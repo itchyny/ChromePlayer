@@ -5,7 +5,6 @@ window.UI = {
 
   start: function (player) {
     var self = this;
-    $('div#appname a').text('Local Player v' + player.version);
     self.player = player;
     self.div = (function (a, x) {
       a.forEach(function (b) { x[b] = $('#' + b); });
@@ -26,6 +25,7 @@ window.UI = {
     self.resizableSet ();
     self.selectableSet ();
     $(window).resize(function () { self.initsize (); });
+    $('div#appname a').text('Local Player v' + player.version);
   },
 
   initdrop: function () {
@@ -51,8 +51,8 @@ window.UI = {
     self.div.next.click(function () { player.next (); });
     self.div.mute.click(function () { player.mute (); });
     self.div.volumeon.click(function () { player.resume (); });
-    self.div.repeat.click(function () { player.repeatToggle (); });
-    self.div.shuffle.click(function () { player.toggleshuffle (); });
+    self.div.repeat.click(function () { player.repeat.next (); });
+    self.div.shuffle.click(function () { player.shuffle.next (); });
     self.div.conf.click(function () { self.div.config.fadeToggle(200); });
     $('img.lbutton, img.rbutton')
     .mouseup(function (e) { $(this).css({ 'top': '50%' }); })
@@ -238,33 +238,24 @@ window.UI = {
   },
 
   seek: (function () {
-    // The most frequently called function.
-    var convertTime = (function () {
-      var lparseInt = parseInt,
-          lisNaN = isNaN;
-      return function (sec) {
-        sec = lparseInt(sec, 10);
-        if(lisNaN(sec)) {
-          return '00:00';
-        }
-        var min = lparseInt((sec / 60) % 60, 10),
-            hour = lparseInt(sec / 3600, 10);
-        sec %= 60;
-        if(hour > 0) {
-          return hour.toString() + ':' + (min < 10 ? '0' : '') + min.toString() + ':' + (sec < 10 ? '0' : '') + sec.toString();
-        } else {
-          return (min < 10 ? '0' : '') + min.toString() + ':' + (sec < 10 ? '0' : '') + sec.toString();
-        }
-      };
-    })(),
-    c = document.getElementById('current'),
-    r = document.getElementById('remain');
+    var convertTime = function (sec) {
+      sec = parseInt(sec, 10);
+      if (isNaN(sec)) return '00:00';
+      var min = parseInt((sec / 60) % 60, 10),
+          hour = parseInt(sec / 3600, 10);
+      sec %= 60;
+      if (hour > 0) {
+        return hour.toString() + ':' + (min < 10 ? '0' : '') + min.toString() + ':' + (sec < 10 ? '0' : '') + sec.toString();
+      } else {
+        return (min < 10 ? '0' : '') + min.toString() + ':' + (sec < 10 ? '0' : '') + sec.toString();
+      }
+    };
     return function () {
       var audioCurrentTime = this.player.playing.audio.currentTime,
           audioDuration = this.player.playing.audio.duration;
       this.div.musicSlider.slider({ 'value': audioCurrentTime / audioDuration });
-      c.innerText = convertTime(audioCurrentTime);
-      r.innerText = '-' + convertTime(audioDuration - audioCurrentTime);
+      this.div.current.text (convertTime (audioCurrentTime));
+      this.div.remain.text ('-' + convertTime (audioDuration - audioCurrentTime));
     };
   })(),
 

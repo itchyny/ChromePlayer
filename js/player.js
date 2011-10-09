@@ -1,10 +1,23 @@
 ;
 // Main player
-
+// TODO: flacが入ってきたらダメ
 function Player () {
-  this.ui = UI;
-  this.key = new Key (this, keyconfig);
-  this.order = new Order;
+  var self = this;
+  self.ui = UI;
+  self.key = new Key (self, keyconfig);
+
+  this.repeat = new Enumstate (['false', 'true', 'one'],
+    function () { return local.get ('repeat') || 'false'; },
+    function (repeat) {
+      local.set ('repeat', repeat);
+      self.ui.setrepeat (repeat);
+    });
+  this.shuffle = new Enumstate (['false', 'true'],
+    function () { return local.get ('shuffle') || 'false'; },
+    function (shuffle) {
+      local.set ('shuffle', shuffle);
+      self.ui.setshuffle (shuffle);
+    });
 }
 
 Player.prototype = {
@@ -14,8 +27,8 @@ Player.prototype = {
   start: function () {
     this.ui.start (this);
     this.key.start ();
-    this.initrepeat ();
-    this.initshuffle ();
+    this.repeat.init ();
+    this.shuffle.init ();
   },
 
   files: [],
@@ -30,10 +43,10 @@ Player.prototype = {
 
   readFiles: function (files) {
     var self = this;
-    this.files = this.files.concat(files);
     for (var i = 0, l = files.length, n = this.musics.length;
             i < l;
                   i++, n++) {
+      this.files[n] = files[i];
       this.musics[n] = new Music (files[i]);
       this.musics[n].tagread (
         (function (j) {
@@ -126,59 +139,13 @@ Player.prototype = {
   prev: function () {
   },
 
-  // add: function (files) {
-  //   this.files = files;
-  // },
-
   remove: function (index) {
     this[index] = null;
   },
 
-  repeat: 'false',
-
-  initrepeat: function () {
-    this.setrepeat (local.get ('repeat') || 'false');
-  },
-
-  repeatToggle: function () {
-    switch (this.repeat) {
-      case 'true' : this.repeat = 'one'   ; break ;
-      case 'one'  : this.repeat = 'false' ; break ;
-      default     : this.repeat = 'true'  ;
-    }
-    local.set('repeat', this.repeat);
-    this.ui.setrepeat (this.repeat);
-  },
-
-  getrepeat: function () {
-    return this.repeat;
-  },
-
-  setrepeat: function (r) {
-    this.repeat = r;
-    this.ui.setrepeat (r);
-  },
-
-  shuffle: 'false',
-
-  initshuffle: function () {
-    this.setshuffle (local.get ('shuffle') || 'false');
-  },
-
-  setshuffle: function (shuffle) {
-    this.shuffle = shuffle;
-    local.set ('shuffle', shuffle);
-    this.ui.setshuffle (shuffle);
-    this.order.setshuffle (shuffle);
-  },
-
-  getshuffle: function () {
-    return this.shuffle;
-  },
-
-  toggleshuffle: function () {
-    this.setshuffle ((this.shuffle !== 'true').toString());
-  },
+  order: new Enumstate ([]),
+  repeat: new Enumstate (['false', 'true', 'one']),
+  shuffle: new Enumstate (['false', 'true']),
 
 }
 

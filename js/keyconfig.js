@@ -1,6 +1,8 @@
 ;
 // key configuration for player
 
+// TODO: clickを全てplayer.uiから取る.
+// clickをui.clickに
 
 function click (t) {
   var i = UI.div[t] || $('img#' + t);

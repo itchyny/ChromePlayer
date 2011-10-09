@@ -12,6 +12,7 @@
 
     set: function (key, val) {
       ls.setItem (key, val);
+      return ls[key];
     },
 
     remove: function (key) {

@@ -7,13 +7,15 @@ function Order (arr) {
 
 Order.prototype = {
 
+  arr: [],
+
   index: 0,
+
+  history: [],
 
   historyindex: 0,
 
   shuffleflg: false,
-
-  history: [],
 
   reset: function () {
     this.index = 0;
@@ -22,14 +24,11 @@ Order.prototype = {
       this.shuffle ();
   },
 
-  set: function (arr) {
-  },
-
-  shuffleOn: function () {
+  shuffleon: function () {
     this.shuffleflg = true;
   },
 
-  shuffleOff: function () {
+  shuffleoff: function () {
     this.shuffleflg = false;
   },
 
