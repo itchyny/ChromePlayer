@@ -1,7 +1,7 @@
 {
-  "name": "Local Player",
+  "name": "Chrome Player",
   "description": "Music Player on your Browser",
-  "version": "1.58",
+  "version": "1.60",
   "app": {
     "launch": {
       "local_path": "index.html"

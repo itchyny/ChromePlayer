@@ -8,48 +8,54 @@ function Music (file) {
 
 Music.prototype = {
 
-  start: function (self, vol, next) {
-    self.musicread (self, vol, next, true);
-  },
-
-  musicread: function (self, vol, next, startplay) {
-    var reader = new FileReader ()
+  musicread: function (vol, next, startplay) {
+    var self = this;
+    var reader = new FileReader ();
     reader.onerror = function (e) {
-      log ("onerror");
-      log (e);
+      log ("onerror"); log (e);
     };
     reader.onload = function (e) {
       self.audio = new Audio (e.target.result);
       self.audio.volume = vol;
-      self.audio.addEventListener ('ended', next);
+      self.audio.addEventListener ('ended',
+        function () {
+          self.release ();
+          next ();
+        });
       if (startplay)
         self.audio.play ();
     };
     reader.readAsDataURL (self.file);
   },
 
-  onload: function (e, f) {
-    var result = e.target.result;
-    var id3 = new ID3 (result);
-    this.tags = id3.read();
+  ontagload: function (e, f) {
+    this.tags = new ID3 (e.target.result).read();
     f (this.tags);
   },
 
   tagread: function (f) {
-    var binaryReader = new FileReader();
     var self = this;
+    var binaryReader = new FileReader();
     binaryReader.onload = function (e) {
-      self.onload (e, f);
+      self.ontagload (e, f);
     };
-    try {
-      binaryReader.readAsBinaryString (this.file.slice(0, 1000));
-    } catch (e) {
-      binaryReader.readAsBinaryString (this.file.webkitSlice(0, 1000));
-    }
+    binaryReader.readAsBinaryString (this.file.webkitSlice(0, 1000));
+    // binaryReader.readAsBinaryString (this.file.slice(0, 1000));
   },
 
-  play: function () {
-    this.audio && this.audio.play ();
+  play: function (vol, next) {
+    var self = this;
+    if (self.audio) {
+      self.audio.volume = vol;
+      self.audio.addEventListener ('ended',
+        function () {
+          self.release ();
+          next ();
+        });
+      self.audio.play ();
+    } else {
+      self.musicread (vol, next, true);
+    }
   },
 
   pause: function () {
@@ -57,11 +63,12 @@ Music.prototype = {
   },
 
   paused: function () {
-    return this.audio.paused;
+    return !this.audio || this.audio.paused
   },
 
   setvolume: function (vol) {
-    this.audio.volume = vol;
+    if (this.audio)
+      this.audio.volume = vol;
   },
 
   mute: function () {
@@ -78,6 +85,4 @@ Music.prototype = {
   },
 
 };
-
-
 

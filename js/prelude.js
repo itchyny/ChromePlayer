@@ -2,20 +2,18 @@ function log (x) {
   console.dir (x);
 }
 
-Array.prototype.shuffle = ( function () {
-  var mathRandom = Math.random,
-  mathFloor = Math.floor;
-  return function () {
-    var i = this.length, j, t;
-    while(i) {
-      j = mathFloor( mathRandom() * i );
-      t = this[--i];
-      this[i] = this[j];
-      this[j] = t;
-    }
-    return this;
-  };
-})();
+Array.prototype.shuffle = function () {
+  var i = this.length, j, t;
+  var mathRandom = Math.random;
+  var mathFloor = Math.floor;
+  while (i) {
+    j = mathFloor( mathRandom() * i );
+    t = this[--i];
+    this[i] = this[j];
+    this[j] = t;
+  }
+  return this;
+};
 
 Array.prototype.unique = function () {
   var ans = [], i, j, l, m, f;

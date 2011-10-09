@@ -3,7 +3,6 @@
 
 
 function click (t) {
-    // console.log(t);
   var i = UI.div[t] || $('img#' + t);
   i.mousedown().click();
   setTimeout( function () {
@@ -13,7 +12,6 @@ function click (t) {
 
 function clickfun (t) {
   return function (e) {
-    // console.log(e);
     click(t);
   };
 }
@@ -126,6 +124,12 @@ window.keyconfig = {
   "<c-up>": function (player) {
     player.volumeup ();
   },
+  "<ca-down>": function (player) {
+    if (player.volume === 0 && player.predvol !== undefined)
+      click ('volumeon');
+    else
+      click ('mute');
+  },
   "<up>": function () {
     var $selected = $('tr.ui-selected'),
         $last = $('tr.last-select');
@@ -213,14 +217,12 @@ window.keyconfig = {
   "<enter>": function () {
     switch($('div#help:visible,div#config:visible,div#about:visible,div#property:visible').size()) {
       case 0:
-        // player.audio.playThis(
-          $('tr.ui-selected')
-            .UNSELECT(true)
-          .first()
-          .children()
-          .first()
-        // );
-          .dblclick();
+        $('tr.ui-selected')
+          .UNSELECT(true)
+        .first()
+        .children()
+        .first()
+        .dblclick();
         return;
       default:
         UI.div.config.add(UI.div.help).add(UI.div.property).add(UI.div.about)
@@ -230,7 +232,7 @@ window.keyconfig = {
         return;
       }
   },
-  "<s-enter>": function (player) {
+  "<a-enter>": function (player) {
     UI.div.property.fadeIn(200);
     if (/* player.data.tagread === 'true' &&*/ player.tags) {
       var m = {
@@ -245,6 +247,60 @@ window.keyconfig = {
         $('dd#id' + m[flameid])
           .text('　' + tags.map( function (i, x) {return x[flameid]}).unique().join());
       }
+    }
+  },
+  "<pgdn>": function () {
+    UI.div.tablebody.scrollTop( UI.div.tablebody.scrollTop() + UI.div.tablebody.height() * 0.8 );
+    $('tr.ui-selected')
+      .UNSELECT(true);
+    var h = window.innerHeight;
+    $('tr', DIV.tbody)
+      .filter( function () { return $(this).position().top < h; } )
+      .last()
+      .SELECT()
+      .LASTSELECT();
+  },
+  "<s-pgdn>": function () {
+    UI.div.tablebody.scrollTop( UI.div.tablebody.scrollTop() + UI.div.tablebody.height() * 0.8 );
+    if($('tr.last-select').prev().ISSELECTED()) {
+      $('tr.ui-selected')
+        .filter( function () { return $(this).position().top < UI.div.thead.position().top + 40; } )
+        .UNSELECT(true);
+    } else {
+      var h = window.innerHeight;
+      $('tr.last-select')
+        .nextAll()
+        .filter( function () { return $(this).position().top < h; } )
+        .SELECT(true)
+        .last()
+        .SELECT();
+    }
+  },
+  "<pdup>": function () {
+    UI.div.tablebody.scrollTop( UI.div.tablebody.scrollTop() - UI.div.tablebody.height() * 0.8 );
+    $('tr.ui-selected')
+      .UNSELECT(true);
+    $('tr', UI.div.tbody)
+      .filter( function () { return $(this).position().top > 0; } )
+      .first()
+      .SELECT()
+      .LASTSELECT();
+  },
+  "<s-pgup>": function () {
+    UI.div.tablebody.scrollTop( UI.div.tablebody.scrollTop() - UI.div.tablebody.height() * 0.8 );
+    var h = window.innerHeight,
+        $last = $('tr.last-select', UI.div.tbody);
+    if($last.next().ISSELECTED()) {
+      $('tr.ui-selected')
+        .filter( function () { return $(this).position().top > h - 50; })
+        .UNSELECT(true);
+    } else {
+      $last
+        .prevAll()
+        .filter( function () { return $(this).position().top > 0; } )
+        .SELECT(true)
+        .last()
+        .SELECT();
     }
   },
 

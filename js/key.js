@@ -3,11 +3,9 @@
 
 function Key (app, config) {
   this.app = app;
-  if (config) {
-    for (var key in config) {
+  if (config)
+    for (var key in config)
       this.set (this.parse (key), config[key]);
-    }
-  }
 }
 
 Key.prototype = {
@@ -93,7 +91,7 @@ Key.prototype = {
     if (65 <= keyCode && keyCode <= 90) return String.fromCharCode(keyCode).toLowerCase();
     if (96 <= keyCode && keyCode <= 105) return keyCode - 96;
     if (112 <= keyCode && keyCode <= 123) return "f" + (keyCode - 111);
-    throw keyCode + "?"
+    console.log ("unknown key: " + keyCode + "?");
   },
 
 };
