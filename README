@@ -1,4 +1,4 @@
-* This is the source code of Chrome Player(renamed to Local Player)
+* This is the source code of Chrome Player
 * Chrome Player is an App for Google Chrome,
 * available at https://chrome.google.com/webstore/detail/chkhjlbdflppmaddpjmjecgdagdljimc
 
@@ -32,6 +32,16 @@ Support for other types like wav or flac
 Cost too much memory
 Can't deal with large file ( > about 10MB )
 ( This 10MB is just a rough estimate. )
+
+-- Source code
+I pushed this source to github.
+https://github.com/itchyny/ChromePlayer
+I allow you to fork another app from this code.
+
+-- Security
+You may wonder why this App accesses "all data from your website". Actually, this App gets no data from your browsing site. This permission is needed for "Global keyboard control." It is realized by following: listening the keydown event, and if it was → or ←, the player catches that event and seek for next or previous music. 
+
+If you want see the script, open a site (www.google.com for example) and right click → inspect → Scripts, find chrome-extension://chkhjlbdflppmaddpjmjecgdagdljimc/js/shortcuts.js. "chkhjlbdflppmaddpjmjecgdagdljimc" is the id number for this App.
 
 -- Contact or comment
 Write a review below ↓↓.
