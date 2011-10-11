@@ -1,5 +1,5 @@
-;
 // Music file
+
 function Music (file) {
   this.file = file;
   this.type = file.type;

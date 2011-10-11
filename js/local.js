@@ -1,5 +1,5 @@
-;
-// wrapper for localStorage
+// Easy wrapper for localStorage
+
 (function () {
 
   var ls = localStorage;
@@ -22,6 +22,7 @@
     clear: function () {
       ls.clear ();
     }
+
   };
 
 

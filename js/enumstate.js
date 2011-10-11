@@ -1,13 +1,12 @@
-;
 // Enumerable state
 
 function Enumstate (array, initializer, callback) {
   this.array = array;
-  this._enum = this.enum = new Enum (array);
-  this.at (0);
+  this._enums = this.enums = new Enums (array);
   this.length = array.length;
   this.initializer = initializer;
   this.callback = callback;
+  this.at (0);
 }
 
 Enumstate.prototype = {
@@ -25,7 +24,7 @@ Enumstate.prototype = {
   at: function (i) {
     if (i === undefined) return this.value;
     this.index = i;
-    this.value = this.enum.toEnum (i);
+    this.value = this.enums.toEnum (i);
     this.history = this.history.concat (i);
     return this.value;
   },
@@ -33,16 +32,15 @@ Enumstate.prototype = {
   next: function (j) {
     if (j === undefined) j = 1
     this.index += j;
-    this.value = this.enum.toEnum (this.index);
+    this.value = this.enums.toEnum (this.index);
     if (this.value === undefined) {
       if (this.shuffle) {
-        this.enum = new Enum (this.enum.array.shuffle ());
+        this.enums = new Enums (this.enums.array.shuffle ());
       }
       this.at (0);
     } else {
       this.at (this.index);
     }
-    // console.log(this.history);
     this.callback (this.value);
     return this.value;
   },
@@ -53,14 +51,14 @@ Enumstate.prototype = {
 
   shuffleOn: function () {
     this.shuffle = true;
-    this._enum = this.enum;
-    this.enum = new Enum (this.enum.array.shuffle ());
+    this._enums = this.enums;
+    this.enums = new Enums (this.enums.array.shuffle ());
     return this;
   },
 
   shuffleOff: function () {
     this.shuffle = false;
-    this.enum = this._enum;
+    this.enums = this._enums;
     return this;
   },
 
@@ -73,11 +71,11 @@ Enumstate.prototype = {
 
   init: function (x) {
     if (x !== undefined)
-      this.at (this.enum.fromEnum (x));
+      this.at (this.enums.fromEnum (x));
     else if (typeof this.initializer === 'function')
-      this.at (this.enum.fromEnum (this.initializer ()));
+      this.at (this.enums.fromEnum (this.initializer ()));
     else
-      this.at (this.enum.fromEnum (this.initializer));
+      this.at (this.enums.fromEnum (this.initializer));
     this.callback (this.value);
   },
 

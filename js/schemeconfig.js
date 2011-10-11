@@ -1,4 +1,5 @@
-;// color scheme configuration
+// color scheme configuration
+
 window.scheme = {
   'classic-default': {
     'background-color': {

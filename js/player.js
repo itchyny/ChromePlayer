@@ -1,11 +1,10 @@
-;
 // Main player
 // TODO: flacが入ってきたらダメ
+
 function Player () {
   var self = this;
   self.ui = UI;
   self.key = new Key (self, keyconfig);
-
   this.repeat = new Enumstate (['false', 'true', 'one'],
     function () { return local.get ('repeat') || 'false'; },
     function (repeat) {

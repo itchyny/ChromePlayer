@@ -1,4 +1,3 @@
-;
 // key configuration for player
 
 // TODO: clickを全てplayer.uiから取る.
@@ -20,34 +19,34 @@ function clickfun (t) {
 
 window.keyconfig = {
 
-  "<c-space>": clickfun ("play"),
-  "<a-space>": clickfun ("play"),
-  "<space>": clickfun ("play"),
-  "<c-r>": clickfun ("repeat"),
-  "<c-o>": clickfun ("open"),
-  "<c-u>": clickfun ("shuffle"),
-  "<c-a>": function () {
+  '<c-space>': clickfun ('play'),
+  '<a-space>': clickfun ('play'),
+  '<space>': clickfun ('play'),
+  '<c-r>': clickfun ('repeat'),
+  '<c-o>': clickfun ('open'),
+  '<c-u>': clickfun ('shuffle'),
+  '<c-a>': function () {
     UI.div.tbody
       .children()
       .SELECT(true)
       .last()
       .LASTSELECT();
   },
-  "<cs-a>": function () {
+  '<cs-a>': function () {
     UI.div.tbody
       .children()
       .UNSELECT(true);
   },
-  "<s-/>": function () {
+  '<s-/>': function () {
     UI.div.help.fadeToggle(200);
     if($('div#help:hidden').size()) {
       div.tablebody.focus();
     }
   },
-  "<f1>": function () {
+  '<f1>': function () {
       UI.div.about.fadeToggle(200);
   },
-  "<esc>": function () {
+  '<esc>': function () {
     switch($('#help:visible,#config:visible,#about:visible,#property:visible,#filter:visible').size()) {
       case 0:
         if($('div#musicSlider a:focus, div#volumeSlider a:focus').size()) {
@@ -66,13 +65,13 @@ window.keyconfig = {
         return;
       };
   },
-  "<delete>": function () {
+  '<delete>': function () {
     $('tr.ui-selected').last().next().LASTSELECT();
     $('tr.ui-selected').first().prev().LASTSELECT(true);
     $('tr.ui-selected').remove();
     // player.order.set();
   },
-  "<down>": function () {
+  '<down>': function () {
     var $selected = $('tr.ui-selected'),
         $last = $('tr.last-select');
     if($selected.size()) {
@@ -102,7 +101,7 @@ window.keyconfig = {
             .LASTSELECT();
     }
   },
-  "<s-down>": function () {
+  '<s-down>': function () {
     var $last = $('tr.last-select');
     if($last.size()) {
       if($last.prev().ISSELECTED()) {
@@ -120,19 +119,19 @@ window.keyconfig = {
       }
     }
   },
-  "<c-down>": function (player) {
+  '<c-down>': function (player) {
     player.volumedown ();
   },
-  "<c-up>": function (player) {
+  '<c-up>': function (player) {
     player.volumeup ();
   },
-  "<ca-down>": function (player) {
+  '<ca-down>': function (player) {
     if (player.volume === 0 && player.predvol !== undefined)
       click ('volumeon');
     else
       click ('mute');
   },
-  "<up>": function () {
+  '<up>': function () {
     var $selected = $('tr.ui-selected'),
         $last = $('tr.last-select');
     if($selected.size()) {
@@ -162,7 +161,7 @@ window.keyconfig = {
             .LASTSELECT();
     }
   },
-  "<s-up>": function () {
+  '<s-up>': function () {
     var $last = $('tr.last-select');
     if($last.size()) {
       if($last.next().ISSELECTED()) {
@@ -180,7 +179,7 @@ window.keyconfig = {
       }
     }
   },
-  "<home>": function () {
+  '<home>': function () {
     $('tr.ui-selected')
       .UNSELECT(true);
     UI.div.tbody.children()
@@ -188,7 +187,7 @@ window.keyconfig = {
       .SELECT()
       .LASTSELECT();
   },
-  "<s-home>": function () {
+  '<s-home>': function () {
     $('tr.ui-selected')
       .removeClass('ui-selected ddms_selected');
     $('tr.last-select')
@@ -198,7 +197,7 @@ window.keyconfig = {
     .last()
       .SELECT();
   },
-  "<end>": function () {
+  '<end>': function () {
     $('tr.ui-selected')
       .UNSELECT(true);
     UI.div.tbody.children()
@@ -206,7 +205,7 @@ window.keyconfig = {
       .SELECT()
       .LASTSELECT();
   },
-  "<s-end>": function () {
+  '<s-end>': function () {
     $('tr.ui-selected')
       .removeClass('ui-selected ddms_selected');
     $('tr.last-select')
@@ -216,7 +215,7 @@ window.keyconfig = {
     .last()
       .SELECT();
   },
-  "<enter>": function () {
+  '<enter>': function () {
     switch($('div#help:visible,div#config:visible,div#about:visible,div#property:visible').size()) {
       case 0:
         $('tr.ui-selected')
@@ -234,7 +233,7 @@ window.keyconfig = {
         return;
       }
   },
-  "<a-enter>": function (player) {
+  '<a-enter>': function (player) {
     UI.div.property.fadeIn(200);
     if (/* player.data.tagread === 'true' &&*/ player.tags) {
       var m = {
@@ -251,7 +250,7 @@ window.keyconfig = {
       }
     }
   },
-  "<pgdn>": function () {
+  '<pgdn>': function () {
     UI.div.tablebody.scrollTop( UI.div.tablebody.scrollTop() + UI.div.tablebody.height() * 0.8 );
     $('tr.ui-selected')
       .UNSELECT(true);
@@ -262,7 +261,7 @@ window.keyconfig = {
       .SELECT()
       .LASTSELECT();
   },
-  "<s-pgdn>": function () {
+  '<s-pgdn>': function () {
     UI.div.tablebody.scrollTop( UI.div.tablebody.scrollTop() + UI.div.tablebody.height() * 0.8 );
     if($('tr.last-select').prev().ISSELECTED()) {
       $('tr.ui-selected')
@@ -278,7 +277,7 @@ window.keyconfig = {
         .SELECT();
     }
   },
-  "<pdup>": function () {
+  '<pdup>': function () {
     UI.div.tablebody.scrollTop( UI.div.tablebody.scrollTop() - UI.div.tablebody.height() * 0.8 );
     $('tr.ui-selected')
       .UNSELECT(true);
@@ -288,7 +287,7 @@ window.keyconfig = {
       .SELECT()
       .LASTSELECT();
   },
-  "<s-pgup>": function () {
+  '<s-pgup>': function () {
     UI.div.tablebody.scrollTop( UI.div.tablebody.scrollTop() - UI.div.tablebody.height() * 0.8 );
     var h = window.innerHeight,
         $last = $('tr.last-select', UI.div.tbody);

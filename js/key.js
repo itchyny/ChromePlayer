@@ -1,4 +1,3 @@
-;
 // Key maneger
 
 function Key (app, config) {
