@@ -308,3 +308,20 @@ window.keyconfig = {
 };
 
 
+
+// map <c-space> PlayPause
+// map <a-space> PlayPause
+// map <space> PlayPause
+// map <c-r> ToggleRepeat
+// map <c-o> OpenFile
+// map <c-u> ToggleShuffle
+// map <c-a> SelectAll
+// map <cs-a> SelectNone
+// map <s-/> ToggleHelp
+// map <enter> PlaySelected
+// map <up> SelectUp
+// map <down> SelectDown
+// map <s-up> SelectShiftUp
+// map <s-down> SelectShiftDown
+// map <home> SelectHome
+// map <end> SelectEnd

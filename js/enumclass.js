@@ -1,13 +1,13 @@
-// Enum data
+// Enum data class
 
-function Enums (array) {
+function Enumsclass (array) {
   this.array = array;
   this.length = array.length;
   this.head = array[0];
   this.last = array[array.length - 1];
 }
 
-Enums.prototype = {
+Enumclass.prototype = {
 
   array: [],
 

@@ -44,8 +44,8 @@ window.UI = {
     var player = self.player;
     self.div.open.click(function () { self.div.fileselect.click(); });
     self.div.fileselect.change(function (e) { player.readFiles(e.target.files); });
-    self.div.play.click(function () { player.toggle (); });  // <- audio.play
-    self.div.pause.click(function () { player.toggle (); });  // <- audio.pause
+    self.div.play.click(function () { player.toggle (); });
+    self.div.pause.click(function () { player.toggle (); });
     self.div.prev.click(function () { player.prev (); });
     self.div.next.click(function () { player.next (); });
     self.div.mute.click(function () { player.mute (); });
@@ -413,7 +413,6 @@ window.UI = {
   },
 
 };
-
 
 $.fn.SELECT = function (flg, anime) {
   if(this.size()) {

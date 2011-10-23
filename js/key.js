@@ -85,11 +85,16 @@ Key.prototype = {
   },
 
   keyCode: function (keyCode) {
-    if (this.codes[keyCode]) return this.codes[keyCode];
-    if (48 <= keyCode && keyCode <= 57) return keyCode - 48;
-    if (65 <= keyCode && keyCode <= 90) return String.fromCharCode(keyCode).toLowerCase();
-    if (96 <= keyCode && keyCode <= 105) return keyCode - 96;
-    if (112 <= keyCode && keyCode <= 123) return "f" + (keyCode - 111);
+    if (this.codes[keyCode])
+      return this.codes[keyCode];
+    if (48 <= keyCode && keyCode <= 57)
+      return keyCode - 48;
+    if (65 <= keyCode && keyCode <= 90)
+      return String.fromCharCode(keyCode).toLowerCase();
+    if (96 <= keyCode && keyCode <= 105)
+      return keyCode - 96;
+    if (112 <= keyCode && keyCode <= 123)
+      return "f" + (keyCode - 111);
     console.log ("unknown key: " + keyCode);
   },
 

@@ -1,5 +1,6 @@
 // Main player
 // TODO: flacが入ってきたらダメ
+// TODO: そろそろorderをnew Enumstateしよう
 
 function Player () {
   var self = this;
@@ -42,9 +43,7 @@ Player.prototype = {
 
   readFiles: function (files) {
     var self = this;
-    for (var i = 0, l = files.length, n = this.musics.length;
-            i < l;
-                  i++, n++) {
+    for (var i = 0, l = files.length, n = this.musics.length; i < l; i++, n++) {
       this.files[n] = files[i];
       this.musics[n] = new Music (files[i]);
       this.musics[n].tagread (
@@ -66,9 +65,7 @@ Player.prototype = {
       self.playing.release ();
     self.nowplaying = index;
     self.playing = self.musics[index];
-    self.playing.play (self.volume / 256, function () {
-      self.next ();
-    });
+    self.playing.play (self.volume / 256, function () { self.next (); });
     self.ui.play (index);
   },
 
@@ -82,9 +79,7 @@ Player.prototype = {
     var self = this;
     if (!self.playing) return;
     if (self.playing.paused ()) {
-      self.playing.play (self.volume / 256, function () {
-        self.next ();
-      });
+      self.playing.play (self.volume / 256, function () { self.next (); });
       self.ui.play (self.nowplaying);
     } else {
       self.pause ();
@@ -143,7 +138,9 @@ Player.prototype = {
   },
 
   order: new Enumstate ([]),
+
   repeat: new Enumstate (['false', 'true', 'one']),
+
   shuffle: new Enumstate (['false', 'true']),
 
 }
