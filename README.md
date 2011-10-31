@@ -1,3 +1,7 @@
+# !!! WARNING: THIS IS UNSTABLE VERSION !!!
+# Stable version is available at https://github.com/itchyny/ChromePlayer/tree/3005dd77af29be16e808684dfc5d5df1691b49ce          
+
+
 # This is the source code of Chrome Player
 ## Chrome Player is an App for Google Chrome,
 ### available at https://chrome.google.com/webstore/detail/chkhjlbdflppmaddpjmjecgdagdljimc

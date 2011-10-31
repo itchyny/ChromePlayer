@@ -1,6 +1,6 @@
 // Enum data class
 
-function Enumsclass (array) {
+function Enumclass (array) {
   this.array = array;
   this.length = array.length;
   this.head = array[0];
