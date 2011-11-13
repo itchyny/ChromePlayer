@@ -1,6 +1,6 @@
 // color scheme configuration
 
-window.scheme = {
+var scheme = {
   'classic-default': {
     'background-color': {
       'div#wrapper': '#aaa',

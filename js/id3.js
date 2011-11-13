@@ -172,6 +172,5 @@ ID3.prototype = {
 
 };
 
-window.ID3 = ID3;
 
 

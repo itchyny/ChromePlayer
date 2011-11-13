@@ -64,33 +64,38 @@ Player.prototype = {
 
   nowplaying: 0,
 
+  _readFiles: function (file, last) {
+    var self = this;
+    var n = self.musics.length;
+    if (file.type.match (/audio\/.*(mp3|ogg|m4a|mp4)/)) {
+      self.files[n] = file;
+      self.musics[n] = new Music (file);
+      self.musics[n].tagread (
+        (function (j) {
+        return function (tags) {
+          self.tags[j] = tags;
+          self.ui.ontagread (tags, j);
+        };
+      }) (n));
+      self.ui.addfile (file, n);
+      self.order.concat ([n]);
+      if (!self.playing) {
+        self.play ();
+      }
+    }
+    if (last) {
+      self.ui.selectableSet ();
+      self.order.shuffleOn (); // TODO
+    }
+  },
+
   readFiles: function (files) {
     var self = this;
-    for (var i = 0, l = files.length, n = self.musics.length; i < l; i++, n++) {
-      setTimeout ( (function (i, n) {
-        return function () {
-          if (files[i].type.match (/audio\/.*(mp3|ogg|m4a|mp4)/)) {
-            self.files[n] = files[i];
-            self.musics[n] = new Music (files[i]);
-            self.musics[n].tagread (
-              (function (j) {
-              return function (tags) {
-                self.tags[j] = tags;
-                self.ui.ontagread (tags, j);
-              };
-            }) (n));
-            self.ui.addfile (files[i], n);
-            self.order.concat ([n]);
-            if (!self.playing) {
-              self.play ();
-            }
-          }
-          if (i === l - 1) {
-            self.ui.selectableSet ();
-          }
-        }
-      }) (i, n)
-      , 10 * i);
+    for (var i = 0, l = files.length; i < l; i++) {
+      setTimeout ( (function (file, last) {
+        return self._readFiles (file, last);
+      }) (files[i], i === l - 1)
+      , 100 * i);
     }
   },
 
@@ -140,6 +145,7 @@ Player.prototype = {
   },
 
   prev: function () {
+    // TODO
   },
 
   get volume () {
@@ -202,9 +208,18 @@ Player.prototype = {
 
   shuffle: new Enumstate (['false', 'true']),
 
+  seekBy: function (sec) {
+    if (this.nowplaying != undefined && this.playing.audio) {
+      var prev = this.playing.seekBy (sec);
+      if (prev) {
+        this.prev ();
+      }
+    }
+  },
+
 }
 
 window.onload = function () {
-  window.player = (new Player).start ();
+  var player = (new Player).start ();
 };
 

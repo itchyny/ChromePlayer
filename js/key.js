@@ -27,7 +27,7 @@ Key.prototype = {
 
   convert: function (e) {
     var meta = this.meta (e);
-    var key = "<" + (meta ? meta + "-" : "") + this.keyCode (e.keyCode) + ">";
+    var key = '<' + (meta ? meta + '-' : '') + this.keyCode (e.keyCode) + '>';
     return key;
   },
 
@@ -49,39 +49,40 @@ Key.prototype = {
   callback: [],
 
   codes: {
-      8: "backspace",
-      9: "tab",
-     13: "enter",
-     16: "shift",
-     17: "ctrl",
-     18: "alt",
-     27: "esc",
-     32: "space",
-     33: "pgup",
-     34: "pgdn",
-     35: "end",
-     36: "home",
-     37: "left",
-     38: "up",
-     39: "right",
-     40: "down",
-     45: "insert",
-     46: "delete",
-    106: "*",
-    107: "+",
-    111: "/",
-    144: "numlock",
-    186: ":",
-    187: ";",
-    188: ",",
-    189: "-",
-    190: ".",
-    191: "/",
-    192: "@",
-    219: "[",
-    220: "\\",
-    221: "]",
-    222: "^",
+      8: 'backspace',
+      9: 'tab',
+     13: 'enter',
+     16: 'shift',
+     17: 'ctrl',
+     18: 'alt',
+     27: 'esc',
+     32: 'space',
+     33: 'pgup',
+     34: 'pgdn',
+     35: 'end',
+     36: 'home',
+     37: 'left',
+     38: 'up',
+     39: 'right',
+     40: 'down',
+     45: 'insert',
+     46: 'delete',
+     91: '^', // TODO
+    106: '*',
+    107: '+',
+    111: '/',
+    144: 'numlock',
+    186: ':',
+    187: ';',
+    188: ',',
+    189: '-',
+    190: '.',
+    191: '/',
+    192: '@',
+    219: '[',
+    220: '\\',
+    221: ']',
+    222: '^',
   },
 
   keyCode: function (keyCode) {
@@ -94,8 +95,8 @@ Key.prototype = {
     if (96 <= keyCode && keyCode <= 105)
       return keyCode - 96;
     if (112 <= keyCode && keyCode <= 123)
-      return "f" + (keyCode - 111);
-    console.log ("unknown key: " + keyCode);
+      return 'f' + (keyCode - 111);
+    console.log ('unknown key: ' + keyCode);
   },
 
 };

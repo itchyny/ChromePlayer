@@ -1,31 +1,24 @@
 // Easy wrapper for localStorage
 
-(function () {
+var local = {
 
-  var ls = localStorage;
+  get: function (key) {
+    return localStorage[key];
+  },
 
-  window.local = {
+  set: function (key, val) {
+    localStorage.setItem (key, val);
+    return localStorage[key];
+  },
 
-    get: function (key) {
-      return ls[key];
-    },
+  remove: function (key) {
+    localStorage.removeItem (key);
+  },
 
-    set: function (key, val) {
-      ls.setItem (key, val);
-      return ls[key];
-    },
+  clear: function () {
+    localStorage.clear ();
+  }
 
-    remove: function (key) {
-      ls.removeItem (key);
-    },
-
-    clear: function () {
-      ls.clear ();
-    }
-
-  };
-
-
-})();
+};
 
 

@@ -1,4 +1,3 @@
-;
 // Order
 
 function Order (arr) {

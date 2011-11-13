@@ -89,5 +89,22 @@ Music.prototype = {
     }
   },
 
+  seekBy: function (sec) {
+    if (this.audio) {
+      var cT = this.audio.currentTime;
+      var dr = this.audio.duration;
+      if (sec < 0 && cT < -sec) {
+        this.audio.currentTime = 0;
+        if (cT < -sec / 4) {
+          return true; // TODO: previous music
+        }
+      } else if (cT + sec > dr) {
+        this.audio.currentTime = dr;
+      } else {
+        this.audio.currentTime += sec;
+      }
+    }
+  },
+
 };
 
