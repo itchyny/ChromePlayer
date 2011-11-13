@@ -67,8 +67,9 @@ Music.prototype = {
   },
 
   setvolume: function (vol) {
-    if (this.audio)
+    if (this.audio) {
       this.audio.volume = vol;
+    }
   },
 
   mute: function () {
@@ -81,7 +82,9 @@ Music.prototype = {
   },
 
   release: function () {
-    delete this.audio;
+    if (this.audio) {
+      delete this.audio;
+    }
   },
 
 };

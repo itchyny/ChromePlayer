@@ -129,10 +129,25 @@ window.UI = {
         'min': 0,
         'max': 1,
         'step': 0.01,
-        // 'start': info.startSlide,
-        // 'stop': info.stopSlide
+        'start': function (e, ui) { self.startSlide (e, ui); },
+        'stop': function (e, ui) { self.stopSlide (e, ui); }
       })
       .slider('disable');
+  },
+
+  startSlide: function (e, ui) {
+    if (this.seeking) {
+      clearInterval (this.seeking);
+    }
+  },
+
+  stopSlide: function (e, ui) {
+    console.dir (e);
+    console.dir (ui);
+    var self = this;
+    if (self.player.seekAt (ui.value)) {
+      self.seeking = setInterval (function () { self.seek (); }, 1000);
+    }
   },
 
   addfile: function (file, index) {
@@ -147,10 +162,11 @@ window.UI = {
             + '<td><div class="album"></div></td>'
             + '</tr>';
     var h = -1;
+    var tbodyWdt = this.div.tbody.width();
     html[++h] = '<tr class="music" number="';
     html[++h] = index;
     html[++h] = '" style="width:';
-    html[++h] = 1280 // tbodyWdt; // TODO
+    html[++h] = tbodyWdt;
     html[++h] = 'px;">';
     html[++h] = '<td class="now">';
     html[++h] = '<td></td>';
@@ -182,7 +198,7 @@ window.UI = {
     var self = this;
     $('tr.music').dblclick (
       function (e) {
-        self.div.musicSlider.slider({ 'value': 0 });
+        self.div.musicSlider.slider ({ 'value': 0 });
         var index = parseInt( $(e.target).closest('tr').attr('number') || e.closest('tr').attr('number') || e.attr('number'), 10 );
         self.player.pause ();
         self.player.play (index);
@@ -214,14 +230,18 @@ window.UI = {
       $selected.UNSELECT(true);
       $('tr.nP').SELECT().LASTSELECT();
     }
-    self.seeking && clearInterval (self.seeking);
+    if (self.seeking) {
+      clearInterval (self.seeking);
+    }
     self.seeking = setInterval (function () { self.seek (); }, 1000);
     setTimeout (function () { self.reflesh (); }, 50);
   },
 
   pause: function () {
     var self = this;
-    this.seeking && clearInterval (this.seeking);
+    if (this.seeking) {
+      clearInterval (this.seeking);
+    }
     this.reflesh (false);
     setTimeout (function () { self.reflesh (); }, 50);
   },
@@ -254,7 +274,7 @@ window.UI = {
       if (this.player.playing != undefined && this.player.playing.audio) {
         var audioCurrentTime = this.player.playing.audio.currentTime,
             audioDuration = this.player.playing.audio.duration;
-        this.div.musicSlider.slider({ 'value': audioCurrentTime / audioDuration });
+        this.div.musicSlider.slider ({ 'value': audioCurrentTime / audioDuration });
         this.div.current.text (convertTime (audioCurrentTime));
         this.div.remain.text ('-' + convertTime (audioDuration - audioCurrentTime));
       }

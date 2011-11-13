@@ -1,18 +1,20 @@
 // Main player
-// TODO: flacが入ってきたらダメ
-// TODO: そろそろorderをnew Enumstateしよう
+// TODO: シャッフル, リピート
+// TODO: 読めないタグ
+// TODO: ui.jsのaddfile高速化
+// TODO: play/pauseのボタンがおかしい
 
 function Player () {
   var self = this;
   self.ui = UI;
   self.key = new Key (self, keyconfig);
-  this.repeat = new Enumstate (['false', 'true', 'one'],
+  self.repeat = new Enumstate (['false', 'true', 'one'],
     function () { return local.get ('repeat') || 'false'; },
     function (repeat) {
       local.set ('repeat', repeat);
       self.ui.setrepeat (repeat);
     });
-  this.shuffle = new Enumstate (['false', 'true'],
+  self.shuffle = new Enumstate (['false', 'true'],
     function () { return local.get ('shuffle') || 'false'; },
     function (shuffle) {
       local.set ('shuffle', shuffle);
@@ -43,40 +45,39 @@ Player.prototype = {
 
   readFiles: function (files) {
     var self = this;
-    for (var i = 0, l = files.length, n = this.musics.length; i < l; i++, n++) {
-      setTimeout (
-        (function (i, n) {
-          return function () {
-            if (files[i].type.match (/audio\/.*(mp3|ogg|m4a|mp4)/)) {
-              self.files[n] = files[i];
-              self.musics[n] = new Music (files[i]);
-              self.musics[n].tagread (
-                (function (j) {
-                  return function (tags) {
-                    self.tags[j] = tags;
-                    self.ui.ontagread (tags, j);
-                  };
-                })(n));
-              self.ui.addfile (files[i], n);
-              self.order.concat ([n]);
-              if (!self.playing) {
-                self.play ();
-              }
-            }
-            if (i === l - 1) {
-              self.ui.selectableSet ();
+    for (var i = 0, l = files.length, n = self.musics.length; i < l; i++, n++) {
+      setTimeout ( (function (i, n) {
+        return function () {
+          if (files[i].type.match (/audio\/.*(mp3|ogg|m4a|mp4)/)) {
+            self.files[n] = files[i];
+            self.musics[n] = new Music (files[i]);
+            self.musics[n].tagread (
+              (function (j) {
+              return function (tags) {
+                self.tags[j] = tags;
+                self.ui.ontagread (tags, j);
+              };
+            }) (n));
+            self.ui.addfile (files[i], n);
+            self.order.concat ([n]);
+            if (!self.playing) {
+              self.play ();
             }
           }
-        }) (i, n)
+          if (i === l - 1) {
+            self.ui.selectableSet ();
+          }
+        }
+      }) (i, n)
       , 10 * i);
     }
   },
 
   play: function (index) {
+    var self = this;
     if (index === undefined) {
       index = this.order.at (0);
     }
-    var self = this;
     self.pause ();
     if (self.playing) {
       self.playing.release ();
@@ -109,8 +110,10 @@ Player.prototype = {
 
   next: function () {
     this.ui.pause ();
-    var index = this.order.next (); //this.nowplaying + 1; // TODO
-    if (!this.musics[index]) index = this.order.at (0);
+    var index = this.order.next ();
+    if (!this.musics[index]) {
+      index = this.order.at (0);
+    }
     this.play (index);
     // log('--  next  --');
   },
@@ -132,7 +135,9 @@ Player.prototype = {
     this.ui.volume = volume;
     local.set ('volume', volume);
     this._volume = volume;
-    this.playing && this.playing.setvolume (volume / 258);
+    if (this.playing) {
+      this.playing.setvolume (volume / 258);
+    }
   },
 
   updatevolume: function () {
@@ -160,6 +165,14 @@ Player.prototype = {
   remove: function (index) {
     this[index] = null;
     this.order.remove (index);
+  },
+
+  seekAt: function (position /* 0 - 1 */ ) {
+    if (this.playing != undefined && this.playing.audio) {
+      this.playing.audio.currentTime = this.playing.audio.duration * position;
+      return true;
+    }
+    return false;
   },
 
   order: new Enumstate ([]),
