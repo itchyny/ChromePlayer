@@ -21,7 +21,7 @@
 window.addEventListener(
   'keydown',
   (function(){
-    const keys = [ 32, 37, 38, 39, 40, 119, 120, 121, 173, 174, 175, 176, 177, 178, 179 ];
+    var keys = [ 32, 37, 38, 39, 40, 119, 120, 121, 173, 174, 175, 176, 177, 178, 179 ];
     return function(e){
       if(keys.indexOf(e.keyCode) >= 0){
         try{

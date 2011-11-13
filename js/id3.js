@@ -19,7 +19,7 @@ String.prototype.unsynchsafe = function () {
 function decode (chars) {
   switch (chars.charCodeAt(0)) {
     case 0: { // ISO-8859-1
-      log("ISO-8859-1"); // UTF-16?
+      // log("ISO-8859-1"); // UTF-16?
       // console.log(chars);
       var a = "";
       for (var i = -1; i < chars.length; ) { // TODO
@@ -33,10 +33,10 @@ function decode (chars) {
       return chars.toString();
     }
     case 2: { // UTF-16BE without BOM
-      log("UTF-16BE without BOM");
+      // log("UTF-16BE without BOM");
     }
     case 1: { // UTF-16 with BOM
-           log("UTF-16 with BOM");
+           // log("UTF-16 with BOM");
       var a = "", StringfromCharCode = String.fromCharCode, kind;
       for(var i = 1, charslen = chars.length; i < charslen; ) {
         if(kind === 1 || ((chars.charCodeAt(i) & 0xff) === 0xff)) { // 2bytes
@@ -60,7 +60,7 @@ function decode (chars) {
       return a;
     }
     case 3: { // UTF-8
-           log("UTF-8");
+           // log("UTF-8");
       var a = "", StringfromCharCode = String.fromCharCode;
       for(var i = 1, charslen = chars.length; i < charslen; ) {
         var charsi = chars.charCodeAt(i);
@@ -155,7 +155,7 @@ ID3.prototype = {
     var lparseInt = parseInt;
     while (i < this.tagsize) {
       var flameid = this.result.slice(i, i += 4);
-      console.log(flameid);
+      // console.log(flameid);
       var flamesize = ( function (x) {return lparseInt(x.charCodeAt(3), 10);})(this.result.slice(i, i += 4));
       var flameflg = this.result.slice(i, i += 2).toBin();
       var flametext = ldecode(this.result.slice(i, i += flamesize));

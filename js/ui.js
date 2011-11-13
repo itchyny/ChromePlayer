@@ -182,6 +182,7 @@ window.UI = {
     var self = this;
     $('tr.music').dblclick (
       function (e) {
+        self.div.musicSlider.slider({ 'value': 0 });
         var index = parseInt( $(e.target).closest('tr').attr('number') || e.closest('tr').attr('number') || e.attr('number'), 10 );
         self.player.pause ();
         self.player.play (index);
@@ -250,11 +251,13 @@ window.UI = {
       }
     };
     return function () {
-      var audioCurrentTime = this.player.playing.audio.currentTime,
-          audioDuration = this.player.playing.audio.duration;
-      this.div.musicSlider.slider({ 'value': audioCurrentTime / audioDuration });
-      this.div.current.text (convertTime (audioCurrentTime));
-      this.div.remain.text ('-' + convertTime (audioDuration - audioCurrentTime));
+      if (this.player.playing != undefined && this.player.playing.audio) {
+        var audioCurrentTime = this.player.playing.audio.currentTime,
+            audioDuration = this.player.playing.audio.duration;
+        this.div.musicSlider.slider({ 'value': audioCurrentTime / audioDuration });
+        this.div.current.text (convertTime (audioCurrentTime));
+        this.div.remain.text ('-' + convertTime (audioDuration - audioCurrentTime));
+      }
     };
   })(),
 

@@ -65,11 +65,15 @@ window.keyconfig = {
         return;
       };
   },
-  '<delete>': function () {
+  '<delete>': function (player) {
     $('tr.ui-selected').last().next().LASTSELECT();
     $('tr.ui-selected').first().prev().LASTSELECT(true);
+    $('tr.ui-selected')
+      .map(
+        function (i, tr) {
+          return player.remove ( parseInt($(tr).attr('number'), 10) );
+      });
     $('tr.ui-selected').remove();
-    // player.order.set();
   },
   '<down>': function () {
     var $selected = $('tr.ui-selected'),

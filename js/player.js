@@ -44,35 +44,56 @@ Player.prototype = {
   readFiles: function (files) {
     var self = this;
     for (var i = 0, l = files.length, n = this.musics.length; i < l; i++, n++) {
-      this.files[n] = files[i];
-      this.musics[n] = new Music (files[i]);
-      this.musics[n].tagread (
-        (function (j) {
-          return function (tags) {
-            self.tags[j] = tags;
-            self.ui.ontagread (tags, j);
-          };
-        })(n));
-      this.ui.addfile (files[i], n);
+      setTimeout (
+        (function (i, n) {
+          return function () {
+            if (files[i].type.match (/audio\/.*(mp3|ogg|m4a|mp4)/)) {
+              self.files[n] = files[i];
+              self.musics[n] = new Music (files[i]);
+              self.musics[n].tagread (
+                (function (j) {
+                  return function (tags) {
+                    self.tags[j] = tags;
+                    self.ui.ontagread (tags, j);
+                  };
+                })(n));
+              self.ui.addfile (files[i], n);
+              self.order.concat ([n]);
+              if (!self.playing) {
+                self.play ();
+              }
+            }
+            if (i === l - 1) {
+              self.ui.selectableSet ();
+            }
+          }
+        }) (i, n)
+      , 10 * i);
     }
-    this.ui.selectableSet ();
   },
 
   play: function (index) {
+    if (index === undefined) {
+      index = this.order.at (0);
+    }
     var self = this;
     self.pause ();
-    if (self.playing)
+    if (self.playing) {
       self.playing.release ();
-    self.nowplaying = index;
-    self.playing = self.musics[index];
-    self.playing.play (self.volume / 256, function () { self.next (); });
-    self.ui.play (index);
+    }
+    if (index != undefined) {
+      self.nowplaying = index;
+      self.playing = self.musics[index];
+      self.playing.play (self.volume / 256, function () { self.next (); });
+      self.ui.play (index);
+    }
   },
 
   pause: function () {
     this.ui.pause ();
-    if (this.playing)
+    if (this.playing) {
       this.playing.pause ();
+    }
   },
 
   toggle: function () {
@@ -84,6 +105,17 @@ Player.prototype = {
     } else {
       self.pause ();
     }
+  },
+
+  next: function () {
+    this.ui.pause ();
+    var index = this.order.next (); //this.nowplaying + 1; // TODO
+    if (!this.musics[index]) index = this.order.at (0);
+    this.play (index);
+    // log('--  next  --');
+  },
+
+  prev: function () {
   },
 
   get volume () {
@@ -125,16 +157,9 @@ Player.prototype = {
     this.volume = Math.max (this.volume - 16, 0);
   },
 
-  next: function () {
-    this.ui.pause ();
-    log('--  next  --');
-  },
-
-  prev: function () {
-  },
-
   remove: function (index) {
     this[index] = null;
+    this.order.remove (index);
   },
 
   order: new Enumstate ([]),

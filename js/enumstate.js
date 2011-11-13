@@ -11,7 +11,7 @@ function Enumstate (array, initializer, callback) {
 
 Enumstate.prototype = {
 
-  index: undefined,
+  index: 0,
 
   value: undefined,
 
@@ -63,20 +63,35 @@ Enumstate.prototype = {
   },
 
   shuffleToggle: function () {
-    if (this.shuffle)
+    if (this.shuffle) {
       return this.shuffleOff ();
-    else
+    } else {
       return this.shuffleOn ();
+    }
   },
 
   init: function (x) {
-    if (x !== undefined)
+    if (x !== undefined) {
       this.at (this.enumclass.fromEnum (x));
-    else if (typeof this.initializer === 'function')
+    } else if (typeof this.initializer === 'function') {
       this.at (this.enumclass.fromEnum (this.initializer ()));
-    else
+    } else {
       this.at (this.enumclass.fromEnum (this.initializer));
+    }
     this.callback (this.value);
+  },
+
+  concat: function (arr) {
+    this.enumclass.concat (arr);
+  },
+
+  splice: function (start, count) {
+    this.enumclass.splice (start, count);
+  },
+
+  remove: function (value) {
+    var index = this.enumclass.fromEnum (value);
+    this.splice (index, 1);
   },
 
 };
