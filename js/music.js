@@ -59,7 +59,9 @@ Music.prototype = {
   },
 
   pause: function () {
-    this.audio && this.audio.pause ();
+    if (this.audio) {
+      this.audio.pause ();
+    }
   },
 
   paused: function () {

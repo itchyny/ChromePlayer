@@ -235,6 +235,7 @@ window.UI = {
     }
     self.seeking = setInterval (function () { self.seek (); }, 1000);
     setTimeout (function () { self.reflesh (); }, 50);
+    setTimeout (function () { self.reflesh (); }, 500);
   },
 
   pause: function () {
@@ -247,8 +248,12 @@ window.UI = {
   },
 
   reflesh: function (b) {
+    log ("reflesh");
+    log ("this.player.playing" + this.player.playing);
+    log ("this.player.playing !== undefined:" + this.player.playing !== undefined);
+    if (this.player.playing) log ("this.player.playing.paused (): " + this.player.playing.paused ());
     this.div.play.attr(
-      b === false || (this.player.playing !== null && this.player.playing.paused ()) ? {
+      b === false || (this.player.playing !== undefined && this.player.playing.paused ()) ? {
         'src': './img/play.png',
         'title': 'Play'
       } : {
@@ -307,7 +312,7 @@ window.UI = {
       .each(function (i) {
         var flg = false;
         var splitter = $('<th />', {'class': 'splitter'}).mousedown(function (e) { flg = true; }).insertBefore($(this));
-        // if (i === 0) { return; } // First column is unresizable.
+        if (i === 0) return; // First column is unresizable.
         $(window)
           .mouseup(function (e) {
             if (flg) {

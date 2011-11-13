@@ -39,4 +39,15 @@ $.fn.texttitle = function (t) {
   return this.text(t).attr('title', t);
 };
 
+function aboutEqual (x, y) {
+  return Math.abs (x - y) < 1e-9;
+}
+
+function viewname (x) {
+  if (typeof test === "function") {
+    var line = "================================";
+    var space = "   ";
+    test (line + space + x + space + line, function () {});
+  }
+}
 

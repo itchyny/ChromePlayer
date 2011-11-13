@@ -1,8 +1,29 @@
 // Main player
+// TODO  !!!!!実装に妥協しない!!!!!! TODO
+// TODO   使いやすく  読みやすく     TODO
+//
 // TODO: シャッフル, リピート
 // TODO: 読めないタグ
 // TODO: ui.jsのaddfile高速化
 // TODO: play/pauseのボタンがおかしい
+// TODO: tableクリックでslideからのfocus out
+// TODO: volumeをEnumstateに
+// TODO: 3 tabs / cycle
+// TODO: album art from id3 tag
+// TODO: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/
+// http://phpjavascriptroom.com/?t=ajax&p=jquery_plugin_contextmenu
+// TODO: keyconfigを各自で設定できるように
+// TODO: jk移動
+// TODO: キーだけでファイルの入れ替え
+// TODO: 入れ替えた時にorder更新
+// TODO: ソート
+// TODO: ファイル削除した時にnextしたときスキップされる
+// TODO: C-zで削除キャンセルなど
+// TODO: スキップされた時に, nextを消す <- 次々とスキップしていくと, 大量の曲が一気に流れる
+// TODO: -> <- キーが効かない
+// TODO: volume upにバグ
+// TODO: title="..."にゴミが入る
+
 
 function Player () {
   var self = this;

@@ -62,7 +62,7 @@ Enumclass.prototype = {
     var k = this.fromEnum (z);
     var d = j - i;
     var ans = [];
-    if (0 == d) {
+    if (0 === d) {
       ans = ans.concat (this.array[i]);
     } else if (0 < d) {
       for (var l = i; l <= k && l < this.length; l += d) {

@@ -6,7 +6,8 @@ function Limited (min, max, step, initializer, callback) {
   this.max = max;
   this.step = step;
   this.initializer = initializer;
-  this.callback = callback;
+  this.callback = callback || function (x) { };
+  this.init ();
 }
 
 Limited.prototype = {
@@ -15,10 +16,11 @@ Limited.prototype = {
 
   at: function (x) {
     if (x === undefined || isNaN (x)) {
-      if (this.value === undefined)
+      if (this.value === undefined) {
         this.value = (this.min + this.max) / 2;
-      else
+      } else {
         this.value = this.assert (this.value);
+      }
     } else {
       this.value = this.assert (x);
     }
@@ -31,30 +33,34 @@ Limited.prototype = {
   },
 
   add: function (x) {
-    if (x === undefined || isNaN (x))
+    if (x === undefined || isNaN (x)) {
       x = this.step;
+    }
     return this.at (this.value + x);
   },
 
   increase: function (x) {
-    if (x === undefined || isNaN (x))
+    if (x === undefined || isNaN (x)) {
       x = this.step;
+    }
     return this.add (x);
   },
 
   decrease: function (x) {
-    if (x === undefined || isNaN (x))
+    if (x === undefined || isNaN (x)) {
       x = this.step;
+    }
     return this.add (-x);
   },
 
   init: function (x) {
-    if (x !== undefined)
+    if (x !== undefined) {
       this.at (x);
-    else if (typeof this.initializer === 'function')
+    } else if (typeof this.initializer === 'function') {
       this.at (this.initializer ());
-    else
+    } else {
       this.at (this.initializer);
+    }
     this.callback (this.value);
   },
 
@@ -67,5 +73,6 @@ Limited.prototype = {
   },
 
 };
+
 
 
