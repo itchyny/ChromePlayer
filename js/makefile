@@ -16,8 +16,17 @@ SOURCE_FILES =\
 	footer.js
 
 
+DATE=$(shell git log -1 --pretty=format:%ad)
+SED_DATE = sed "s/@DATE/${DATE}/"
+
+VERSION = $(shell cat version.txt)
+SED_VER = sed "s/@VERSION/${VERSION}/"
+
+TARGET = main.js
+
 main.js : ${SOURCE_FILES} makefile
-	@cat ${SOURCE_FILES} > main.js
+	@cat ${SOURCE_FILES} |\
+		${SED_DATE} | ${SED_VER} > ${TARGET}
 
 all:
 	make main.js

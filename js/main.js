@@ -1,3 +1,13 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\
+ *
+ *    Chrome Player 1.60
+ *
+ *    author      : itchyny
+ *    last update : Mon Nov 14 08:32:08 2011 +0900
+ *    source code : https://github.com/itchyny/ChromePlayer
+ *
+\* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 (function () {
 
 function log (x) {
@@ -148,6 +158,12 @@ Enumclass.prototype = {
 
   last: undefined,
 
+  init: function () {
+    this.length = this.array.length;
+    this.head = this.array[0];
+    this.last = this.array[this.array.length - 1];
+  },
+
   succ: function (x) {
     return this.toEnum (+ 1 + this.fromEnum (x));
   },
@@ -209,12 +225,6 @@ Enumclass.prototype = {
     return ans;
   },
 
-  init: function () {
-    this.length = this.array.length;
-    this.head = this.array[0];
-    this.last = this.array[this.array.length - 1];
-  },
-
   concat: function (arr) {
     this.array = this.array.concat (arr);
     this.init ();
@@ -226,18 +236,6 @@ Enumclass.prototype = {
   },
 
 };
-
-/*
-var o = new Enumclass ([1,2,3,4,5,4,3,2,1])
-console.dir(o)
-console.dir (o.toEnum (5))
-console.dir (o.fromEnum (5))
-o.concat ([5,4,3,2])
-console.dir (o)
-o.splice (5,1);
-console.dir (o)
-*/
-
 
 // Enumerable (ordered) state
 
@@ -276,7 +274,7 @@ Enumstate.prototype = {
     this.value = this.enumclass.toEnum (this.index);
     if (this.value === undefined) {
       if (this.shuffle) {
-        this.enumclass = new enumclass (this.enumclass.array.shuffle ());
+        this.enumclass = new Enumclass (this.enumclass.array.shuffle ());
       }
       this.at (0);
     } else {
@@ -293,7 +291,7 @@ Enumstate.prototype = {
   shuffleOn: function () {
     this.shuffle = true;
     this._enumclass = this.enumclass;
-    this.enumclass = new enumclass (this.enumclass.array.shuffle ());
+    this.enumclass = new Enumclass (this.enumclass.array.shuffle ());
     return this;
   },
 
@@ -1970,7 +1968,6 @@ var keyconfig = {
 // TODO: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/
 // http://phpjavascriptroom.com/?t=ajax&p=jquery_plugin_contextmenu
 // TODO: keyconfigを各自で設定できるように
-// TODO: jk移動
 // TODO: キーだけでファイルの入れ替え
 // TODO: 入れ替えた時にorder更新
 // TODO: ソート

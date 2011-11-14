@@ -13,7 +13,6 @@
 // TODO: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/
 // http://phpjavascriptroom.com/?t=ajax&p=jquery_plugin_contextmenu
 // TODO: keyconfigを各自で設定できるように
-// TODO: jk移動
 // TODO: キーだけでファイルの入れ替え
 // TODO: 入れ替えた時にorder更新
 // TODO: ソート

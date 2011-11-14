@@ -15,6 +15,12 @@ Enumclass.prototype = {
 
   last: undefined,
 
+  init: function () {
+    this.length = this.array.length;
+    this.head = this.array[0];
+    this.last = this.array[this.array.length - 1];
+  },
+
   succ: function (x) {
     return this.toEnum (+ 1 + this.fromEnum (x));
   },
@@ -76,12 +82,6 @@ Enumclass.prototype = {
     return ans;
   },
 
-  init: function () {
-    this.length = this.array.length;
-    this.head = this.array[0];
-    this.last = this.array[this.array.length - 1];
-  },
-
   concat: function (arr) {
     this.array = this.array.concat (arr);
     this.init ();
@@ -93,16 +93,4 @@ Enumclass.prototype = {
   },
 
 };
-
-/*
-var o = new Enumclass ([1,2,3,4,5,4,3,2,1])
-console.dir(o)
-console.dir (o.toEnum (5))
-console.dir (o.fromEnum (5))
-o.concat ([5,4,3,2])
-console.dir (o)
-o.splice (5,1);
-console.dir (o)
-*/
-
 
