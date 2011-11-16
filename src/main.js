@@ -3,7 +3,7 @@
  *    Chrome Player 1.60
  *
  *    author      : itchyny
- *    last update : Tue Nov 15 01:31:16 2011 +0900
+ *    last update : Wed Nov 16 22:25:39 2011 +0900
  *    source code : https://github.com/itchyny/ChromePlayer
  *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -90,32 +90,25 @@ Limited.prototype = {
       this.value = this.assert (x);
     }
     this.callback (this.value);
-    return this.value;
+    return this;
   },
 
   assert: function (x) {
     return Math.min (Math.max (x, this.min), this.max);
   },
 
-  add: function (x) {
+  increase: function (x) {
     if (x === undefined || isNaN (x)) {
       x = this.step;
     }
     return this.at (this.value + x);
   },
 
-  increase: function (x) {
-    if (x === undefined || isNaN (x)) {
-      x = this.step;
-    }
-    return this.add (x);
-  },
-
   decrease: function (x) {
     if (x === undefined || isNaN (x)) {
       x = this.step;
     }
-    return this.add (-x);
+    return this.increase (-x);
   },
 
   init: function (x) {
@@ -126,7 +119,6 @@ Limited.prototype = {
     } else {
       this.at (this.initializer);
     }
-    this.callback (this.value);
   },
 
   setToMin: function () {
@@ -927,7 +919,7 @@ var UI = {
         'min': 0,
         'max': 256,
         'step': 8,
-        'value': self.player.volume,
+        'value': self.player.volume.value,
         'slide': function () { self.player.updatevolume (); },
         'stop': function () { self.player.updatevolume (); }
       });
@@ -1016,8 +1008,10 @@ var UI = {
     return parseInt(this.div.volumeSlider.slider('value'), 10);
   },
 
-  set volume (volume) {
-    this.div.volumeSlider.slider({ 'value': volume });
+  setvolume: function (volume) {
+    if (this.div && this.div.volumeSlider) {
+      this.div.volumeSlider.slider({ 'value': volume });
+    }
   },
 
   play: function (index) {
@@ -1225,16 +1219,20 @@ var UI = {
   },
 
   setrepeat: function (r) {
-    this.div.repeat
-      .css({ 'opacity': (r === 'false' ? 0.4 : '') })
-      .attr({ 'src': (r === 'one' ? './img/one.png' : './img/repeat.png') });
+    if (this.div && this.div.repeat) {
+      this.div.repeat
+        .css({ 'opacity': (r === 'false' ? 0.4 : '') })
+        .attr({ 'src': (r === 'one' ? './img/one.png' : './img/repeat.png') });
+    }
   },
 
   setshuffle: function (s) {
-    this.div.shuffle
-      .css({
-        'opacity': (s.toString() === 'true' ? '' : 0.4)
-      });
+    if (this.div && this.div.shuffle) {
+      this.div.shuffle
+        .css({
+          'opacity': (s.toString() === 'true' ? '' : 0.4)
+        });
+    }
   },
 
   showFileName: function (filename, index) {
@@ -1778,9 +1776,11 @@ Order.prototype = {
 
 function Key (app, config) {
   this.app = app;
-  if (config)
-    for (var key in config)
+  if (config) {
+    for (var key in config) {
       this.set (this.parse (key), config[key]);
+    }
+  }
 }
 
 Key.prototype = {
@@ -1962,7 +1962,6 @@ var keyconfig = {
 // TODO: ui.jsのaddfile高速化
 // TODO: play/pauseのボタンがおかしい
 // TODO: tableクリックでslideからのfocus out
-// TODO: volumeをEnumstateに
 // TODO: 3 tabs / cycle
 // TODO: album art from id3 tag
 // TODO: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/
@@ -1975,7 +1974,6 @@ var keyconfig = {
 // TODO: C-zで削除キャンセルなど
 // TODO: スキップされた時に, nextを消す <- 次々とスキップしていくと, 大量の曲が一気に流れる
 // TODO: -> <- キーが効かない
-// TODO: volume upにバグ
 // TODO: title="..."にゴミが入る
 
 
@@ -1995,6 +1993,18 @@ function Player () {
       local.set ('shuffle', shuffle);
       self.ui.setshuffle (shuffle);
     });
+  self.volume = new Limited (0, 256, 16,
+    function () {
+      var vol = local.get ('volume');
+      return vol !== undefined ? vol : 127;
+    },
+    function (volume) {
+      self.ui.setvolume (volume);
+      local.set ('volume', volume);
+      if (self.playing) {
+        self.playing.setvolume (volume / 256);
+      }
+    });
 }
 
 Player.prototype = {
@@ -2002,10 +2012,11 @@ Player.prototype = {
   version: '1.60',
 
   start: function () {
-    this.ui.start (this);
     this.key.start ();
     this.repeat.init ();
     this.shuffle.init ();
+    this.volume.init ();
+    this.ui.start (this); // call after all the staff are initialized
   },
 
   files: [],
@@ -2065,7 +2076,7 @@ Player.prototype = {
     if (index != undefined) {
       self.nowplaying = index;
       self.playing = self.musics[index];
-      self.playing.play (self.volume / 256, function () { self.next (); });
+      self.playing.play (self.volume.value / 256, function () { self.next (); });
       self.ui.play (index);
     }
   },
@@ -2081,7 +2092,7 @@ Player.prototype = {
     var self = this;
     if (!self.playing) return;
     if (self.playing.paused ()) {
-      self.playing.play (self.volume / 256, function () { self.next (); });
+      self.playing.play (self.volume.value / 256, function () { self.next (); });
       self.ui.play (self.nowplaying);
     } else {
       self.pause ();
@@ -2102,45 +2113,28 @@ Player.prototype = {
     // TODO
   },
 
-  get volume () {
-    if (this._volume === undefined) {
-      var vol = local.get ('volume');
-      this._volume = vol === undefined ? 128 : vol;
-    }
-    local.set ('volume', this._volume);
-    return this._volume;
-  },
-
-  set volume (volume) {
-    var volume = volume % 257;
-    this.ui.volume = volume;
-    local.set ('volume', volume);
-    this._volume = volume;
-    if (this.playing) {
-      this.playing.setvolume (volume / 258);
-    }
-  },
+  volume: new Limited (0, 256, 16, 127),
 
   updatevolume: function () {
-    this.volume = this.ui.volume;
+    this.volume.at (this.ui.volume);
   },
 
   mute: function () {
     this.predvol = this.volume;
-    this.volume = 0;
+    this.volume.at (0);
   },
 
   resume: function () {
-    this.volume = this.predvol;
+    this.volume.at (this.predvol);
     delete this.predvol;
   },
 
   volumeup: function () {
-    this.volume = Math.min (this.volume + 16, 256);
+    this.volume.increase ();
   },
 
   volumedown: function () {
-    this.volume = Math.max (this.volume - 16, 0);
+    this.volume.decrease ();
   },
 
   remove: function (index) {
@@ -2149,7 +2143,7 @@ Player.prototype = {
   },
 
   seekAt: function (position /* 0 - 1 */ ) {
-    if (this.playing != undefined && this.playing.audio) {
+    if (this.playing !== undefined && this.playing.audio) {
       this.playing.audio.currentTime = this.playing.audio.duration * position;
       return true;
     }
@@ -2163,7 +2157,7 @@ Player.prototype = {
   shuffle: new Enumstate (['false', 'true']),
 
   seekBy: function (sec) {
-    if (this.nowplaying != undefined && this.playing.audio) {
+    if (this.nowplaying !== undefined && this.playing.audio) {
       var prev = this.playing.seekBy (sec);
       if (prev) {
         this.prev ();

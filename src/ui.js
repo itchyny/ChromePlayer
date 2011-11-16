@@ -119,7 +119,7 @@ var UI = {
         'min': 0,
         'max': 256,
         'step': 8,
-        'value': self.player.volume,
+        'value': self.player.volume.value,
         'slide': function () { self.player.updatevolume (); },
         'stop': function () { self.player.updatevolume (); }
       });
@@ -208,8 +208,10 @@ var UI = {
     return parseInt(this.div.volumeSlider.slider('value'), 10);
   },
 
-  set volume (volume) {
-    this.div.volumeSlider.slider({ 'value': volume });
+  setvolume: function (volume) {
+    if (this.div && this.div.volumeSlider) {
+      this.div.volumeSlider.slider({ 'value': volume });
+    }
   },
 
   play: function (index) {
@@ -417,16 +419,20 @@ var UI = {
   },
 
   setrepeat: function (r) {
-    this.div.repeat
-      .css({ 'opacity': (r === 'false' ? 0.4 : '') })
-      .attr({ 'src': (r === 'one' ? './img/one.png' : './img/repeat.png') });
+    if (this.div && this.div.repeat) {
+      this.div.repeat
+        .css({ 'opacity': (r === 'false' ? 0.4 : '') })
+        .attr({ 'src': (r === 'one' ? './img/one.png' : './img/repeat.png') });
+    }
   },
 
   setshuffle: function (s) {
-    this.div.shuffle
-      .css({
-        'opacity': (s.toString() === 'true' ? '' : 0.4)
-      });
+    if (this.div && this.div.shuffle) {
+      this.div.shuffle
+        .css({
+          'opacity': (s.toString() === 'true' ? '' : 0.4)
+        });
+    }
   },
 
   showFileName: function (filename, index) {

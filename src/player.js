@@ -7,7 +7,6 @@
 // TODO: ui.jsのaddfile高速化
 // TODO: play/pauseのボタンがおかしい
 // TODO: tableクリックでslideからのfocus out
-// TODO: volumeをEnumstateに
 // TODO: 3 tabs / cycle
 // TODO: album art from id3 tag
 // TODO: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/
@@ -20,7 +19,6 @@
 // TODO: C-zで削除キャンセルなど
 // TODO: スキップされた時に, nextを消す <- 次々とスキップしていくと, 大量の曲が一気に流れる
 // TODO: -> <- キーが効かない
-// TODO: volume upにバグ
 // TODO: title="..."にゴミが入る
 
 
@@ -40,6 +38,18 @@ function Player () {
       local.set ('shuffle', shuffle);
       self.ui.setshuffle (shuffle);
     });
+  self.volume = new Limited (0, 256, 16,
+    function () {
+      var vol = local.get ('volume');
+      return vol !== undefined ? vol : 127;
+    },
+    function (volume) {
+      self.ui.setvolume (volume);
+      local.set ('volume', volume);
+      if (self.playing) {
+        self.playing.setvolume (volume / 256);
+      }
+    });
 }
 
 Player.prototype = {
@@ -47,10 +57,11 @@ Player.prototype = {
   version: '1.60',
 
   start: function () {
-    this.ui.start (this);
     this.key.start ();
     this.repeat.init ();
     this.shuffle.init ();
+    this.volume.init ();
+    this.ui.start (this); // call after all the staff are initialized
   },
 
   files: [],
@@ -110,7 +121,7 @@ Player.prototype = {
     if (index != undefined) {
       self.nowplaying = index;
       self.playing = self.musics[index];
-      self.playing.play (self.volume / 256, function () { self.next (); });
+      self.playing.play (self.volume.value / 256, function () { self.next (); });
       self.ui.play (index);
     }
   },
@@ -126,7 +137,7 @@ Player.prototype = {
     var self = this;
     if (!self.playing) return;
     if (self.playing.paused ()) {
-      self.playing.play (self.volume / 256, function () { self.next (); });
+      self.playing.play (self.volume.value / 256, function () { self.next (); });
       self.ui.play (self.nowplaying);
     } else {
       self.pause ();
@@ -147,45 +158,28 @@ Player.prototype = {
     // TODO
   },
 
-  get volume () {
-    if (this._volume === undefined) {
-      var vol = local.get ('volume');
-      this._volume = vol === undefined ? 128 : vol;
-    }
-    local.set ('volume', this._volume);
-    return this._volume;
-  },
-
-  set volume (volume) {
-    var volume = volume % 257;
-    this.ui.volume = volume;
-    local.set ('volume', volume);
-    this._volume = volume;
-    if (this.playing) {
-      this.playing.setvolume (volume / 258);
-    }
-  },
+  volume: new Limited (0, 256, 16, 127),
 
   updatevolume: function () {
-    this.volume = this.ui.volume;
+    this.volume.at (this.ui.volume);
   },
 
   mute: function () {
     this.predvol = this.volume;
-    this.volume = 0;
+    this.volume.at (0);
   },
 
   resume: function () {
-    this.volume = this.predvol;
+    this.volume.at (this.predvol);
     delete this.predvol;
   },
 
   volumeup: function () {
-    this.volume = Math.min (this.volume + 16, 256);
+    this.volume.increase ();
   },
 
   volumedown: function () {
-    this.volume = Math.max (this.volume - 16, 0);
+    this.volume.decrease ();
   },
 
   remove: function (index) {
