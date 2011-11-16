@@ -2,9 +2,11 @@
 
 function Key (app, config) {
   this.app = app;
-  if (config)
-    for (var key in config)
+  if (config) {
+    for (var key in config) {
       this.set (this.parse (key), config[key]);
+    }
+  }
 }
 
 Key.prototype = {

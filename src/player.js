@@ -194,7 +194,7 @@ Player.prototype = {
   },
 
   seekAt: function (position /* 0 - 1 */ ) {
-    if (this.playing != undefined && this.playing.audio) {
+    if (this.playing !== undefined && this.playing.audio) {
       this.playing.audio.currentTime = this.playing.audio.duration * position;
       return true;
     }
@@ -208,7 +208,7 @@ Player.prototype = {
   shuffle: new Enumstate (['false', 'true']),
 
   seekBy: function (sec) {
-    if (this.nowplaying != undefined && this.playing.audio) {
+    if (this.nowplaying !== undefined && this.playing.audio) {
       var prev = this.playing.seekBy (sec);
       if (prev) {
         this.prev ();
