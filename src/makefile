@@ -27,7 +27,9 @@ TARGET = main.js
 main.js : ${SOURCE_FILES} makefile
 	@cat ${SOURCE_FILES} |\
 		${SED_DATE} | ${SED_VER} > ${TARGET}
+	cp ./main.js ../js/
 
 all:
-	make main.js
+	cd ../
+	make all
 
