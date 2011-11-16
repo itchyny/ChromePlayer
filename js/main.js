@@ -3,7 +3,7 @@
  *    Chrome Player 1.60
  *
  *    author      : itchyny
- *    last update : Wed Nov 16 22:25:39 2011 +0900
+ *    last update : Thu Nov 17 00:50:25 2011 +0900
  *    source code : https://github.com/itchyny/ChromePlayer
  *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -135,12 +135,12 @@ Limited.prototype = {
 
 // Enum data class
 
-function Enumclass (array) {
+function Enum (array) {
   this.array = array;
   this.init ();
 }
 
-Enumclass.prototype = {
+Enum.prototype = {
 
   array: [],
 
@@ -233,7 +233,7 @@ Enumclass.prototype = {
 
 function Enumstate (array, initializer, callback) {
   this.array = array;
-  this._enumclass = this.enumclass = new Enumclass (array);
+  this._enumclass = this.enumclass = new Enum (array);
   this.length = array.length;
   this.initializer = initializer;
   this.callback = callback || function (x) { };
@@ -266,7 +266,7 @@ Enumstate.prototype = {
     this.value = this.enumclass.toEnum (this.index);
     if (this.value === undefined) {
       if (this.shuffle) {
-        this.enumclass = new Enumclass (this.enumclass.array.shuffle ());
+        this.enumclass = new Enum (this.enumclass.array.shuffle ());
       }
       this.at (0);
     } else {
@@ -283,7 +283,7 @@ Enumstate.prototype = {
   shuffleOn: function () {
     this.shuffle = true;
     this._enumclass = this.enumclass;
-    this.enumclass = new Enumclass (this.enumclass.array.shuffle ());
+    this.enumclass = new Enum (this.enumclass.array.shuffle ());
     return this;
   },
 

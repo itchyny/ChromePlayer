@@ -2,7 +2,7 @@ SOURCE_FILES =\
 	header.js \
 	prelude.js \
 	limited.js \
-	enumclass.js \
+	enum.js \
 	enumstate.js \
 	id3.js \
 	music.js \

@@ -2,7 +2,7 @@
 
 function Enumstate (array, initializer, callback) {
   this.array = array;
-  this._enumclass = this.enumclass = new Enumclass (array);
+  this._enumclass = this.enumclass = new Enum (array);
   this.length = array.length;
   this.initializer = initializer;
   this.callback = callback || function (x) { };
@@ -35,7 +35,7 @@ Enumstate.prototype = {
     this.value = this.enumclass.toEnum (this.index);
     if (this.value === undefined) {
       if (this.shuffle) {
-        this.enumclass = new Enumclass (this.enumclass.array.shuffle ());
+        this.enumclass = new Enum (this.enumclass.array.shuffle ());
       }
       this.at (0);
     } else {
@@ -52,7 +52,7 @@ Enumstate.prototype = {
   shuffleOn: function () {
     this.shuffle = true;
     this._enumclass = this.enumclass;
-    this.enumclass = new Enumclass (this.enumclass.array.shuffle ());
+    this.enumclass = new Enum (this.enumclass.array.shuffle ());
     return this;
   },
 
