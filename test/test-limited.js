@@ -26,7 +26,7 @@ function testlimited (min, max, step, initializer, callback) {
     x.at (min);
     for (var i=0; i < (max - min) / step; i++) {
       equal (aboutEqual (x.value, min + i * step), true, "x <- min + step * i");
-      x.add ();
+      x.increase ();
     };
     for (var i=0; i < (max - min) / step; i++) {
       equal (aboutEqual (x.value, max - i * step), true, "x <- max - step * i");

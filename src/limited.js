@@ -25,32 +25,25 @@ Limited.prototype = {
       this.value = this.assert (x);
     }
     this.callback (this.value);
-    return this.value;
+    return this;
   },
 
   assert: function (x) {
     return Math.min (Math.max (x, this.min), this.max);
   },
 
-  add: function (x) {
+  increase: function (x) {
     if (x === undefined || isNaN (x)) {
       x = this.step;
     }
     return this.at (this.value + x);
   },
 
-  increase: function (x) {
-    if (x === undefined || isNaN (x)) {
-      x = this.step;
-    }
-    return this.add (x);
-  },
-
   decrease: function (x) {
     if (x === undefined || isNaN (x)) {
       x = this.step;
     }
-    return this.add (-x);
+    return this.increase (-x);
   },
 
   init: function (x) {
@@ -61,7 +54,6 @@ Limited.prototype = {
     } else {
       this.at (this.initializer);
     }
-    this.callback (this.value);
   },
 
   setToMin: function () {
