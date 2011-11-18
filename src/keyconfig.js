@@ -25,7 +25,7 @@ var keyconfig = {
   '<c-up>': function (player) { player.volumeup (); },
   '<0>': function (player) { player.volumeup (); },
   '<c-k>': function (player) { player.volumeup (); },
-  '<ca-down>': function (player) { player.ui.toggleMute (); },
+  '<ca-down>': function (player) { player.ui.toggleMute (player); },
   '<up>': function (player) { player.ui.selectUp (); },
   '<k>': function (player) { player.ui.selectUp (); },
   '<s-up>': function (player) { player.ui.expandUp (); },
@@ -45,13 +45,15 @@ var keyconfig = {
   '<h>': function (player) { player.seekBy (-10); },
   '<b>': function (player) { player.seekBy (-30); },
   '<enter>': function (player) { player.ui.defaultEnter (); },
-  '<a-enter>': function (player) { player.ui.viewInformation (); },
+  '<a-enter>': function (player) { player.ui.viewInformation (player); },
   '<pgdn>': function (player) { player.ui.pageDown (); },
   '<s-pgdn>': function (player) { player.ui.expandPageDown (); },
   '<pdup>': function (player) { player.ui.pageUp (); },
   '<s-pgup>':  function (player) { player.ui.expandPageUp (); },
   '<^>':  function (player) { player.seekBy (-10000); }, // TODO
   '<s-4>':  function (player) { player.seekBy (10000); },
+  '<tab>': function (player) { player.ui.focusToggle (); },
+  '<s-tab>': function (player) { player.ui.focusToggleReverse (); },
 
 };
 

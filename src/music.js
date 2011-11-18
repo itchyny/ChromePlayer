@@ -22,8 +22,9 @@ Music.prototype = {
           self.release ();
           next ();
         });
-      if (startplay)
+      if (startplay) {
         self.audio.play ();
+      }
     };
     reader.readAsDataURL (self.file);
   },
@@ -65,7 +66,7 @@ Music.prototype = {
   },
 
   paused: function () {
-    return !this.audio || this.audio.paused
+    return !this.audio || this.audio.paused;
   },
 
   setvolume: function (vol) {
@@ -104,7 +105,7 @@ Music.prototype = {
         this.audio.currentTime += sec;
       }
     }
-  },
+  }
 
 };
 

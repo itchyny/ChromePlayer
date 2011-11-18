@@ -3,12 +3,11 @@
 var local = {
 
   get: function (key) {
-    return localStorage[key];
+    return localStorage.getItem (key);
   },
 
   set: function (key, val) {
     localStorage.setItem (key, val);
-    return localStorage[key];
   },
 
   remove: function (key) {

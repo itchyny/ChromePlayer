@@ -3,7 +3,7 @@
  *    Chrome Player 1.60
  *
  *    author      : itchyny
- *    last update : Thu Nov 17 00:50:25 2011 +0900
+ *    last update : Thu Nov 17 05:43:17 2011 +0900
  *    source code : https://github.com/itchyny/ChromePlayer
  *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -66,7 +66,9 @@ function viewname (x) {
 // Limited number
 
 function Limited (min, max, step, initializer, callback) {
-  if (min > max) min = [max, max = min][0];
+  if (min > max) {
+    min = [max, max = min][0];
+  }
   this.min = min;
   this.max = max;
   this.step = step;
@@ -90,7 +92,7 @@ Limited.prototype = {
       this.value = this.assert (x);
     }
     this.callback (this.value);
-    return this;
+    return this.value;
   },
 
   assert: function (x) {
@@ -127,7 +129,7 @@ Limited.prototype = {
 
   setToMax: function () {
     return this.at (this.max);
-  },
+  }
 
 };
 
@@ -233,11 +235,10 @@ Enum.prototype = {
 
 function Enumstate (array, initializer, callback) {
   this.array = array;
-  this._enumclass = this.enumclass = new Enum (array);
+  this._enum = this.enum = new Enum (array);
   this.length = array.length;
   this.initializer = initializer;
   this.callback = callback || function (x) { };
-  this.at (0);
 }
 
 Enumstate.prototype = {
@@ -250,29 +251,39 @@ Enumstate.prototype = {
 
   shuffle: false,
 
+  repeat: false,
+
   length: 0,
 
   at: function (i) {
-    if (i === undefined) return this.value;
+    if (i === undefined || isNaN (i)) {
+      i = this.index;
+    }
     this.index = i;
-    this.value = this.enumclass.toEnum (i);
+    this.value = this.enum.toEnum (i);
     this.history = this.history.concat (i);
+    this.callback (this.value);
     return this.value;
   },
 
   next: function (j) {
-    if (j === undefined) j = 1
+    if (j === undefined || isNaN (j)) {
+      j = 1;
+    }
     this.index += j;
-    this.value = this.enumclass.toEnum (this.index);
+    this.value = this.enum.toEnum (this.index);
     if (this.value === undefined) {
       if (this.shuffle) {
-        this.enumclass = new Enum (this.enumclass.array.shuffle ());
+        this.enum = new Enum (this.enum.array.shuffle ());
       }
-      this.at (0);
+      if (this.repeat) {
+        this.at (0);
+      } else {
+        return undefined;
+      }
     } else {
       this.at (this.index);
     }
-    this.callback (this.value);
     return this.value;
   },
 
@@ -282,14 +293,14 @@ Enumstate.prototype = {
 
   shuffleOn: function () {
     this.shuffle = true;
-    this._enumclass = this.enumclass;
-    this.enumclass = new Enum (this.enumclass.array.shuffle ());
+    this._enum = this.enum;
+    this.enum = new Enum (this.enum.array.shuffle ());
     return this;
   },
 
   shuffleOff: function () {
     this.shuffle = false;
-    this.enumclass = this._enumclass;
+    this.enum = this._enum;
     return this;
   },
 
@@ -301,27 +312,43 @@ Enumstate.prototype = {
     }
   },
 
+  repeatOn: function () {
+    this.repeat = true;
+  },
+
+  repeatOff: function () {
+    this.repeat = false;
+  },
+
+  repeatToggle: function () {
+    if (this.repeat) {
+      return this.repeatOff ();
+    } else {
+      return this.repeatOn ();
+    }
+  },
+
   init: function (x) {
     if (x !== undefined) {
-      this.at (this.enumclass.fromEnum (x));
+      this.at (this.enum.fromEnum (x));
     } else if (typeof this.initializer === 'function') {
-      this.at (this.enumclass.fromEnum (this.initializer ()));
+      console.log(this.initializer());
+      this.at (this.enum.fromEnum (this.initializer ()));
     } else {
-      this.at (this.enumclass.fromEnum (this.initializer));
+      this.at (this.enum.fromEnum (this.initializer));
     }
-    this.callback (this.value);
   },
 
   concat: function (arr) {
-    this.enumclass.concat (arr);
+    this.enum.concat (arr);
   },
 
   splice: function (start, count) {
-    this.enumclass.splice (start, count);
+    this.enum.splice (start, count);
   },
 
   remove: function (value) {
-    var index = this.enumclass.fromEnum (value);
+    var index = this.enum.fromEnum (value);
     this.splice (index, 1);
   },
 
@@ -528,8 +555,9 @@ Music.prototype = {
           self.release ();
           next ();
         });
-      if (startplay)
+      if (startplay) {
         self.audio.play ();
+      }
     };
     reader.readAsDataURL (self.file);
   },
@@ -571,7 +599,7 @@ Music.prototype = {
   },
 
   paused: function () {
-    return !this.audio || this.audio.paused
+    return !this.audio || this.audio.paused;
   },
 
   setvolume: function (vol) {
@@ -610,7 +638,7 @@ Music.prototype = {
         this.audio.currentTime += sec;
       }
     }
-  },
+  }
 
 };
 
@@ -619,12 +647,11 @@ Music.prototype = {
 var local = {
 
   get: function (key) {
-    return localStorage[key];
+    return localStorage.getItem (key);
   },
 
   set: function (key, val) {
     localStorage.setItem (key, val);
-    return localStorage[key];
   },
 
   remove: function (key) {
@@ -854,8 +881,8 @@ var UI = {
     self.div.shuffle.click(function () { player.shuffle.next (); });
     self.div.conf.click(function () { self.div.config.fadeToggle(200); });
     $('img.lbutton, img.rbutton')
-    .mouseup(function (e) { $(this).css({ 'top': '50%' }); })
-    .mousedown(function (e) { $(this).css({ 'top': parseInt($(this).css('top'), 10) * 1.03 + '%' }); });
+      .mouseup(function (e) { $(this).css({ 'top': '50%' }); })
+      .mousedown(function (e) { $(this).css({ 'top': parseInt($(this).css('top'), 10) * 1.03 + '%' }); });
   },
 
   initsize: function () {
@@ -1054,7 +1081,8 @@ var UI = {
     log ("this.player.playing !== undefined:" + this.player.playing !== undefined);
     if (this.player.playing) log ("this.player.playing.paused (): " + this.player.playing.paused ());
     this.div.play.attr(
-      b === false || (this.player.playing !== undefined && this.player.playing.paused ()) ? {
+      b === false || (this.player.playing !== undefined
+                                && this.player.playing.paused ()) ? {
         'src': './img/play.png',
         'title': 'Play'
       } : {
@@ -1538,10 +1566,11 @@ var UI = {
   },
 
   toggleMute: function (player) { // player.toggleMute
-    if (player.volume === 0 && player.predvol !== undefined)
+    if (player.volume.value === 0 && player.predvol !== undefined) {
       this.click ('volumeon');
-    else
+    } else {
       this.click ('mute');
+    }
   },
 
   click: function (t) {
@@ -1550,6 +1579,39 @@ var UI = {
     setTimeout ( function () {
       i.mouseup ();
     }, 200 );
+  },
+
+
+  focusIndex: 0,
+
+  focusElements: function () {
+    return [ $('#tbody')
+           , $('div#musicSlider a')
+           , $('div#volumeSlider a')
+           ]; 
+  },
+
+  focusUpdate: function () {
+    this.focusElements ()[this.focusIndex].focus();
+    if (this.focusIndex === 0) {
+      $('tr.ui-selected')
+        .first()
+        .SELECT()
+        .size()
+        || $('tr.nP')
+            .SELECT()
+            .LASTSELECT();
+    }
+  },
+
+  focusToggle: function () {
+    this.focusIndex = (this.focusIndex + 1) % 3;
+    this.focusUpdate ();
+  },
+
+  focusToggleReverse: function () {
+    this.focusIndex = (this.focusIndex - 1 + this.focusElements().length) % 3;
+    this.focusUpdate ();
   },
 
 };
@@ -1684,94 +1746,6 @@ $.fn.drag_drop_multi_select.defaults.after_drop_action = function ($item, $old, 
 ////             //.resizable({ handles: 'e, w' });
 ////             //.resizable();
 ////             this.div.filterword.keydown(filter.start);
-// Order
-
-function Order (arr) {
-  this.arr = arr;
-}
-
-Order.prototype = {
-
-  arr: [],
-
-  index: 0,
-
-  history: [],
-
-  historyindex: 0,
-
-  shuffleflg: false,
-
-  reset: function () {
-    this.index = 0;
-    this.arr = this.arr.filter (function (x) { return x !== undefined; });
-    if (this.shuffleflg)
-      this.shuffle ();
-  },
-
-  shuffleon: function () {
-    this.shuffleflg = true;
-  },
-
-  shuffleoff: function () {
-    this.shuffleflg = false;
-  },
-
-  setshuffle: function (shuffle) {
-    this.shuffleflg = shuffle !== "false" && shuffle;
-  },
-
-  sort: function () {
-    this.arr = this.arr.sort (function (x, y) { return x - y; });
-  },
-
-  reverse: function () {
-    this.arr = this.arr.reverse ();
-  },
-
-  shuffle: function () {
-    this.arr.shuffle ();
-  },
-
-  next: function () {
-    var ans = undefined;
-    if (this.history.length === this.historyindex) {
-      for (var i = this.index; i < this.arr.length; ++i) {
-        ans = this.arr[i];
-        if (ans !== undefined) break;
-      }
-      if (undefined !== ans) {
-        this.history.concat (ans);
-        this.historyindex = this.historyindex + 1;
-      } else {
-        this.reset ();
-        if (!this.arr[this.index]) ans = this.index;
-        this.history.concat (ans);
-        this.historyindex = this.historyindex + 1;
-      }
-    } else {
-      ans = this.history[this.historyindex];
-      this.historyindex = this.historyindex + 1;
-    }
-    return ans;
-  },
-
-  append: function (i) {
-    this.arr = this.arr.concat (i);
-  },
-
-  delete: function (x) {
-    for (var i = 0; i < this.arr.length; ++i) {
-      if (this.arr[i] === x) {
-        this.arr[i] = undefined;
-      }
-    }
-  },
-
-
-};
-
-
 // Key maneger
 
 function Key (app, config) {
@@ -1905,7 +1879,7 @@ var keyconfig = {
   '<c-up>': function (player) { player.volumeup (); },
   '<0>': function (player) { player.volumeup (); },
   '<c-k>': function (player) { player.volumeup (); },
-  '<ca-down>': function (player) { player.ui.toggleMute (); },
+  '<ca-down>': function (player) { player.ui.toggleMute (player); },
   '<up>': function (player) { player.ui.selectUp (); },
   '<k>': function (player) { player.ui.selectUp (); },
   '<s-up>': function (player) { player.ui.expandUp (); },
@@ -1925,13 +1899,15 @@ var keyconfig = {
   '<h>': function (player) { player.seekBy (-10); },
   '<b>': function (player) { player.seekBy (-30); },
   '<enter>': function (player) { player.ui.defaultEnter (); },
-  '<a-enter>': function (player) { player.ui.viewInformation (); },
+  '<a-enter>': function (player) { player.ui.viewInformation (player); },
   '<pgdn>': function (player) { player.ui.pageDown (); },
   '<s-pgdn>': function (player) { player.ui.expandPageDown (); },
   '<pdup>': function (player) { player.ui.pageUp (); },
   '<s-pgup>':  function (player) { player.ui.expandPageUp (); },
   '<^>':  function (player) { player.seekBy (-10000); }, // TODO
   '<s-4>':  function (player) { player.seekBy (10000); },
+  '<tab>': function (player) { player.ui.focusToggle (); },
+  '<s-tab>': function (player) { player.ui.focusToggleReverse (); },
 
 };
 
@@ -1962,49 +1938,52 @@ var keyconfig = {
 // TODO: ui.jsのaddfile高速化
 // TODO: play/pauseのボタンがおかしい
 // TODO: tableクリックでslideからのfocus out
-// TODO: 3 tabs / cycle
 // TODO: album art from id3 tag
 // TODO: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/
 // http://phpjavascriptroom.com/?t=ajax&p=jquery_plugin_contextmenu
 // TODO: keyconfigを各自で設定できるように
 // TODO: キーだけでファイルの入れ替え
-// TODO: 入れ替えた時にorder更新
+// TODO: ファイル順入れ替えた時にorder更新
 // TODO: ソート
 // TODO: ファイル削除した時にnextしたときスキップされる
 // TODO: C-zで削除キャンセルなど
-// TODO: スキップされた時に, nextを消す <- 次々とスキップしていくと, 大量の曲が一気に流れる
 // TODO: -> <- キーが効かない
 // TODO: title="..."にゴミが入る
-
+// TODO: fixed first row of table
+// TODO: Enterでplayした時に, orderをどうするか
+// DONE: スキップされた時に, nextを消す <- 次々とスキップしていくと, 大量の曲が一気に流れる
 
 function Player () {
   var self = this;
   self.ui = UI;
   self.key = new Key (self, keyconfig);
   self.repeat = new Enumstate (['false', 'true', 'one'],
-    function () { return local.get ('repeat') || 'false'; },
+    function () { return local.get('repeat') || 'false'; },
     function (repeat) {
       local.set ('repeat', repeat);
       self.ui.setrepeat (repeat);
     });
+  self.repeat.repeatOn ();
   self.shuffle = new Enumstate (['false', 'true'],
     function () { return local.get ('shuffle') || 'false'; },
     function (shuffle) {
       local.set ('shuffle', shuffle);
       self.ui.setshuffle (shuffle);
     });
+  self.shuffle.repeatOn ();
   self.volume = new Limited (0, 256, 16,
     function () {
       var vol = local.get ('volume');
-      return vol !== undefined ? vol : 127;
+      return vol !== undefined ? vol : 127;  // vol can be 0
     },
     function (volume) {
-      self.ui.setvolume (volume);
       local.set ('volume', volume);
+      self.ui.setvolume (volume);
       if (self.playing) {
         self.playing.setvolume (volume / 256);
       }
     });
+  self.start ();
 }
 
 Player.prototype = {
@@ -2013,10 +1992,10 @@ Player.prototype = {
 
   start: function () {
     this.key.start ();
+    this.ui.start (this);
     this.repeat.init ();
     this.shuffle.init ();
     this.volume.init ();
-    this.ui.start (this); // call after all the staff are initialized
   },
 
   files: [],
@@ -2029,31 +2008,7 @@ Player.prototype = {
 
   nowplaying: 0,
 
-  _readFiles: function (file, last) {
-    var self = this;
-    var n = self.musics.length;
-    if (file.type.match (/audio\/.*(mp3|ogg|m4a|mp4)/)) {
-      self.files[n] = file;
-      self.musics[n] = new Music (file);
-      self.musics[n].tagread (
-        (function (j) {
-        return function (tags) {
-          self.tags[j] = tags;
-          self.ui.ontagread (tags, j);
-        };
-      }) (n));
-      self.ui.addfile (file, n);
-      self.order.concat ([n]);
-      if (!self.playing) {
-        self.play ();
-      }
-    }
-    if (last) {
-      self.ui.selectableSet ();
-      self.order.shuffleOn (); // TODO
-    }
-  },
-
+  /* file reading */
   readFiles: function (files) {
     var self = this;
     for (var i = 0, l = files.length; i < l; i++) {
@@ -2064,6 +2019,32 @@ Player.prototype = {
     }
   },
 
+  _readFiles: function (file, last) {
+    var self = this;
+    var n = self.musics.length;
+    if (file.type.match (/audio\/.*(mp3|ogg|m4a|mp4)/)) {
+      self.files[n] = file;
+      self.musics[n] = new Music (file);
+      self.musics[n].tagread (
+        (function (self, j, starttoplay) {
+        return function (tags) {
+          self.tags[j] = tags;
+          self.ui.ontagread (tags, j);
+          if (starttoplay) {
+            self.play ();
+          }
+        };
+      }) (self, n, !self.playing));
+      self.ui.addfile (file, n);
+      self.order.concat ([n]);
+    }
+    if (last) {
+      self.ui.selectableSet ();
+      self.order.shuffleOn (); // TODO
+    }
+  },
+
+  /* basic player operations */
   play: function (index) {
     var self = this;
     if (index === undefined) {
@@ -2102,17 +2083,35 @@ Player.prototype = {
   next: function () {
     this.ui.pause ();
     var index = this.order.next ();
+    if (index === undefined) return;
     if (!this.musics[index]) {
       index = this.order.at (0);
     }
     this.play (index);
-    // log('--  next  --');
   },
 
   prev: function () {
     // TODO
   },
 
+  seekAt: function (position /* 0 - 1 */ ) {
+    if (this.playing !== undefined && this.playing.audio) {
+      this.playing.audio.currentTime = this.playing.audio.duration * position;
+      return true;
+    }
+    return false;
+  },
+
+  seekBy: function (sec) {
+    if (this.nowplaying !== undefined && this.playing.audio) {
+      var prev = this.playing.seekBy (sec);
+      if (prev) {
+        this.prev ();
+      }
+    }
+  },
+
+  /* volume operations */
   volume: new Limited (0, 256, 16, 127),
 
   updatevolume: function () {
@@ -2121,7 +2120,7 @@ Player.prototype = {
 
   mute: function () {
     this.predvol = this.volume;
-    this.volume.at (0);
+    this.volume.setToMin ();
   },
 
   resume: function () {
@@ -2142,33 +2141,16 @@ Player.prototype = {
     this.order.remove (index);
   },
 
-  seekAt: function (position /* 0 - 1 */ ) {
-    if (this.playing !== undefined && this.playing.audio) {
-      this.playing.audio.currentTime = this.playing.audio.duration * position;
-      return true;
-    }
-    return false;
-  },
-
   order: new Enumstate ([]),
 
   repeat: new Enumstate (['false', 'true', 'one']),
 
   shuffle: new Enumstate (['false', 'true']),
 
-  seekBy: function (sec) {
-    if (this.nowplaying !== undefined && this.playing.audio) {
-      var prev = this.playing.seekBy (sec);
-      if (prev) {
-        this.prev ();
-      }
-    }
-  },
-
 }
 
 window.onload = function () {
-  var player = (new Player).start ();
+  var player = new Player (); //.start ();
 };
 
-} ) ();
+})();

@@ -2,11 +2,10 @@
 
 function Enumstate (array, initializer, callback) {
   this.array = array;
-  this._enumclass = this.enumclass = new Enum (array);
+  this._enum = this.enum = new Enum (array);
   this.length = array.length;
   this.initializer = initializer;
   this.callback = callback || function (x) { };
-  this.at (0);
 }
 
 Enumstate.prototype = {
@@ -19,29 +18,39 @@ Enumstate.prototype = {
 
   shuffle: false,
 
+  repeat: false,
+
   length: 0,
 
   at: function (i) {
-    if (i === undefined) return this.value;
+    if (i === undefined || isNaN (i)) {
+      i = this.index;
+    }
     this.index = i;
-    this.value = this.enumclass.toEnum (i);
+    this.value = this.enum.toEnum (i);
     this.history = this.history.concat (i);
+    this.callback (this.value);
     return this.value;
   },
 
   next: function (j) {
-    if (j === undefined) j = 1
+    if (j === undefined || isNaN (j)) {
+      j = 1;
+    }
     this.index += j;
-    this.value = this.enumclass.toEnum (this.index);
+    this.value = this.enum.toEnum (this.index);
     if (this.value === undefined) {
       if (this.shuffle) {
-        this.enumclass = new Enum (this.enumclass.array.shuffle ());
+        this.enum = new Enum (this.enum.array.shuffle ());
       }
-      this.at (0);
+      if (this.repeat) {
+        this.at (0);
+      } else {
+        return undefined;
+      }
     } else {
       this.at (this.index);
     }
-    this.callback (this.value);
     return this.value;
   },
 
@@ -51,14 +60,14 @@ Enumstate.prototype = {
 
   shuffleOn: function () {
     this.shuffle = true;
-    this._enumclass = this.enumclass;
-    this.enumclass = new Enum (this.enumclass.array.shuffle ());
+    this._enum = this.enum;
+    this.enum = new Enum (this.enum.array.shuffle ());
     return this;
   },
 
   shuffleOff: function () {
     this.shuffle = false;
-    this.enumclass = this._enumclass;
+    this.enum = this._enum;
     return this;
   },
 
@@ -70,27 +79,43 @@ Enumstate.prototype = {
     }
   },
 
+  repeatOn: function () {
+    this.repeat = true;
+  },
+
+  repeatOff: function () {
+    this.repeat = false;
+  },
+
+  repeatToggle: function () {
+    if (this.repeat) {
+      return this.repeatOff ();
+    } else {
+      return this.repeatOn ();
+    }
+  },
+
   init: function (x) {
     if (x !== undefined) {
-      this.at (this.enumclass.fromEnum (x));
+      this.at (this.enum.fromEnum (x));
     } else if (typeof this.initializer === 'function') {
-      this.at (this.enumclass.fromEnum (this.initializer ()));
+      console.log(this.initializer());
+      this.at (this.enum.fromEnum (this.initializer ()));
     } else {
-      this.at (this.enumclass.fromEnum (this.initializer));
+      this.at (this.enum.fromEnum (this.initializer));
     }
-    this.callback (this.value);
   },
 
   concat: function (arr) {
-    this.enumclass.concat (arr);
+    this.enum.concat (arr);
   },
 
   splice: function (start, count) {
-    this.enumclass.splice (start, count);
+    this.enum.splice (start, count);
   },
 
   remove: function (value) {
-    var index = this.enumclass.fromEnum (value);
+    var index = this.enum.fromEnum (value);
     this.splice (index, 1);
   },
 

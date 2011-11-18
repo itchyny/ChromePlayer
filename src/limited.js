@@ -1,7 +1,9 @@
 // Limited number
 
 function Limited (min, max, step, initializer, callback) {
-  if (min > max) min = [max, max = min][0];
+  if (min > max) {
+    min = [max, max = min][0];
+  }
   this.min = min;
   this.max = max;
   this.step = step;
@@ -25,7 +27,7 @@ Limited.prototype = {
       this.value = this.assert (x);
     }
     this.callback (this.value);
-    return this;
+    return this.value;
   },
 
   assert: function (x) {
@@ -62,7 +64,7 @@ Limited.prototype = {
 
   setToMax: function () {
     return this.at (this.max);
-  },
+  }
 
 };
 

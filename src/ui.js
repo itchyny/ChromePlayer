@@ -54,8 +54,8 @@ var UI = {
     self.div.shuffle.click(function () { player.shuffle.next (); });
     self.div.conf.click(function () { self.div.config.fadeToggle(200); });
     $('img.lbutton, img.rbutton')
-    .mouseup(function (e) { $(this).css({ 'top': '50%' }); })
-    .mousedown(function (e) { $(this).css({ 'top': parseInt($(this).css('top'), 10) * 1.03 + '%' }); });
+      .mouseup(function (e) { $(this).css({ 'top': '50%' }); })
+      .mousedown(function (e) { $(this).css({ 'top': parseInt($(this).css('top'), 10) * 1.03 + '%' }); });
   },
 
   initsize: function () {
@@ -254,7 +254,8 @@ var UI = {
     log ("this.player.playing !== undefined:" + this.player.playing !== undefined);
     if (this.player.playing) log ("this.player.playing.paused (): " + this.player.playing.paused ());
     this.div.play.attr(
-      b === false || (this.player.playing !== undefined && this.player.playing.paused ()) ? {
+      b === false || (this.player.playing !== undefined
+                                && this.player.playing.paused ()) ? {
         'src': './img/play.png',
         'title': 'Play'
       } : {
@@ -738,10 +739,11 @@ var UI = {
   },
 
   toggleMute: function (player) { // player.toggleMute
-    if (player.volume === 0 && player.predvol !== undefined)
+    if (player.volume.value === 0 && player.predvol !== undefined) {
       this.click ('volumeon');
-    else
+    } else {
       this.click ('mute');
+    }
   },
 
   click: function (t) {
@@ -750,6 +752,39 @@ var UI = {
     setTimeout ( function () {
       i.mouseup ();
     }, 200 );
+  },
+
+
+  focusIndex: 0,
+
+  focusElements: function () {
+    return [ $('#tbody')
+           , $('div#musicSlider a')
+           , $('div#volumeSlider a')
+           ]; 
+  },
+
+  focusUpdate: function () {
+    this.focusElements ()[this.focusIndex].focus();
+    if (this.focusIndex === 0) {
+      $('tr.ui-selected')
+        .first()
+        .SELECT()
+        .size()
+        || $('tr.nP')
+            .SELECT()
+            .LASTSELECT();
+    }
+  },
+
+  focusToggle: function () {
+    this.focusIndex = (this.focusIndex + 1) % 3;
+    this.focusUpdate ();
+  },
+
+  focusToggleReverse: function () {
+    this.focusIndex = (this.focusIndex - 1 + this.focusElements().length) % 3;
+    this.focusUpdate ();
   },
 
 };

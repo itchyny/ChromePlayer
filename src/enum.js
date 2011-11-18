@@ -90,7 +90,7 @@ Enum.prototype = {
   splice: function (start, count) {
     this.array.splice (start, count);
     this.init ();
-  },
+  }
 
 };
 

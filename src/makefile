@@ -9,7 +9,6 @@ SOURCE_FILES =\
 	local.js \
 	schemeconfig.js \
 	ui.js \
-	order.js \
 	key.js \
 	keyconfig.js \
 	player.js \
