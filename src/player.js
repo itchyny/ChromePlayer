@@ -14,13 +14,12 @@
 // TODO: キーだけでファイルの入れ替え
 // TODO: ファイル順入れ替えた時にorder更新
 // TODO: ソート
-// TODO: ファイル削除した時にnextしたときスキップされる
 // TODO: C-zで削除キャンセルなど
-// TODO: -> <- キーが効かない
 // TODO: title="..."にゴミが入る
 // TODO: fixed first row of table
 // TODO: Enterでplayした時に, orderをどうするか
 // DONE: スキップされた時に, nextを消す <- 次々とスキップしていくと, 大量の曲が一気に流れる
+// DONE: ファイル削除した時にnextしたときスキップされる
 
 function Player () {
   var self = this;
@@ -80,22 +79,25 @@ Player.prototype = {
   /* file reading */
   readFiles: function (files) {
     var self = this;
+    var first = true;
     for (var i = 0, l = files.length; i < l; i++) {
-      setTimeout ( (function (file, last) {
-        return self._readFiles (file, last);
-      }) (files[i], i === l - 1)
-      , 100 * i);
+      if (files[i].type.match (/audio\/.*(mp3|ogg|m4a|mp4)/)) {
+        setTimeout ( (function (file, first, last) {
+          return self._readFiles (file, first, last);
+        }) (files[i], first, i === l - 1)
+        , 100 * i);
+        first = false;
+      }
     }
   },
 
-  _readFiles: function (file, last) {
+  _readFiles: function (file, first, last) {
     var self = this;
     var n = self.musics.length;
-    if (file.type.match (/audio\/.*(mp3|ogg|m4a|mp4)/)) {
-      self.files[n] = file;
-      self.musics[n] = new Music (file);
-      self.musics[n].tagread (
-        (function (self, j, starttoplay) {
+    self.files[n] = file;
+    self.musics[n] = new Music (file);
+    self.musics[n].tagread (
+      (function (self, j, starttoplay) {
         return function (tags) {
           self.tags[j] = tags;
           self.ui.ontagread (tags, j);
@@ -103,12 +105,12 @@ Player.prototype = {
             self.play ();
           }
         };
-      }) (self, n, !self.playing));
-      self.ui.addfile (file, n);
-      self.order.concat ([n]);
-    }
+    }) (self, n, !self.playing && first));
+    self.ui.addfile (file, n);
+    self.order.concat ([n]);
     if (last) {
       self.ui.selectableSet ();
+      self.ui.setdblclick ();
       self.order.shuffleOn (); // TODO
     }
   },
@@ -156,6 +158,7 @@ Player.prototype = {
     if (!this.musics[index]) {
       index = this.order.at (0);
     }
+    log ("next: " + index);
     this.play (index);
   },
 
@@ -165,6 +168,7 @@ Player.prototype = {
 
   seekAt: function (position /* 0 - 1 */ ) {
     if (this.playing !== undefined && this.playing.audio) {
+      position = Math.max (0, Math.min (1, position));
       this.playing.audio.currentTime = this.playing.audio.duration * position;
       return true;
     }
@@ -172,7 +176,7 @@ Player.prototype = {
   },
 
   seekBy: function (sec) {
-    if (this.nowplaying !== undefined && this.playing.audio) {
+    if (this.nowplaying !== undefined && this.playing && this.playing.audio) {
       var prev = this.playing.seekBy (sec);
       if (prev) {
         this.prev ();
@@ -195,6 +199,14 @@ Player.prototype = {
   resume: function () {
     this.volume.at (this.predvol);
     delete this.predvol;
+  },
+
+  togglemute: function () {
+    if (this.volume.value === 0 && this.prevol !== undefined) {
+      this.resume ();
+    } else {
+      this.mute ();
+    }
   },
 
   volumeup: function () {

@@ -10,6 +10,7 @@ SOURCE_FILES =\
 	schemeconfig.js \
 	ui.js \
 	key.js \
+	command.js \
 	keyconfig.js \
 	player.js \
 	footer.js
@@ -26,7 +27,7 @@ TARGET = main.js
 main.js : ${SOURCE_FILES} makefile
 	@cat ${SOURCE_FILES} |\
 		${SED_DATE} | ${SED_VER} > ${TARGET}
-	cp ./main.js ../js/
+	cp ${TARGET} ../js/
 
 all:
 	cd ../

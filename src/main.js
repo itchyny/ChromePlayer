@@ -3,7 +3,7 @@
  *    Chrome Player 1.60
  *
  *    author      : itchyny
- *    last update : Thu Nov 17 05:43:17 2011 +0900
+ *    last update : Sat Nov 19 08:01:29 2011 +0900
  *    source code : https://github.com/itchyny/ChromePlayer
  *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -29,8 +29,8 @@ Array.prototype.shuffle = function () {
 
 Array.prototype.unique = function () {
   var ans = [], i, j, l, m, f;
-  for(i = -1, l = this.length; ++i < l;) {
-    for(j = -1, m = ans.length, f = true; ++j < m;) {
+  for(i = -1, l = this.length; i < l; ++i) {
+    for(j = -1, m = ans.length, f = true; j < m; ++j) {
       if(ans[j] === this[i]) {
         j = m + 1;
         f = false;
@@ -227,7 +227,7 @@ Enum.prototype = {
   splice: function (start, count) {
     this.array.splice (start, count);
     this.init ();
-  },
+  }
 
 };
 
@@ -861,8 +861,9 @@ var UI = {
     };
     document.body.ondrop = function (e) {
       e.preventDefault();
-      if (e.dataTransfer && e.dataTransfer.files)
-      self.player.readFiles (e.dataTransfer.files);
+      if (e.dataTransfer && e.dataTransfer.files) {
+        self.player.readFiles (e.dataTransfer.files);
+      }
     };
   },
 
@@ -1020,7 +1021,7 @@ var UI = {
     .texttitle(tags['TALB'] || '');
   },
 
-  setdblclick : function () {
+  setdblclick: function () {
     var self = this;
     $('tr.music').dblclick (
       function (e) {
@@ -1304,7 +1305,7 @@ var UI = {
     }
   },
 
-  expandDown: function () {
+  extendDown: function () {
     var $last = $('tr.last-select');
     if($last.size()) {
       if($last.prev().ISSELECTED()) {
@@ -1354,7 +1355,7 @@ var UI = {
     }
   },
 
-  expandUp: function () {
+  extendUp: function () {
     var $last = $('tr.last-select');
     if($last.size()) {
       if($last.next().ISSELECTED()) {
@@ -1382,7 +1383,7 @@ var UI = {
       .LASTSELECT();
   },
 
-  expandToHome: function () {
+  extendToHome: function () {
     $('tr.ui-selected')
       .removeClass('ui-selected ddms_selected');
     $('tr.last-select')
@@ -1402,7 +1403,7 @@ var UI = {
       .LASTSELECT();
   },
 
-  expandToEnd: function () {
+  extendToEnd: function () {
     $('tr.ui-selected')
       .removeClass('ui-selected ddms_selected');
     $('tr.last-select')
@@ -1462,7 +1463,7 @@ var UI = {
       .LASTSELECT();
   },
 
-  expandPageDown: function () {
+  extendPageDown: function () {
     UI.div.tablebody.scrollTop( UI.div.tablebody.scrollTop() + UI.div.tablebody.height() * 0.8 );
     if($('tr.last-select').prev().ISSELECTED()) {
       $('tr.ui-selected')
@@ -1490,7 +1491,7 @@ var UI = {
       .LASTSELECT();
   },
 
-  expandPageUp:  function () {
+  extendPageUp:  function () {
     UI.div.tablebody.scrollTop( UI.div.tablebody.scrollTop() - UI.div.tablebody.height() * 0.8 );
     var h = window.innerHeight,
         $last = $('tr.last-select', UI.div.tbody);
@@ -1565,13 +1566,13 @@ var UI = {
       };
   },
 
-  toggleMute: function (player) { // player.toggleMute
-    if (player.volume.value === 0 && player.predvol !== undefined) {
-      this.click ('volumeon');
-    } else {
-      this.click ('mute');
-    }
-  },
+  // toggleMute: function () { // player.toggleMute
+  //   if (player.volume.value === 0 && player.predvol !== undefined) {
+  //     this.click ('volumeon');
+  //   } else {
+  //     this.click ('mute');
+  //   }
+  // },
 
   click: function (t) {
     var i = UI.div[t] || $('img#' + t);
@@ -1747,45 +1748,114 @@ $.fn.drag_drop_multi_select.defaults.after_drop_action = function ($item, $old, 
 ////             //.resizable();
 ////             this.div.filterword.keydown(filter.start);
 // Key maneger
+// TODO: expansion of commands :: String
 
 function Key (app, config) {
+  var key;
   this.app = app;
   if (config) {
-    for (var key in config) {
-      this.set (this.parse (key), config[key]);
+    for (key in config) {
+      if (config.hasOwnProperty (key)) {
+        if (config[key]) {
+          this.set (this.parse (key), config[key]);
+          this.keys.push (key);
+        }
+      }
     }
   }
+  this.keys = this.keys.sort ();
 }
 
 Key.prototype = {
 
+  keys: [],
+
+  callback: {},
+
   start: function () {
     var self = this;
+    $(window).keypress (function (e) {
+      self.prevent (e);
+    });
     $(window).keydown (function (e) {
-      var f = self.callback [self.convert (e)];
-      if (f) {
+      self.keydown (e);
+      if (self.callback [ self.convert (e) ]) {
         self.prevent (e);
-        f (self.app, e);
       }
     });
   },
 
+  keydown: function (e) {
+    var self = this;
+    if (!self.onlyMeta (e)) {
+      self.keyqueue.push (self.convert (e));
+      if (self.triggerTimer) {
+        clearTimeout (self.triggerTimer);
+        self.triggerTimer = undefined;
+      }
+      if (self.triggerInstantly ()) {
+        self.trigger (e);
+      } else {
+        self.triggerTimer = setTimeout (function () {
+          self.trigger (e);
+        }, self.watingTime);
+      }
+    }
+  },
+
+  triggerInstantly: function () {
+    var key = this.keyqueue.join ('');
+    var index = this.keys.indexOf (key);
+    if (index < 0) {
+      return false;
+    }
+    if (this.keys[index + 1] !== undefined && this.keys[index + 1].indexOf (key) < 0) {
+      return true;
+    }
+    return false;
+  },
+
+  onlyMeta: function (e) {
+    switch (this.codes [e.keyCode]) {
+      case 'alt': case 'ctrl': case 'shift':
+        return true;
+      default:
+        return false;
+    }
+  },
+
+  trigger: function (e) {
+    var self = this;
+    var f = self.callback [self.keyqueue.join ('')];
+    log (self.keyqueue.join (''));
+    if (f) {
+      self.prevent (e);
+      f (self.app, e);
+    }
+    self.keyqueue = [];
+  },
+
+  keyqueue: [],
+
+  triggerTimer: undefined,
+
+  watingTime: 300,
+
   prevent: function (e) {
-    if (e.preventDefault)
+    if (e.preventDefault) {
       e.preventDefault();
+    }
   },
 
   convert: function (e) {
     var meta = this.meta (e);
-    var key = '<' + (meta ? meta + '-' : '') + this.keyCode (e.keyCode) + '>';
+    var key = (meta !== '' || this.codes[e.keyCode]) ? '<' + meta + this.keyCode (e.keyCode) + '>'
+                                                     :              this.keyCode (e.keyCode);
     return key;
   },
 
   meta: function (e) {
-    return (e.global ? 'g' : '')
-         + (e.ctrlKey || e.metaKey ? 'c' : '')
-         + (e.shiftKey ? 's' : '')
-         + (e.altKey ? 'a' : '');
+    return ((e.global ? 'g-' : '') + (e.ctrlKey || e.metaKey ? 'c-' : '') + (e.shiftKey ? 's-' : '') + (e.altKey ? 'a-' : ''));
   },
 
   parse: function (key) {
@@ -1795,8 +1865,6 @@ Key.prototype = {
   set: function (key, callback) {
     this.callback [key] = callback;
   },
-
-  callback: [],
 
   codes: {
       8: 'backspace',
@@ -1817,7 +1885,7 @@ Key.prototype = {
      40: 'down',
      45: 'insert',
      46: 'delete',
-     91: '^', // TODO
+     91: 'ctrl',
     106: '*',
     107: '+',
     111: '/',
@@ -1833,102 +1901,165 @@ Key.prototype = {
     220: '\\',
     221: ']',
     222: '^',
+    132: 'f1',
+    133: 'f2',
+    134: 'f3',
+    135: 'f4',
+    136: 'f5',
+    137: 'f6',
+    138: 'f7',
+    139: 'f8',
+    140: 'f9',
+    141: 'f10',
+    142: 'f11',
+    143: 'f12'
   },
 
   keyCode: function (keyCode) {
-    if (this.codes[keyCode])
+    if (this.codes[keyCode]) {
       return this.codes[keyCode];
-    if (48 <= keyCode && keyCode <= 57)
+    }
+    if (48 <= keyCode && keyCode <= 57) {
       return keyCode - 48;
-    if (65 <= keyCode && keyCode <= 90)
+    }
+    if (65 <= keyCode && keyCode <= 90) {
       return String.fromCharCode(keyCode).toLowerCase();
-    if (96 <= keyCode && keyCode <= 105)
+    }
+    if (96 <= keyCode && keyCode <= 105) {
       return keyCode - 96;
-    if (112 <= keyCode && keyCode <= 123)
-      return 'f' + (keyCode - 111);
+    }
     console.log ('unknown key: ' + keyCode);
-  },
+  }
 
 };
 
+
+// commands
+// TODO: arguments
+var command = {
+
+  /* operate player */
+  PlayPause:          function (opt) { return function (app) { app.ui.click ('play'); }; },
+  OpenFile:           function (opt) { return function (app) { app.ui.click ('open'); }; },
+  NextMusic:          function (opt) { return function (app) { app.next (); }; },
+  PreviousMusic:      function (opt) { return function (app) { app.prev (); }; },
+  SeekForward:        function (opt) { return function (app) { app.seekBy (opt[0]); }; },
+  SeekBackward:       function (opt) { return function (app) { app.seekBy (-opt[0]); }; },
+  SeekPercent:        function (opt) { return function (app) { app.seekAt (opt[0]); }; },
+
+  /* change setting */
+  ToggleRepeat:       function (opt) { return function (app) { app.ui.click ('repeat'); }; },
+  ToggleShuffle:      function (opt) { return function (app) { app.ui.click ('shuffle'); }; },
+
+  /* volume */
+  VolumeUp:           function (opt) { return function (app) { app.volumeup (); }; },
+  VolumeDown:         function (opt) { return function (app) { app.volumedown (); }; },
+  VolumeMute:         function (opt) { return function (app) { app.mute (); }; },
+  VolumeResume:       function (opt) { return function (app) { app.resume (); }; },
+  VolumeToggleMute:   function (opt) { return function (app) { app.togglemute (); }; },
+
+
+  /* select, extend */
+  SelectDown:         function (opt) { return function (app) { app.ui.selectDown (); }; },
+  ExtendDown:         function (opt) { return function (app) { app.ui.extendDown (); }; },
+  SelectUp:           function (opt) { return function (app) { app.ui.selectUp (); }; },
+  ExtendUp:           function (opt) { return function (app) { app.ui.extendUp (); }; },
+  SelectHome:         function (opt) { return function (app) { app.ui.selectHome (); }; },
+  ExtendToHome:       function (opt) { return function (app) { app.ui.extendToHome (); }; },
+  SelectEnd:          function (opt) { return function (app) { app.ui.selectEnd (); }; },
+  ExtendToEnd:        function (opt) { return function (app) { app.ui.extendToEnd (); }; },
+  SelectAll:          function (opt) { return function (app) { app.ui.selectAll (); }; },
+  UnselectAll:        function (opt) { return function (app) { app.ui.unselectAll (); }; },
+  PageDown:           function (opt) { return function (app) { app.ui.pageDown (); }; },
+  ExtendPageDown:     function (opt) { return function (app) { app.ui.extendPageDown (); }; },
+  PageUp:             function (opt) { return function (app) { app.ui.pageUp (); }; },
+  ExtendPageUp:       function (opt) { return function (app) { app.ui.extendPageUp (); }; },
+  DeleteSelected:     function (opt) { return function (app) { app.ui.deleteSelected (); }; },
+
+  /* toggle popup menu */
+  ToggleHelp:         function (opt) { return function (app) { app.ui.toggleHelp (); }; },
+  ToggleAbout:        function (opt) { return function (app) { app.ui.toggleAbout (); }; },
+  DefaultEnter:       function (opt) { return function (app) { app.ui.defaultEnter (); }; },
+  ViewInformation:    function (opt) { return function (app) { app.ui.viewInformation (); }; },
+  Escape:             function (opt) { return function (app) { app.ui.escape (); }; },
+  FocusToggle:        function (opt) { return function (app) { app.ui.focusToggle (); }; },
+  FocusToggleReverse: function (opt) { return function (app) { app.ui.focusToggleReverse (); }; },
+
+  /* Special commands */
+  Define:             function (opt) { return function () {}; } // TODO
+
+};
 
 // key configuration for player
 
 var keyconfig = {
 
-  '<c-space>': function (player) { player.ui.click ('play'); },
-  '<a-space>': function (player) { player.ui.click ('play'); },
-  '<space>': function (player) { player.ui.click ('play'); },
-  '<c-r>': function (player) { player.ui.click ('repeat'); },
-  '<c-o>': function (player) { player.ui.click ('open'); },
-  '<c-u>': function (player) { player.ui.click ('shuffle'); },
-  '<c-a>': function (player) { player.ui.selectAll (); },
-  '<cs-a>': function (player) { player.ui.unselectAll (); },
-  '<s-/>': function (player) { player.ui.toggleHelp (); },
-  '<f1>': function (player) { player.ui.toggleAbout (); },
-  '<esc>': function (player) { player.ui.escape (); },
-  '<delete>': function (player) { player.ui.deleteSelected (); },
-  '<d>': function (player) { player.ui.deleteSelected (); },
-  '<down>': function (player) { player.ui.selectDown (); },
-  '<j>': function (player) { player.ui.selectDown (); },
-  '<s-down>': function (player) { player.ui.expandDown (); },
-  '<s-j>': function (player) { player.ui.expandDown (); },
-  '<c-down>': function (player) { player.volumedown (); },
-  '<c-j>': function (player) { player.volumedown (); },
-  '<9>': function (player) { player.volumedown (); },
-  '<c-up>': function (player) { player.volumeup (); },
-  '<0>': function (player) { player.volumeup (); },
-  '<c-k>': function (player) { player.volumeup (); },
-  '<ca-down>': function (player) { player.ui.toggleMute (player); },
-  '<up>': function (player) { player.ui.selectUp (); },
-  '<k>': function (player) { player.ui.selectUp (); },
-  '<s-up>': function (player) { player.ui.expandUp (); },
-  '<s-k>': function (player) { player.ui.expandUp (); },
-  'gg': function (player) { player.ui.selectHome (); }, // TODO
-  '<home>': function (player) { player.ui.selectHome (); },
-  '<s-home>': function (player) { player.ui.expandToHome (); },
-  '<end>': function (player) { player.ui.selectEnd (); },
-  '<s-end>': function (player) { player.ui.expandToEnd (); },
-  '<s-g>': function (player) { player.ui.selectEnd (); },
-  '<right>': function (player) { player.seekBy (10); },
-  '<s-right>': function (player) { player.seekBy (30); },
-  '<left>': function (player) { player.seekBy (-10); },
-  '<s-left>': function (player) { player.seekBy (-30); },
-  '<l>': function (player) { player.seekBy (10); },
-  '<w>': function (player) { player.seekBy (30); },
-  '<h>': function (player) { player.seekBy (-10); },
-  '<b>': function (player) { player.seekBy (-30); },
-  '<enter>': function (player) { player.ui.defaultEnter (); },
-  '<a-enter>': function (player) { player.ui.viewInformation (player); },
-  '<pgdn>': function (player) { player.ui.pageDown (); },
-  '<s-pgdn>': function (player) { player.ui.expandPageDown (); },
-  '<pdup>': function (player) { player.ui.pageUp (); },
-  '<s-pgup>':  function (player) { player.ui.expandPageUp (); },
-  '<^>':  function (player) { player.seekBy (-10000); }, // TODO
-  '<s-4>':  function (player) { player.seekBy (10000); },
-  '<tab>': function (player) { player.ui.focusToggle (); },
-  '<s-tab>': function (player) { player.ui.focusToggleReverse (); },
+  /* operate player */
+  '<space>': command.PlayPause (),
+  '<c-space>': command.PlayPause (),
+  '<c-right>': command.NextMusic (),
+  '<c-left>': command.PreviousMusic (),
+  '<c-o>': command.OpenFile (),
+  '<right>': command.SeekForward ([10]),
+  '<s-right>': command.SeekForward ([30]),
+  'l': command.SeekForward ([10]), // vim
+  'w': command.SeekForward ([30]), // vim
+  '<left>': command.SeekBackward ([10]),
+  '<s-left>': command.SeekBackward ([30]),
+  'h': command.SeekBackward ([10]), // vim
+  'b': command.SeekBackward ([30]), // vim
+  '0': command.SeekPercent ([0]), // vim
+  '<s-4>': command.SeekPercent ([100]), // vim
+
+  /* change setting */
+  '<c-r>': command.ToggleRepeat (),
+  '<c-u>': command.ToggleShuffle (),
+
+  /* volume */
+  '<c-up>': command.VolumeUp (),
+  '<c-down>': command.VolumeDown (),
+  '<c-a-down>': command.VolumeToggleMute (),
+  '9': command.VolumeDown (), // mplayer
+  // '0': command.VolumeUp (), // mplayer
+
+  /* select, expand */
+  '<down>': command.SelectDown (),
+  'j': command.SelectDown (), // vim
+  '<s-down>': command.ExtendDown (),
+  '<s-j>': command.ExtendDown (), // vim
+  '<up>': command.SelectUp (),
+  'k': command.SelectUp (), // vim
+  '<s-up>': command.ExtendUp (),
+  '<s-k>': command.ExtendUp (), // vim
+  '<home>': command.SelectHome (),
+  'gg': command.SelectHome (), // vim
+  '<s-home>': command.ExtendToHome (),
+  '<end>': command.SelectEnd (),
+  '<s-g>': command.SelectEnd (), // vim
+  '<s-end>': command.ExtendToEnd (),
+  '<c-a>': command.SelectAll (),
+  '<c-s-a>': command.UnselectAll (),
+  '<pgdn>': command.PageDown (),
+  '<c-f>': command.PageDown (), // vim
+  '<s-pgdn>': command.ExtendPageDown (),
+  '<pdup>': command.PageUp (),
+  '<c-b>': command.PageUp (), // vim
+  '<s-pdup>': command.ExtendPageUp (),
+
+  /* toggle popup menu, ui */
+  '<s-/>': command.ToggleHelp (),
+  '<f1>': command.ToggleAbout (),
+  '<delete>': command.DeleteSelected (),
+  'd': command.DeleteSelected (), // vim
+  '<esc>': command.Escape (),
+  '<enter>': command.DefaultEnter (),
+  '<a-enter>': command.ViewInformation (),
+  '<tab>': command.FocusToggle (),
+  '<s-tab>': command.FocusToggleReverse ()
 
 };
 
 
-
-// map <c-space> PlayPause
-// map <a-space> PlayPause
-// map <space> PlayPause
-// map <c-r> ToggleRepeat
-// map <c-o> OpenFile
-// map <c-u> ToggleShuffle
-// map <c-a> SelectAll
-// map <cs-a> SelectNone
-// map <s-/> ToggleHelp
-// map <enter> PlaySelected
-// map <up> SelectUp
-// map <down> SelectDown
-// map <s-up> SelectShiftUp
-// map <s-down> SelectShiftDown
-// map <home> SelectHome
-// map <end> SelectEnd
 // Main player
 // TODO  !!!!!実装に妥協しない!!!!!! TODO
 // TODO   使いやすく  読みやすく     TODO
@@ -1945,13 +2076,12 @@ var keyconfig = {
 // TODO: キーだけでファイルの入れ替え
 // TODO: ファイル順入れ替えた時にorder更新
 // TODO: ソート
-// TODO: ファイル削除した時にnextしたときスキップされる
 // TODO: C-zで削除キャンセルなど
-// TODO: -> <- キーが効かない
 // TODO: title="..."にゴミが入る
 // TODO: fixed first row of table
 // TODO: Enterでplayした時に, orderをどうするか
 // DONE: スキップされた時に, nextを消す <- 次々とスキップしていくと, 大量の曲が一気に流れる
+// DONE: ファイル削除した時にnextしたときスキップされる
 
 function Player () {
   var self = this;
@@ -2011,22 +2141,25 @@ Player.prototype = {
   /* file reading */
   readFiles: function (files) {
     var self = this;
+    var first = true;
     for (var i = 0, l = files.length; i < l; i++) {
-      setTimeout ( (function (file, last) {
-        return self._readFiles (file, last);
-      }) (files[i], i === l - 1)
-      , 100 * i);
+      if (files[i].type.match (/audio\/.*(mp3|ogg|m4a|mp4)/)) {
+        setTimeout ( (function (file, first, last) {
+          return self._readFiles (file, first, last);
+        }) (files[i], first, i === l - 1)
+        , 100 * i);
+        first = false;
+      }
     }
   },
 
-  _readFiles: function (file, last) {
+  _readFiles: function (file, first, last) {
     var self = this;
     var n = self.musics.length;
-    if (file.type.match (/audio\/.*(mp3|ogg|m4a|mp4)/)) {
-      self.files[n] = file;
-      self.musics[n] = new Music (file);
-      self.musics[n].tagread (
-        (function (self, j, starttoplay) {
+    self.files[n] = file;
+    self.musics[n] = new Music (file);
+    self.musics[n].tagread (
+      (function (self, j, starttoplay) {
         return function (tags) {
           self.tags[j] = tags;
           self.ui.ontagread (tags, j);
@@ -2034,12 +2167,12 @@ Player.prototype = {
             self.play ();
           }
         };
-      }) (self, n, !self.playing));
-      self.ui.addfile (file, n);
-      self.order.concat ([n]);
-    }
+    }) (self, n, !self.playing && first));
+    self.ui.addfile (file, n);
+    self.order.concat ([n]);
     if (last) {
       self.ui.selectableSet ();
+      self.ui.setdblclick ();
       self.order.shuffleOn (); // TODO
     }
   },
@@ -2087,6 +2220,7 @@ Player.prototype = {
     if (!this.musics[index]) {
       index = this.order.at (0);
     }
+    log ("next: " + index);
     this.play (index);
   },
 
@@ -2096,6 +2230,7 @@ Player.prototype = {
 
   seekAt: function (position /* 0 - 1 */ ) {
     if (this.playing !== undefined && this.playing.audio) {
+      position = Math.max (0, Math.min (1, position));
       this.playing.audio.currentTime = this.playing.audio.duration * position;
       return true;
     }
@@ -2103,7 +2238,7 @@ Player.prototype = {
   },
 
   seekBy: function (sec) {
-    if (this.nowplaying !== undefined && this.playing.audio) {
+    if (this.nowplaying !== undefined && this.playing && this.playing.audio) {
       var prev = this.playing.seekBy (sec);
       if (prev) {
         this.prev ();
@@ -2128,6 +2263,14 @@ Player.prototype = {
     delete this.predvol;
   },
 
+  togglemute: function () {
+    if (this.volume.value === 0 && this.prevol !== undefined) {
+      this.resume ();
+    } else {
+      this.mute ();
+    }
+  },
+
   volumeup: function () {
     this.volume.increase ();
   },
@@ -2145,12 +2288,13 @@ Player.prototype = {
 
   repeat: new Enumstate (['false', 'true', 'one']),
 
-  shuffle: new Enumstate (['false', 'true']),
+ shuffle: new Enumstate (['false', 'true']),
 
 }
 
 window.onload = function () {
-  var player = new Player (); //.start ();
+  var player = new Player ();
 };
 
 })();
+/*jslint devel: true, browser: true, continue: true, sloppy: true, vars: true, white: true, passfail: false, plusplus: true, maxerr: 50, indent: 2 */

@@ -17,8 +17,8 @@ Array.prototype.shuffle = function () {
 
 Array.prototype.unique = function () {
   var ans = [], i, j, l, m, f;
-  for(i = -1, l = this.length; ++i < l;) {
-    for(j = -1, m = ans.length, f = true; ++j < m;) {
+  for(i = -1, l = this.length; i < l; ++i) {
+    for(j = -1, m = ans.length, f = true; j < m; ++j) {
       if(ans[j] === this[i]) {
         j = m + 1;
         f = false;

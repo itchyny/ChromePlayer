@@ -34,8 +34,9 @@ var UI = {
     };
     document.body.ondrop = function (e) {
       e.preventDefault();
-      if (e.dataTransfer && e.dataTransfer.files)
-      self.player.readFiles (e.dataTransfer.files);
+      if (e.dataTransfer && e.dataTransfer.files) {
+        self.player.readFiles (e.dataTransfer.files);
+      }
     };
   },
 
@@ -193,7 +194,7 @@ var UI = {
     .texttitle(tags['TALB'] || '');
   },
 
-  setdblclick : function () {
+  setdblclick: function () {
     var self = this;
     $('tr.music').dblclick (
       function (e) {
@@ -477,7 +478,7 @@ var UI = {
     }
   },
 
-  expandDown: function () {
+  extendDown: function () {
     var $last = $('tr.last-select');
     if($last.size()) {
       if($last.prev().ISSELECTED()) {
@@ -527,7 +528,7 @@ var UI = {
     }
   },
 
-  expandUp: function () {
+  extendUp: function () {
     var $last = $('tr.last-select');
     if($last.size()) {
       if($last.next().ISSELECTED()) {
@@ -555,7 +556,7 @@ var UI = {
       .LASTSELECT();
   },
 
-  expandToHome: function () {
+  extendToHome: function () {
     $('tr.ui-selected')
       .removeClass('ui-selected ddms_selected');
     $('tr.last-select')
@@ -575,7 +576,7 @@ var UI = {
       .LASTSELECT();
   },
 
-  expandToEnd: function () {
+  extendToEnd: function () {
     $('tr.ui-selected')
       .removeClass('ui-selected ddms_selected');
     $('tr.last-select')
@@ -635,7 +636,7 @@ var UI = {
       .LASTSELECT();
   },
 
-  expandPageDown: function () {
+  extendPageDown: function () {
     UI.div.tablebody.scrollTop( UI.div.tablebody.scrollTop() + UI.div.tablebody.height() * 0.8 );
     if($('tr.last-select').prev().ISSELECTED()) {
       $('tr.ui-selected')
@@ -663,7 +664,7 @@ var UI = {
       .LASTSELECT();
   },
 
-  expandPageUp:  function () {
+  extendPageUp:  function () {
     UI.div.tablebody.scrollTop( UI.div.tablebody.scrollTop() - UI.div.tablebody.height() * 0.8 );
     var h = window.innerHeight,
         $last = $('tr.last-select', UI.div.tbody);
@@ -738,13 +739,13 @@ var UI = {
       };
   },
 
-  toggleMute: function (player) { // player.toggleMute
-    if (player.volume.value === 0 && player.predvol !== undefined) {
-      this.click ('volumeon');
-    } else {
-      this.click ('mute');
-    }
-  },
+  // toggleMute: function () { // player.toggleMute
+  //   if (player.volume.value === 0 && player.predvol !== undefined) {
+  //     this.click ('volumeon');
+  //   } else {
+  //     this.click ('mute');
+  //   }
+  // },
 
   click: function (t) {
     var i = UI.div[t] || $('img#' + t);
