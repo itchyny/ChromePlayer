@@ -53,7 +53,7 @@ function Player () {
   self.shuffle.repeatOn ();
   self.volume = new Limited (0, 256, 16,
     function () {
-      var vol = local.get ('volume');
+      var vol = parseInt (local.get ('volume'), 10);
       return vol !== undefined ? vol : 127;  // vol can be 0
     },
     function (volume) {

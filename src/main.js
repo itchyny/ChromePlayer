@@ -3,7 +3,7 @@
  *    Chrome Player 1.60
  *
  *    author      : itchyny
- *    last update : Sat Nov 19 16:40:14 2011 +0900
+ *    last update : Sat Nov 19 19:14:24 2011 +0900
  *    source code : https://github.com/itchyny/ChromePlayer
  *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -1192,7 +1192,8 @@ var UI = {
     //   Input files.
     //   Sort the file list.
     //   Multi drag & drop action.
-    var tbodyWdt = UI.div.tbody.width();
+    var self = this;
+    var tbodyWdt = self.div.tbody.width();
     var self = this;
     $('tr', self.div.tbody)
     .each(function () {
@@ -1245,7 +1246,7 @@ var UI = {
       .addClass( $self.hasClass('nP') ? 'nP': '' )
       .addClass( $self.hasClass('moved') ? 'ui-selected moved': '' )
       .addClass( $self.hasClass('ui-selected') ? 'ui-selected': '' )
-      .appendTo(UI.div.tbody);
+      .appendTo(self.div.tbody);
       if($self.ISSELECTED()) {
         setTimeout(function () {n.SELECT(true);}, 30);
       }
@@ -1290,6 +1291,7 @@ var UI = {
   },
 
   selectDown: function () {
+    var self = this;
     var $selected = $('tr.ui-selected'),
         $last = $('tr.last-select');
     if($selected.size()) {
@@ -1313,7 +1315,7 @@ var UI = {
         .SELECT()
         .LASTSELECT()
         .size()
-        || $('tr', UI.div.tbody)
+        || $('tr', self.div.tbody)
             .first()
             .SELECT()
             .LASTSELECT();
@@ -1340,6 +1342,7 @@ var UI = {
   },
 
   selectUp: function () {
+    var self = this;
     var $selected = $('tr.ui-selected'),
         $last = $('tr.last-select');
     if($selected.size()) {
@@ -1363,7 +1366,7 @@ var UI = {
         .SELECT()
         .LASTSELECT()
         .size()
-        || $('tr', UI.div.tbody)
+        || $('tr', self.div.tbody)
             .last()
             .SELECT()
             .LASTSELECT();
@@ -1390,9 +1393,10 @@ var UI = {
   },
 
   selectHome: function () {
+    var self = this;
     $('tr.ui-selected')
       .UNSELECT(true);
-    UI.div.tbody.children()
+    self.div.tbody.children()
     .first()
       .SELECT()
       .LASTSELECT();
@@ -1410,9 +1414,10 @@ var UI = {
   },
 
   selectEnd: function () {
+    var self = this;
     $('tr.ui-selected')
       .UNSELECT(true);
-    UI.div.tbody.children()
+    self.div.tbody.children()
     .last()
       .SELECT()
       .LASTSELECT();
@@ -1430,7 +1435,8 @@ var UI = {
   },
 
   selectAll: function () {
-    UI.div.tbody
+    var self = this;
+    self.div.tbody
       .children()
       .SELECT(true)
       .last()
@@ -1438,24 +1444,28 @@ var UI = {
   },
 
   unselectAll: function () {
-    UI.div.tbody
+    var self = this;
+    self.div.tbody
       .children()
       .UNSELECT(true);
   },
 
   toggleHelp: function () {
-    UI.div.help.fadeToggle(200);
+    var self = this;
+    self.div.help.fadeToggle(200);
     if($('div#help:hidden').size()) {
       div.tablebody.focus();
     }
   },
 
   toggleAbout: function () {
-      UI.div.about.fadeToggle(200);
+    var self = this;
+      self.div.about.fadeToggle(200);
   },
 
   toggleConfig: function () {
-      UI.div.config.fadeToggle(200);
+    var self = this;
+      self.div.config.fadeToggle(200);
   },
 
   deleteSelected: function () {
@@ -1471,11 +1481,12 @@ var UI = {
   },
 
   pageDown: function () {
-    UI.div.tablebody.scrollTop( UI.div.tablebody.scrollTop() + UI.div.tablebody.height() * 0.8 );
+    var self = this;
+    self.div.tablebody.scrollTop( self.div.tablebody.scrollTop() + self.div.tablebody.height() * 0.8 );
     $('tr.ui-selected')
       .UNSELECT(true);
     var h = window.innerHeight;
-    $('tr', DIV.tbody)
+    $('tr', self.div.tbody)
       .filter( function () { return $(this).position().top < h; } )
       .last()
       .SELECT()
@@ -1483,10 +1494,11 @@ var UI = {
   },
 
   extendPageDown: function () {
-    UI.div.tablebody.scrollTop( UI.div.tablebody.scrollTop() + UI.div.tablebody.height() * 0.8 );
+    var self = this;
+    self.div.tablebody.scrollTop( self.div.tablebody.scrollTop() + self.div.tablebody.height() * 0.8 );
     if($('tr.last-select').prev().ISSELECTED()) {
       $('tr.ui-selected')
-        .filter( function () { return $(this).position().top < UI.div.thead.position().top + 40; } )
+        .filter( function () { return $(this).position().top < self.div.thead.position().top + 40; } )
         .UNSELECT(true);
     } else {
       var h = window.innerHeight;
@@ -1500,10 +1512,11 @@ var UI = {
   },
 
   pageUp: function () {
-    UI.div.tablebody.scrollTop( UI.div.tablebody.scrollTop() - UI.div.tablebody.height() * 0.8 );
+    var self = this;
+    self.div.tablebody.scrollTop( self.div.tablebody.scrollTop() - self.div.tablebody.height() * 0.8 );
     $('tr.ui-selected')
       .UNSELECT(true);
-    $('tr', UI.div.tbody)
+    $('tr', self.div.tbody)
       .filter( function () { return $(this).position().top > 0; } )
       .first()
       .SELECT()
@@ -1511,9 +1524,10 @@ var UI = {
   },
 
   extendPageUp:  function () {
-    UI.div.tablebody.scrollTop( UI.div.tablebody.scrollTop() - UI.div.tablebody.height() * 0.8 );
+    var self = this;
+    self.div.tablebody.scrollTop( self.div.tablebody.scrollTop() - self.div.tablebody.height() * 0.8 );
     var h = window.innerHeight,
-        $last = $('tr.last-select', UI.div.tbody);
+        $last = $('tr.last-select', self.div.tbody);
     if($last.next().ISSELECTED()) {
       $('tr.ui-selected')
         .filter( function () { return $(this).position().top > h - 50; })
@@ -1529,6 +1543,7 @@ var UI = {
   },
 
   defaultEnter: function () {
+    var self = this;
     if ($('textarea#shortcuts:focus').size()) {
       return;
     }
@@ -1542,7 +1557,7 @@ var UI = {
         .dblclick();
         return;
       default:
-        UI.div.config.add(UI.div.help).add(UI.div.property).add(UI.div.about)
+        self.div.config.add(self.div.help).add(self.div.property).add(self.div.about)
           .filter( function () { return $(':visible', this).size(); })
           .last()
           .fadeOut(200);
@@ -1551,7 +1566,8 @@ var UI = {
   },
 
   viewInformation: function (player) {
-    UI.div.property.fadeIn(200);
+    var self = this;
+    self.div.property.fadeIn(200);
     if (/* player.data.tagread === 'true' &&*/ player.tags) {
       var m = {
         'TALB': 'album',
@@ -1569,6 +1585,7 @@ var UI = {
   },
 
   escape: function () {
+    var self = this;
     switch($('#help:visible,#config:visible,#about:visible,#property:visible,#filter:visible').size()) {
       case 0:
         if($('div#musicSlider a:focus, div#volumeSlider a:focus').size()) {
@@ -1579,7 +1596,7 @@ var UI = {
         }
         return;
       default:
-        UI.div.config.add(UI.div.help).add(UI.div.property).add(UI.div.about)
+        self.div.config.add(self.div.help).add(self.div.property).add(self.div.about)
           .filter( function () { return $(':visible', this).size(); })
           .last()
           .fadeOut(200);
@@ -1597,7 +1614,7 @@ var UI = {
   // },
 
   click: function (t) {
-    var i = UI.div[t] || $('img#' + t);
+    var i = self.div[t] || $('img#' + t);
     i.mousedown ().click();
     setTimeout ( function () {
       i.mouseup ();
@@ -2105,6 +2122,7 @@ var keyconfig = {
 // TODO: Enterでplayした時に, orderをどうするか
 // DONE: スキップされた時に, nextを消す <- 次々とスキップしていくと, 大量の曲が一気に流れる
 // DONE: ファイル削除した時にnextしたときスキップされる
+// TODO: muteにバグ
 
 function Player () {
   var self = this;
@@ -2138,7 +2156,7 @@ function Player () {
   self.shuffle.repeatOn ();
   self.volume = new Limited (0, 256, 16,
     function () {
-      var vol = local.get ('volume');
+      var vol = parseInt (local.get ('volume'), 10);
       return vol !== undefined ? vol : 127;  // vol can be 0
     },
     function (volume) {
@@ -2224,7 +2242,7 @@ Player.prototype = {
     if (self.playing) {
       self.playing.release ();
     }
-    if (index != undefined) {
+    if (index !== undefined) {
       self.nowplaying = index;
       self.playing = self.musics[index];
       self.playing.play (self.volume.value / 256, function () { self.next (); });
@@ -2328,7 +2346,7 @@ Player.prototype = {
 
   repeat: new Enumstate (['false', 'true', 'one']),
 
-  shuffle: new Enumstate (['false', 'true']),
+  shuffle: new Enumstate (['false', 'true'])
 
 }
 

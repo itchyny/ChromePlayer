@@ -2,7 +2,7 @@
 
 function Enumstate (array, initializer, callback) {
   this.array = array;
-  this._enum = this.enum = new Enum (array);
+  this._enum = this.enumclass = new Enum (array);
   this.length = array.length;
   this.initializer = initializer;
   this.callback = callback || function (x) { };
@@ -32,7 +32,7 @@ Enumstate.prototype = {
       i = this.index;
     }
     this.index = i;
-    this.value = this.enum.toEnum (i);
+    this.value = this.enumclass.toEnum (i);
     this.history = this.history.concat (i);
     this.callback (this.value);
     return this.value;
@@ -46,14 +46,13 @@ Enumstate.prototype = {
         j = 1;
       }
       this.index += j;
-      this.value = this.enum.toEnum (this.index);
+      this.value = this.enumclass.toEnum (this.index);
       if (this.value === undefined) {
         if (this.shuffle) {
-          this.enum = new Enum (this.enum.array.shuffle ());
+          this.enumclass = new Enum (this.enumclass.array.shuffle ());
         }
         if (this.repeat) {
           this.index = 0;
-          this.at (0);
         } else {
           return undefined;
         }
@@ -69,16 +68,16 @@ Enumstate.prototype = {
 
   shuffleOn: function () {
     this.shuffle = true;
-    this._enum = this.enum;
-    this.enum = new Enum (this.enum.array.shuffle ());
-    this.index = this.enum.fromEnum (this.value);
+    this._enum = this.enumclass;
+    this.enumclass = new Enum (this.enumclass.array.shuffle ());
+    this.index = this.enumclass.fromEnum (this.value);
     return this;
   },
 
   shuffleOff: function () {
     this.shuffle = false;
-    this.enum = this._enum;
-    this.index = this.enum.fromEnum (this.value);
+    this.enumclass = this._enum;
+    this.index = this.enumclass.fromEnum (this.value);
     return this;
   },
 
@@ -114,26 +113,26 @@ Enumstate.prototype = {
 
   init: function (x) {
     if (x !== undefined) {
-      this.at (this.enum.fromEnum (x));
+      this.at (this.enumclass.fromEnum (x));
     } else if (typeof this.initializer === 'function') {
-      this.at (this.enum.fromEnum (this.initializer ()));
+      this.at (this.enumclass.fromEnum (this.initializer ()));
     } else {
-      this.at (this.enum.fromEnum (this.initializer));
+      this.at (this.enumclass.fromEnum (this.initializer));
     }
   },
 
   concat: function (arr) {
-    this.enum.concat (arr);
+    this.enumclass.concat (arr);
   },
 
   splice: function (start, count) {
-    this.enum.splice (start, count);
+    this.enumclass.splice (start, count);
   },
 
   remove: function (value) {
-    var index = this.enum.fromEnum (value);
+    var index = this.enumclass.fromEnum (value);
     this.splice (index, 1);
-  },
+  }
 
 };
 
