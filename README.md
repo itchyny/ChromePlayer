@@ -35,11 +35,10 @@ mp3, ogg, aac, m4a
 ## Not implemented features, unfixed bugs
 Save the file list
 Support for other types like wav or flac
-Cost too much memory
 
 ## Source code
 I pushed this source to github.
-https://github.com/itchyny/ChromePlayer
+https://github.com/itchyny/ChromePlayer (Local Player used to be named Chrome Player)
 I allow you to fork another app from this code.
 
 ## Security

@@ -10,23 +10,40 @@ Music.prototype = {
 
   musicread: function (vol, next, startplay) {
     var self = this;
-    var reader = new FileReader ();
-    reader.onerror = function (e) {
-      log ("onerror"); log (e);
-    };
-    reader.onload = function (e) {
-      self.audio = new Audio (e.target.result);
+    var createObjectURL 
+      = window.createObjectURL
+        ? function (file) { return window.createObjectURL (file); }
+        : window.webkitURL.createObjectURL
+          ? function (file) { return window.webkitURL.createObjectURL (file); }
+          : undefined;
+    if (createObjectURL) {
+      self.audio = new Audio (createObjectURL (self.file));
       self.audio.volume = vol;
-      self.audio.addEventListener ('ended',
-        function () {
+      self.audio.addEventListener ('ended', function () {
           self.release ();
           next ();
-        });
+      });
       if (startplay) {
         self.audio.play ();
       }
-    };
-    reader.readAsDataURL (self.file);
+    } else {
+      var reader = new FileReader ();
+      reader.onerror = function (e) {
+        log ("onerror"); log (e);
+      };
+      reader.onload = function (e) {
+        self.audio = new Audio (e.target.result);
+        self.audio.volume = vol;
+        self.audio.addEventListener ('ended', function () {
+            self.release ();
+            next ();
+        });
+        if (startplay) {
+          self.audio.play ();
+        }
+      };
+      reader.readAsDataURL (self.file);
+    }
   },
 
   ontagload: function (e, f) {
