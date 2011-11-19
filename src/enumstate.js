@@ -6,6 +6,9 @@ function Enumstate (array, initializer, callback) {
   this.length = array.length;
   this.initializer = initializer;
   this.callback = callback || function (x) { };
+  this.shuffle = false;
+  this.repeat = false;
+  this.repeatone = false;
 }
 
 Enumstate.prototype = {
@@ -19,6 +22,8 @@ Enumstate.prototype = {
   shuffle: false,
 
   repeat: false,
+
+  repeatone: false,
 
   length: 0,
 
@@ -34,23 +39,27 @@ Enumstate.prototype = {
   },
 
   next: function (j) {
-    if (j === undefined || isNaN (j)) {
-      j = 1;
-    }
-    this.index += j;
-    this.value = this.enum.toEnum (this.index);
-    if (this.value === undefined) {
-      if (this.shuffle) {
-        this.enum = new Enum (this.enum.array.shuffle ());
-      }
-      if (this.repeat) {
-        this.at (0);
-      } else {
-        return undefined;
-      }
+    if (this.repeatone) {
+      this.index = this.index;
     } else {
-      this.at (this.index);
+      if (j === undefined || isNaN (j)) {
+        j = 1;
+      }
+      this.index += j;
+      this.value = this.enum.toEnum (this.index);
+      if (this.value === undefined) {
+        if (this.shuffle) {
+          this.enum = new Enum (this.enum.array.shuffle ());
+        }
+        if (this.repeat) {
+          this.index = 0;
+          this.at (0);
+        } else {
+          return undefined;
+        }
+      }
     }
+    this.at (this.index);
     return this.value;
   },
 
@@ -62,12 +71,14 @@ Enumstate.prototype = {
     this.shuffle = true;
     this._enum = this.enum;
     this.enum = new Enum (this.enum.array.shuffle ());
+    this.index = this.enum.fromEnum (this.value);
     return this;
   },
 
   shuffleOff: function () {
     this.shuffle = false;
     this.enum = this._enum;
+    this.index = this.enum.fromEnum (this.value);
     return this;
   },
 
@@ -81,10 +92,12 @@ Enumstate.prototype = {
 
   repeatOn: function () {
     this.repeat = true;
+    this.repeatone = false;
   },
 
   repeatOff: function () {
     this.repeat = false;
+    this.repeatone = false;
   },
 
   repeatToggle: function () {
@@ -95,11 +108,14 @@ Enumstate.prototype = {
     }
   },
 
+  repeatOne: function () {
+    this.repeatone = true;
+  },
+
   init: function (x) {
     if (x !== undefined) {
       this.at (this.enum.fromEnum (x));
     } else if (typeof this.initializer === 'function') {
-      console.log(this.initializer());
       this.at (this.enum.fromEnum (this.initializer ()));
     } else {
       this.at (this.enum.fromEnum (this.initializer));

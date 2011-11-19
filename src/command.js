@@ -43,6 +43,7 @@ var command = {
   /* toggle popup menu */
   ToggleHelp:         function (opt) { return function (app) { app.ui.toggleHelp (); }; },
   ToggleAbout:        function (opt) { return function (app) { app.ui.toggleAbout (); }; },
+  ToggleConfig:       function (opt) { return function (app) { app.ui.toggleConfig (); }; },
   DefaultEnter:       function (opt) { return function (app) { app.ui.defaultEnter (); }; },
   ViewInformation:    function (opt) { return function (app) { app.ui.viewInformation (); }; },
   Escape:             function (opt) { return function (app) { app.ui.escape (); }; },

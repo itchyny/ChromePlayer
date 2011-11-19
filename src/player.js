@@ -2,10 +2,9 @@
 // TODO  !!!!!実装に妥協しない!!!!!! TODO
 // TODO   使いやすく  読みやすく     TODO
 //
-// TODO: シャッフル, リピート
+// TODO: シャッフル, リピート がいまいち
 // TODO: 読めないタグ
 // TODO: ui.jsのaddfile高速化
-// TODO: play/pauseのボタンがおかしい
 // TODO: tableクリックでslideからのfocus out
 // TODO: album art from id3 tag
 // TODO: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/
@@ -20,6 +19,7 @@
 // TODO: Enterでplayした時に, orderをどうするか
 // DONE: スキップされた時に, nextを消す <- 次々とスキップしていくと, 大量の曲が一気に流れる
 // DONE: ファイル削除した時にnextしたときスキップされる
+// TODO: muteにバグ
 
 function Player () {
   var self = this;
@@ -30,6 +30,13 @@ function Player () {
     function (repeat) {
       local.set ('repeat', repeat);
       self.ui.setrepeat (repeat);
+      if (repeat === 'one') {
+        self.order.repeatOne ();
+      } else if (repeat === 'true') {
+        self.order.repeatOn ();
+      } else {
+        self.order.repeatOff ();
+      }
     });
   self.repeat.repeatOn ();
   self.shuffle = new Enumstate (['false', 'true'],
@@ -37,6 +44,11 @@ function Player () {
     function (shuffle) {
       local.set ('shuffle', shuffle);
       self.ui.setshuffle (shuffle);
+      if (shuffle === 'true') {
+        self.order.shuffleOn ();
+      } else {
+        self.order.shuffleOff ();
+      }
     });
   self.shuffle.repeatOn ();
   self.volume = new Limited (0, 256, 16,
@@ -80,18 +92,21 @@ Player.prototype = {
   readFiles: function (files) {
     var self = this;
     var first = true;
-    for (var i = 0, l = files.length; i < l; i++) {
-      if (files[i].type.match (/audio\/.*(mp3|ogg|m4a|mp4)/)) {
+    var musicfiles = [].filter.call (files, function (file) {
+      return file.type.match (/audio\/.*(mp3|ogg|m4a|mp4)/);
+    });
+    [].forEach.call (musicfiles, function (file, index, files) {
         setTimeout ( (function (file, first, last) {
-          return self._readFiles (file, first, last);
-        }) (files[i], first, i === l - 1)
-        , 100 * i);
-        first = false;
-      }
-    }
+          return self.readOneFile (file, first, last);
+        }) (file, (self.shuffle.value.toString () === 'false'
+                       ? index === 0
+                       : index === parseInt (files.length / 2))
+                , index === files.length - 1)
+        , 100 * index);
+    });
   },
 
-  _readFiles: function (file, first, last) {
+  readOneFile: function (file, first, last) {
     var self = this;
     var n = self.musics.length;
     self.files[n] = file;
@@ -111,7 +126,6 @@ Player.prototype = {
     if (last) {
       self.ui.selectableSet ();
       self.ui.setdblclick ();
-      self.order.shuffleOn (); // TODO
     }
   },
 
@@ -125,7 +139,7 @@ Player.prototype = {
     if (self.playing) {
       self.playing.release ();
     }
-    if (index != undefined) {
+    if (index !== undefined) {
       self.nowplaying = index;
       self.playing = self.musics[index];
       self.playing.play (self.volume.value / 256, function () { self.next (); });
@@ -142,9 +156,11 @@ Player.prototype = {
 
   toggle: function () {
     var self = this;
-    if (!self.playing) return;
+    if (!self.playing) {
+      return;
+    }
     if (self.playing.paused ()) {
-      self.playing.play (self.volume.value / 256, function () { self.next (); });
+      self.playing.resume ();
       self.ui.play (self.nowplaying);
     } else {
       self.pause ();
@@ -154,11 +170,12 @@ Player.prototype = {
   next: function () {
     this.ui.pause ();
     var index = this.order.next ();
-    if (index === undefined) return;
-    if (!this.musics[index]) {
-      index = this.order.at (0);
+    if (index === undefined) {
+      if (this.playing) {
+        this.playing.release ();
+      }
+      return;
     }
-    log ("next: " + index);
     this.play (index);
   },
 
@@ -226,7 +243,7 @@ Player.prototype = {
 
   repeat: new Enumstate (['false', 'true', 'one']),
 
- shuffle: new Enumstate (['false', 'true']),
+  shuffle: new Enumstate (['false', 'true'])
 
 }
 

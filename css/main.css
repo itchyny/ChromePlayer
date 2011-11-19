@@ -32,7 +32,7 @@ div#playlist table tbody tr td{height:2em!important;line-height:2;vertical-align
 div#playlist table tbody tr td.now{height:2em;text-align:center;padding:0;line-height:0;}
 div#help{z-index:8;position:absolute;top:50%;left:50%;height:34em;width:40em;border-radius:2em;margin:-18em 0 0 -21em;padding:2em;background-color:rgba(0, 0, 0, 0.8);color:#fff;font-size:1.2em;list-style:none;display:none;box-shadow:0.1em 0.1em 0.3em rgba(255, 255, 255, 0.5);}div#help *{line-height:1.25;}
 div#help>div{width:100%;overflow:auto;}
-div#help .top{font-size:1.5em;text-shadow:1px 1px 3px #000;}
+div#help .top{font-size:1.5em;text-shadow:1px 1px 3px #000;margin-top:0.5em;}
 div#help span.key{color:#ff4;font-weight:bolder;}
 div#help span.global{text-decoration:underline;}
 div#help dt,div#help dd{display:inline-block;width:16em;}
@@ -41,17 +41,18 @@ div#help dd:before{content:": ";}
 div#help>div{margin:0 0 1em;}
 div#config{z-index:7;position:absolute;top:50%;left:50%;height:34em;width:40em;border-radius:2em;margin:-18em 0 0 -21em;padding:2em;background-color:rgba(0, 0, 0, 0.8);color:#fff;font-size:1.2em;list-style:none;display:none;box-shadow:0.1em 0.1em 0.3em rgba(255, 255, 255, 0.5);}div#config *{line-height:1.25;}
 div#config>div{width:100%;overflow:auto;}
-div#config .top{font-size:1.5em;text-shadow:1px 1px 3px #000;}
+div#config .top{font-size:1.5em;text-shadow:1px 1px 3px #000;margin-top:0.5em;}
 div#config div#scheme a{height:4em;width:4em;border-radius:0.5em;margin:0.25em;margin-bottom:1em;display:inline-block;padding:0.5em 0 0 0.5em;border-bottom:0.1em solid rgba(255, 255, 255, 0.5);border-right:0.1em solid rgba(255, 255, 255, 0.5);}div#config div#scheme a.currentScheme{box-shadow:0.2em 0.2em 0.4em rgba(255, 255, 255, 0.5);}
 div#config input{margin:0.5em 0 0 1em;}
+div#config textarea{background:white;margin:1em;width:36em;}
 div#about{z-index:20;position:absolute;top:50%;left:50%;height:34em;width:40em;border-radius:2em;margin:-18em 0 0 -21em;padding:2em;background-color:rgba(0, 0, 0, 0.8);color:#fff;font-size:1.2em;list-style:none;display:none;box-shadow:0.1em 0.1em 0.3em rgba(255, 255, 255, 0.5);}div#about>div:not(:first-child){font-size:1.1em;}
 div#about *{line-height:1.25;}
 div#about>div{width:100%;overflow:auto;}
-div#about .top{font-size:1.5em;text-shadow:1px 1px 3px #000;}
+div#about .top{font-size:1.5em;text-shadow:1px 1px 3px #000;margin-top:0.5em;}
 div#about p{margin:0em 1em 1em;width:43em;color:#aaa;}div#about p#changelog{font-size:0.9em;overflow-y:scroll;height:27em;}
 div#property{z-index:9;position:absolute;top:50%;left:50%;height:34em;width:40em;border-radius:2em;margin:-18em 0 0 -21em;padding:2em;background-color:rgba(0, 0, 0, 0.8);color:#fff;font-size:1.2em;list-style:none;display:none;box-shadow:0.1em 0.1em 0.3em rgba(255, 255, 255, 0.5);}div#property *{line-height:1.25;}
 div#property>div{width:100%;overflow:auto;}
-div#property .top{font-size:1.5em;text-shadow:1px 1px 3px #000;}
+div#property .top{font-size:1.5em;text-shadow:1px 1px 3px #000;margin-top:0.5em;}
 div#property dt{display:inline-block;border-bottom:1px solid rgba(255, 255, 255, 0.2);word-wrap:break-word;padding-right:1em;margin-right:1em;text-align:right;width:10em;}div#property dt *{white-space:nowrap;}
 div#property dd{display:inline-block;border-bottom:1px solid rgba(255, 255, 255, 0.2);word-wrap:break-word;width:25em;}div#property dd *{white-space:nowrap;}
 div#property>div{margin:0 0 1em;}div#property>div#tags{overflow-y:scroll;height:27em;margin-right:1em;}

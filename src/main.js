@@ -3,7 +3,7 @@
  *    Chrome Player 1.60
  *
  *    author      : itchyny
- *    last update : Sat Nov 19 08:01:29 2011 +0900
+ *    last update : Sat Nov 19 16:40:14 2011 +0900
  *    source code : https://github.com/itchyny/ChromePlayer
  *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -239,6 +239,9 @@ function Enumstate (array, initializer, callback) {
   this.length = array.length;
   this.initializer = initializer;
   this.callback = callback || function (x) { };
+  this.shuffle = false;
+  this.repeat = false;
+  this.repeatone = false;
 }
 
 Enumstate.prototype = {
@@ -252,6 +255,8 @@ Enumstate.prototype = {
   shuffle: false,
 
   repeat: false,
+
+  repeatone: false,
 
   length: 0,
 
@@ -267,23 +272,27 @@ Enumstate.prototype = {
   },
 
   next: function (j) {
-    if (j === undefined || isNaN (j)) {
-      j = 1;
-    }
-    this.index += j;
-    this.value = this.enum.toEnum (this.index);
-    if (this.value === undefined) {
-      if (this.shuffle) {
-        this.enum = new Enum (this.enum.array.shuffle ());
-      }
-      if (this.repeat) {
-        this.at (0);
-      } else {
-        return undefined;
-      }
+    if (this.repeatone) {
+      this.index = this.index;
     } else {
-      this.at (this.index);
+      if (j === undefined || isNaN (j)) {
+        j = 1;
+      }
+      this.index += j;
+      this.value = this.enum.toEnum (this.index);
+      if (this.value === undefined) {
+        if (this.shuffle) {
+          this.enum = new Enum (this.enum.array.shuffle ());
+        }
+        if (this.repeat) {
+          this.index = 0;
+          this.at (0);
+        } else {
+          return undefined;
+        }
+      }
     }
+    this.at (this.index);
     return this.value;
   },
 
@@ -295,12 +304,14 @@ Enumstate.prototype = {
     this.shuffle = true;
     this._enum = this.enum;
     this.enum = new Enum (this.enum.array.shuffle ());
+    this.index = this.enum.fromEnum (this.value);
     return this;
   },
 
   shuffleOff: function () {
     this.shuffle = false;
     this.enum = this._enum;
+    this.index = this.enum.fromEnum (this.value);
     return this;
   },
 
@@ -314,10 +325,12 @@ Enumstate.prototype = {
 
   repeatOn: function () {
     this.repeat = true;
+    this.repeatone = false;
   },
 
   repeatOff: function () {
     this.repeat = false;
+    this.repeatone = false;
   },
 
   repeatToggle: function () {
@@ -328,11 +341,14 @@ Enumstate.prototype = {
     }
   },
 
+  repeatOne: function () {
+    this.repeatone = true;
+  },
+
   init: function (x) {
     if (x !== undefined) {
       this.at (this.enum.fromEnum (x));
     } else if (typeof this.initializer === 'function') {
-      console.log(this.initializer());
       this.at (this.enum.fromEnum (this.initializer ()));
     } else {
       this.at (this.enum.fromEnum (this.initializer));
@@ -598,6 +614,12 @@ Music.prototype = {
     }
   },
 
+  resume: function () {
+    if (this.audio) {
+      this.audio.play ();
+    }
+  },
+
   paused: function () {
     return !this.audio || this.audio.paused;
   },
@@ -611,10 +633,6 @@ Music.prototype = {
   mute: function () {
     this.predvol = this.audio.volume;
     this.setvolume (0);
-  },
-
-  resume: function () {
-    this.setvolume (this.predvol);
   },
 
   release: function () {
@@ -1029,6 +1047,7 @@ var UI = {
         var index = parseInt( $(e.target).closest('tr').attr('number') || e.closest('tr').attr('number') || e.attr('number'), 10 );
         self.player.pause ();
         self.player.play (index);
+        // TODO: この時, player.orderをどう動かすか
     });
   },
 
@@ -1077,10 +1096,6 @@ var UI = {
   },
 
   reflesh: function (b) {
-    log ("reflesh");
-    log ("this.player.playing" + this.player.playing);
-    log ("this.player.playing !== undefined:" + this.player.playing !== undefined);
-    if (this.player.playing) log ("this.player.playing.paused (): " + this.player.playing.paused ());
     this.div.play.attr(
       b === false || (this.player.playing !== undefined
                                 && this.player.playing.paused ()) ? {
@@ -1439,6 +1454,10 @@ var UI = {
       UI.div.about.fadeToggle(200);
   },
 
+  toggleConfig: function () {
+      UI.div.config.fadeToggle(200);
+  },
+
   deleteSelected: function () {
     var player = this.player;
     $('tr.ui-selected').last().next().LASTSELECT();
@@ -1510,6 +1529,9 @@ var UI = {
   },
 
   defaultEnter: function () {
+    if ($('textarea#shortcuts:focus').size()) {
+      return;
+    }
     switch($('div#help:visible,div#config:visible,div#about:visible,div#property:visible').size()) {
       case 0:
         $('tr.ui-selected')
@@ -1979,6 +2001,7 @@ var command = {
   /* toggle popup menu */
   ToggleHelp:         function (opt) { return function (app) { app.ui.toggleHelp (); }; },
   ToggleAbout:        function (opt) { return function (app) { app.ui.toggleAbout (); }; },
+  ToggleConfig:       function (opt) { return function (app) { app.ui.toggleConfig (); }; },
   DefaultEnter:       function (opt) { return function (app) { app.ui.defaultEnter (); }; },
   ViewInformation:    function (opt) { return function (app) { app.ui.viewInformation (); }; },
   Escape:             function (opt) { return function (app) { app.ui.escape (); }; },
@@ -1995,67 +2018,68 @@ var command = {
 var keyconfig = {
 
   /* operate player */
-  '<space>': command.PlayPause (),
-  '<c-space>': command.PlayPause (),
-  '<c-right>': command.NextMusic (),
-  '<c-left>': command.PreviousMusic (),
-  '<c-o>': command.OpenFile (),
-  '<right>': command.SeekForward ([10]),
-  '<s-right>': command.SeekForward ([30]),
-  'l': command.SeekForward ([10]), // vim
-  'w': command.SeekForward ([30]), // vim
-  '<left>': command.SeekBackward ([10]),
-  '<s-left>': command.SeekBackward ([30]),
-  'h': command.SeekBackward ([10]), // vim
-  'b': command.SeekBackward ([30]), // vim
-  '0': command.SeekPercent ([0]), // vim
-  '<s-4>': command.SeekPercent ([100]), // vim
+  '<space>':    command.PlayPause (),
+  '<c-space>':  command.PlayPause (),
+  '<c-right>':  command.NextMusic (),
+  '<c-left>':   command.PreviousMusic (),
+  '<c-o>':      command.OpenFile (),
+  '<right>':    command.SeekForward ([10]),
+  '<s-right>':  command.SeekForward ([30]),
+  'l':          command.SeekForward ([10]), // vim
+  'w':          command.SeekForward ([30]), // vim
+  '<left>':     command.SeekBackward ([10]),
+  '<s-left>':   command.SeekBackward ([30]),
+  'h':          command.SeekBackward ([10]), // vim
+  'b':          command.SeekBackward ([30]), // vim
+  '0':          command.SeekPercent ([0]), // vim
+  '<s-4>':      command.SeekPercent ([100]), // vim
 
   /* change setting */
-  '<c-r>': command.ToggleRepeat (),
-  '<c-u>': command.ToggleShuffle (),
+  '<c-r>':      command.ToggleRepeat (),
+  '<c-u>':      command.ToggleShuffle (),
 
   /* volume */
-  '<c-up>': command.VolumeUp (),
-  '<c-down>': command.VolumeDown (),
+  '<c-up>':     command.VolumeUp (),
+  '<c-down>':   command.VolumeDown (),
   '<c-a-down>': command.VolumeToggleMute (),
-  '9': command.VolumeDown (), // mplayer
-  // '0': command.VolumeUp (), // mplayer
+  '9':          command.VolumeDown (), // mplayer
+  // '0':       command.VolumeUp (), // mplayer
 
   /* select, expand */
-  '<down>': command.SelectDown (),
-  'j': command.SelectDown (), // vim
-  '<s-down>': command.ExtendDown (),
-  '<s-j>': command.ExtendDown (), // vim
-  '<up>': command.SelectUp (),
-  'k': command.SelectUp (), // vim
-  '<s-up>': command.ExtendUp (),
-  '<s-k>': command.ExtendUp (), // vim
-  '<home>': command.SelectHome (),
-  'gg': command.SelectHome (), // vim
-  '<s-home>': command.ExtendToHome (),
-  '<end>': command.SelectEnd (),
-  '<s-g>': command.SelectEnd (), // vim
-  '<s-end>': command.ExtendToEnd (),
-  '<c-a>': command.SelectAll (),
-  '<c-s-a>': command.UnselectAll (),
-  '<pgdn>': command.PageDown (),
-  '<c-f>': command.PageDown (), // vim
-  '<s-pgdn>': command.ExtendPageDown (),
-  '<pdup>': command.PageUp (),
-  '<c-b>': command.PageUp (), // vim
-  '<s-pdup>': command.ExtendPageUp (),
+  '<down>':     command.SelectDown (),
+  'j':          command.SelectDown (), // vim
+  '<s-down>':   command.ExtendDown (),
+  '<s-j>':      command.ExtendDown (), // vim
+  '<up>':       command.SelectUp (),
+  'k':          command.SelectUp (), // vim
+  '<s-up>':     command.ExtendUp (),
+  '<s-k>':      command.ExtendUp (), // vim
+  '<home>':     command.SelectHome (),
+  'gg':         command.SelectHome (), // vim
+  '<s-home>':   command.ExtendToHome (),
+  '<end>':      command.SelectEnd (),
+  '<s-g>':      command.SelectEnd (), // vim
+  '<s-end>':    command.ExtendToEnd (),
+  '<c-a>':      command.SelectAll (),
+  '<c-s-a>':    command.UnselectAll (),
+  '<pgdn>':     command.PageDown (),
+  '<c-f>':      command.PageDown (), // vim
+  '<s-pgdn>':   command.ExtendPageDown (),
+  '<pdup>':     command.PageUp (),
+  '<c-b>':      command.PageUp (), // vim
+  '<s-pdup>':   command.ExtendPageUp (),
 
   /* toggle popup menu, ui */
-  '<s-/>': command.ToggleHelp (),
-  '<f1>': command.ToggleAbout (),
-  '<delete>': command.DeleteSelected (),
-  'd': command.DeleteSelected (), // vim
-  '<esc>': command.Escape (),
-  '<enter>': command.DefaultEnter (),
-  '<a-enter>': command.ViewInformation (),
-  '<tab>': command.FocusToggle (),
-  '<s-tab>': command.FocusToggleReverse ()
+  '<s-/>':      command.ToggleHelp (),
+  '<f1>':       command.ToggleAbout (), // TODO
+  '<c-,>':      command.ToggleConfig (),
+  '<delete>':   command.DeleteSelected (),
+  'd':          command.DeleteSelected (), // vim
+  '<esc>':      command.Escape (),
+  '<enter>':    command.DefaultEnter (),
+  '<a-enter>':  command.ViewInformation (),
+  '<tab>':      command.FocusToggle (),
+  '<s-tab>':    command.FocusToggleReverse ()
 
 };
 
@@ -2064,10 +2088,9 @@ var keyconfig = {
 // TODO  !!!!!実装に妥協しない!!!!!! TODO
 // TODO   使いやすく  読みやすく     TODO
 //
-// TODO: シャッフル, リピート
+// TODO: シャッフル, リピート がいまいち
 // TODO: 読めないタグ
 // TODO: ui.jsのaddfile高速化
-// TODO: play/pauseのボタンがおかしい
 // TODO: tableクリックでslideからのfocus out
 // TODO: album art from id3 tag
 // TODO: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/
@@ -2092,6 +2115,13 @@ function Player () {
     function (repeat) {
       local.set ('repeat', repeat);
       self.ui.setrepeat (repeat);
+      if (repeat === 'one') {
+        self.order.repeatOne ();
+      } else if (repeat === 'true') {
+        self.order.repeatOn ();
+      } else {
+        self.order.repeatOff ();
+      }
     });
   self.repeat.repeatOn ();
   self.shuffle = new Enumstate (['false', 'true'],
@@ -2099,6 +2129,11 @@ function Player () {
     function (shuffle) {
       local.set ('shuffle', shuffle);
       self.ui.setshuffle (shuffle);
+      if (shuffle === 'true') {
+        self.order.shuffleOn ();
+      } else {
+        self.order.shuffleOff ();
+      }
     });
   self.shuffle.repeatOn ();
   self.volume = new Limited (0, 256, 16,
@@ -2142,18 +2177,21 @@ Player.prototype = {
   readFiles: function (files) {
     var self = this;
     var first = true;
-    for (var i = 0, l = files.length; i < l; i++) {
-      if (files[i].type.match (/audio\/.*(mp3|ogg|m4a|mp4)/)) {
+    var musicfiles = [].filter.call (files, function (file) {
+      return file.type.match (/audio\/.*(mp3|ogg|m4a|mp4)/);
+    });
+    [].forEach.call (musicfiles, function (file, index, files) {
         setTimeout ( (function (file, first, last) {
-          return self._readFiles (file, first, last);
-        }) (files[i], first, i === l - 1)
-        , 100 * i);
-        first = false;
-      }
-    }
+          return self.readOneFile (file, first, last);
+        }) (file, (self.shuffle.value.toString () === 'false'
+                       ? index === 0
+                       : index === parseInt (files.length / 2))
+                , index === files.length - 1)
+        , 100 * index);
+    });
   },
 
-  _readFiles: function (file, first, last) {
+  readOneFile: function (file, first, last) {
     var self = this;
     var n = self.musics.length;
     self.files[n] = file;
@@ -2173,7 +2211,6 @@ Player.prototype = {
     if (last) {
       self.ui.selectableSet ();
       self.ui.setdblclick ();
-      self.order.shuffleOn (); // TODO
     }
   },
 
@@ -2204,9 +2241,11 @@ Player.prototype = {
 
   toggle: function () {
     var self = this;
-    if (!self.playing) return;
+    if (!self.playing) {
+      return;
+    }
     if (self.playing.paused ()) {
-      self.playing.play (self.volume.value / 256, function () { self.next (); });
+      self.playing.resume ();
       self.ui.play (self.nowplaying);
     } else {
       self.pause ();
@@ -2216,11 +2255,12 @@ Player.prototype = {
   next: function () {
     this.ui.pause ();
     var index = this.order.next ();
-    if (index === undefined) return;
-    if (!this.musics[index]) {
-      index = this.order.at (0);
+    if (index === undefined) {
+      if (this.playing) {
+        this.playing.release ();
+      }
+      return;
     }
-    log ("next: " + index);
     this.play (index);
   },
 
@@ -2288,7 +2328,7 @@ Player.prototype = {
 
   repeat: new Enumstate (['false', 'true', 'one']),
 
- shuffle: new Enumstate (['false', 'true']),
+  shuffle: new Enumstate (['false', 'true']),
 
 }
 

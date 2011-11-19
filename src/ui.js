@@ -202,6 +202,7 @@ var UI = {
         var index = parseInt( $(e.target).closest('tr').attr('number') || e.closest('tr').attr('number') || e.attr('number'), 10 );
         self.player.pause ();
         self.player.play (index);
+        // TODO: この時, player.orderをどう動かすか
     });
   },
 
@@ -250,10 +251,6 @@ var UI = {
   },
 
   reflesh: function (b) {
-    log ("reflesh");
-    log ("this.player.playing" + this.player.playing);
-    log ("this.player.playing !== undefined:" + this.player.playing !== undefined);
-    if (this.player.playing) log ("this.player.playing.paused (): " + this.player.playing.paused ());
     this.div.play.attr(
       b === false || (this.player.playing !== undefined
                                 && this.player.playing.paused ()) ? {
@@ -612,6 +609,10 @@ var UI = {
       UI.div.about.fadeToggle(200);
   },
 
+  toggleConfig: function () {
+      UI.div.config.fadeToggle(200);
+  },
+
   deleteSelected: function () {
     var player = this.player;
     $('tr.ui-selected').last().next().LASTSELECT();
@@ -683,6 +684,9 @@ var UI = {
   },
 
   defaultEnter: function () {
+    if ($('textarea#shortcuts:focus').size()) {
+      return;
+    }
     switch($('div#help:visible,div#config:visible,div#about:visible,div#property:visible').size()) {
       case 0:
         $('tr.ui-selected')

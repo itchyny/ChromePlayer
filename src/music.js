@@ -65,6 +65,12 @@ Music.prototype = {
     }
   },
 
+  resume: function () {
+    if (this.audio) {
+      this.audio.play ();
+    }
+  },
+
   paused: function () {
     return !this.audio || this.audio.paused;
   },
@@ -78,10 +84,6 @@ Music.prototype = {
   mute: function () {
     this.predvol = this.audio.volume;
     this.setvolume (0);
-  },
-
-  resume: function () {
-    this.setvolume (this.predvol);
   },
 
   release: function () {
