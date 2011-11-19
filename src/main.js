@@ -3,7 +3,7 @@
  *    Chrome Player 1.60
  *
  *    author      : itchyny
- *    last update : Sat Nov 19 21:33:37 2011 +0900
+ *    last update : Sat Nov 19 23:38:49 2011 +0900
  *    source code : https://github.com/itchyny/ChromePlayer
  *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -548,47 +548,71 @@ ID3.prototype = {
 
 // Music file
 
-function Music (file) {
+function Music (file, videoElement) {
   this.file = file;
   this.type = file.type;
   this.name = file.name;
+  this.filetype = file.filetype;
+  if (file.filetype === 'video' && videoElement) {
+    this.videoElement = videoElement;
+  }
 }
 
 Music.prototype = {
 
   musicread: function (vol, next, startplay) {
     var self = this;
-    var createObjectURL = window.createObjectURL || window.webkitURL.createObjectURL;
+    var createObjectURL 
+      = window.createObjectURL
+        ? function (file) { return window.createObjectURL (file); }
+        : window.webkitURL.createObjectURL
+          ? function (file) { return window.webkitURL.createObjectURL (file); }
+          : undefined;
     if (createObjectURL) {
-      self.audio = new Audio (window.webkitURL.createObjectURL (self.file));
-      log ("createObjectURL");
-      self.volume = vol;
-      self.audio.addEventListener ('ended',
-        function () {
-          self.release ();
-          next ();
-        });
-      if (startplay) {
-        self.audio.play ();
-      }
-    } else {
-      var reader = new FileReader ();
-      reader.onerror = function (e) {
-        log ("onerror"); log (e);
-      };
-      reader.onload = function (e) {
-        self.audio = new Audio (e.target.result);
+      log (self.file.filetype);
+      if (self.file.filetype === 'audio') {
+        self.audio = new Audio (createObjectURL (self.file));
         self.audio.volume = vol;
-        self.audio.addEventListener ('ended',
-          function () {
+        self.audio.addEventListener ('ended', function () {
             self.release ();
             next ();
-          });
+        });
         if (startplay) {
           self.audio.play ();
         }
-      };
-      reader.readAsDataURL (self.file);
+      } else if (self.file.filetype === 'video') {
+        var url = self.videoElement.src = createObjectURL (self.file);
+        self.audio = self.videoElement;
+        self.audio.volume = vol;
+        self.audio.addEventListener ('ended', function () {
+            self.release ();
+            next ();
+        });
+        if (startplay) {
+          self.audio.play ();
+        }
+      }
+    } else {
+      if (self.file.filetype === 'audio') {
+        var reader = new FileReader ();
+        reader.onerror = function (e) {
+          log (e);
+        };
+        reader.onload = function (e) {
+          self.audio = new Audio (e.target.result);
+          self.audio.volume = vol;
+          self.audio.addEventListener ('ended', function () {
+              self.release ();
+              next ();
+          });
+          if (startplay) {
+            self.audio.play ();
+          }
+        };
+        reader.readAsDataURL (self.file);
+      } else {
+        next ();
+      }
     }
   },
 
@@ -872,7 +896,7 @@ var UI = {
     'open', 'pause', 'play', 'playlist', 'prev', 'property', 'remain',
     'repeat', 'scheme', 'shuffle', 'tablebody', 'tablediv', 'tagread',
     'volumeSlider', 'volumeon', 'wrapper', 'filter', 'filterword', 'matchnum'],
-    {tbody: $('#tbody'), thead: $('thead'), table: $('table')});
+    {tbody: $('#tbody'), thead: $('thead'), table: $('table'), video: document.getElementsByTagName('video')[0] });
     self.initdrop ();
     self.initbuttons ();
     self.colorset ();
@@ -933,6 +957,9 @@ var UI = {
     // this.div.tbody
     //   .height(window.innerHeight - this.div.tablebody.offset().top - fontSize);
     $('tr').css({ 'width': tbodyWdt });
+    if (!this.fullScreenOff) {
+      this.fullScreenOff ();
+    }
   },
 
   initsplitter: function () {
@@ -1071,6 +1098,14 @@ var UI = {
     if (this.div && this.div.volumeSlider) {
       this.div.volumeSlider.slider({ 'value': volume });
     }
+  },
+
+  popupvideo: function () {
+      this.div.video.parentNode.style.visibility = 'visible';
+  },
+
+  hidevideo: function () {
+      this.div.video.parentNode.style.visibility = 'hidden';
   },
 
   play: function (index) {
@@ -1666,6 +1701,34 @@ var UI = {
     this.focusUpdate ();
   },
 
+  fullScreen: false,
+
+  setVideoSize: function (width, height) {
+    this.div.video.style.width = width + 'px';
+    this.div.video.style.marginLeft = (- width / 2) + 'px';
+    this.div.video.style.height = height + 'px';
+    this.div.video.style.marginTop = (- height / 2) + 'px';
+  },
+
+  fullScreenOn: function () {
+    this.fullScreen = true;
+    this.setVideoSize (window.outerWidth, window.outerHeight);
+  },
+
+  fullScreenOff: function () {
+    this.fullScreen = false;
+    var width;
+    this.setVideoSize (width = window.outerWidth / 2, width / 16 * 9);
+  },
+
+  fullScreenToggle: function () {
+    if (this.fullScreen) {
+      this.fullScreenOff ();
+    } else {
+      this.fullScreenOn ();
+    }
+  },
+
 };
 
 $.fn.SELECT = function (flg, anime) {
@@ -1952,18 +2015,18 @@ Key.prototype = {
     220: '\\',
     221: ']',
     222: '^',
-    132: 'f1',
-    133: 'f2',
-    134: 'f3',
-    135: 'f4',
-    136: 'f5',
-    137: 'f6',
-    138: 'f7',
-    139: 'f8',
-    140: 'f9',
-    141: 'f10',
-    142: 'f11',
-    143: 'f12'
+    112: 'f1',
+    113: 'f2',
+    114: 'f3',
+    115: 'f4',
+    116: 'f5',
+    117: 'f6',
+    118: 'f7',
+    119: 'f8',
+    120: 'f9',
+    121: 'f10',
+    122: 'f11',
+    123: 'f12'
   },
 
   keyCode: function (keyCode) {
@@ -2036,6 +2099,9 @@ var command = {
   Escape:             function (opt) { return function (app) { app.ui.escape (); }; },
   FocusToggle:        function (opt) { return function (app) { app.ui.focusToggle (); }; },
   FocusToggleReverse: function (opt) { return function (app) { app.ui.focusToggleReverse (); }; },
+  FullScreenOn:       function (opt) { return function (app) { app.ui.fullScreenOn (); }; },
+  FullScreenOff:      function (opt) { return function (app) { app.ui.fullScreenOff (); }; },
+  FullScreenToggle:   function (opt) { return function (app) { app.ui.fullScreenToggle (); }; },
 
   /* Special commands */
   Define:             function (opt) { return function () {}; } // TODO
@@ -2108,7 +2174,8 @@ var keyconfig = {
   '<enter>':    command.DefaultEnter (),
   '<a-enter>':  command.ViewInformation (),
   '<tab>':      command.FocusToggle (),
-  '<s-tab>':    command.FocusToggleReverse ()
+  '<s-tab>':    command.FocusToggleReverse (),
+  'f':          command.FullScreenToggle ()
 
 };
 
@@ -2203,14 +2270,31 @@ Player.prototype = {
 
   nowplaying: 0,
 
+  filetypes: {
+    audio: {
+      regexp: /mp3|ogg|m4a/,
+      string: 'audio'
+    },
+    video: {
+      regexp: /mp4|mkv/,
+      string: 'video'
+    }
+  },
+
   /* file reading */
   readFiles: function (files) {
     var self = this;
     var first = true;
     var musicfiles = [].filter.call (files, function (file) {
-      return file.type.match (/audio\/.*(mp3|ogg|m4a|mp4)/);
+      return file.type.match (self.filetypes.audio.regexp) ||
+             file.type.match (self.filetypes.video.regexp);
     });
     [].forEach.call (musicfiles, function (file, index, files) {
+      file.filetype = file.type.match (self.filetypes.audio.regexp)
+                    ? self.filetypes.audio.string
+                      : file.type.match (self.filetypes.video.regexp)
+                      ? self.filetypes.video.string
+                      : '';
         setTimeout ( (function (file, first, last) {
           return self.readOneFile (file, first, last);
         }) (file, (self.shuffle.value.toString () === 'false'
@@ -2225,7 +2309,7 @@ Player.prototype = {
     var self = this;
     var n = self.musics.length;
     self.files[n] = file;
-    self.musics[n] = new Music (file);
+    self.musics[n] = new Music (file, file.filetype === 'video' ? self.ui.div.video : null);
     self.musics[n].tagread (
       (function (self, j, starttoplay) {
         return function (tags) {
@@ -2259,6 +2343,12 @@ Player.prototype = {
       self.playing = self.musics[index];
       self.playing.play (self.volume.value / 256, function () { self.next (); });
       self.ui.play (index);
+      if (self.playing.filetype === 'video') {
+        log ('popup')
+        self.ui.popupvideo ();
+      } else {
+        self.ui.hidevideo ();
+      }
     }
   },
 

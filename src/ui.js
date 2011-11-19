@@ -13,7 +13,7 @@ var UI = {
     'open', 'pause', 'play', 'playlist', 'prev', 'property', 'remain',
     'repeat', 'scheme', 'shuffle', 'tablebody', 'tablediv', 'tagread',
     'volumeSlider', 'volumeon', 'wrapper', 'filter', 'filterword', 'matchnum'],
-    {tbody: $('#tbody'), thead: $('thead'), table: $('table')});
+    {tbody: $('#tbody'), thead: $('thead'), table: $('table'), video: document.getElementsByTagName('video')[0] });
     self.initdrop ();
     self.initbuttons ();
     self.colorset ();
@@ -74,6 +74,9 @@ var UI = {
     // this.div.tbody
     //   .height(window.innerHeight - this.div.tablebody.offset().top - fontSize);
     $('tr').css({ 'width': tbodyWdt });
+    if (!this.fullScreenOff) {
+      this.fullScreenOff ();
+    }
   },
 
   initsplitter: function () {
@@ -212,6 +215,14 @@ var UI = {
     if (this.div && this.div.volumeSlider) {
       this.div.volumeSlider.slider({ 'value': volume });
     }
+  },
+
+  popupvideo: function () {
+      this.div.video.parentNode.style.visibility = 'visible';
+  },
+
+  hidevideo: function () {
+      this.div.video.parentNode.style.visibility = 'hidden';
   },
 
   play: function (index) {
@@ -805,6 +816,35 @@ var UI = {
   focusToggleReverse: function () {
     this.focusIndex = (this.focusIndex - 1 + this.focusElements().length) % 3;
     this.focusUpdate ();
+  },
+
+  fullScreen: false,
+
+  setVideoSize: function (width, height) {
+    this.div.video.style.width = width + 'px';
+    this.div.video.style.marginLeft = (- width / 2) + 'px';
+    this.div.video.style.height = height + 'px';
+    this.div.video.style.marginTop = (- height / 2) + 'px';
+  },
+
+  fullScreenOn: function () {
+    this.fullScreen = true;
+    var resize = 0.98; // TODO
+    this.setVideoSize (window.outerWidth * resize, window.outerHeight * resize);
+  },
+
+  fullScreenOff: function () {
+    this.fullScreen = false;
+    var width;
+    this.setVideoSize (width = window.outerWidth * 0.6, width / 16 * 9);
+  },
+
+  fullScreenToggle: function () {
+    if (this.fullScreen) {
+      this.fullScreenOff ();
+    } else {
+      this.fullScreenOn ();
+    }
   },
 
 };

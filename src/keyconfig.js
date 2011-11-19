@@ -64,7 +64,8 @@ var keyconfig = {
   '<enter>':    command.DefaultEnter (),
   '<a-enter>':  command.ViewInformation (),
   '<tab>':      command.FocusToggle (),
-  '<s-tab>':    command.FocusToggleReverse ()
+  '<s-tab>':    command.FocusToggleReverse (),
+  'f':          command.FullScreenToggle ()
 
 };
 

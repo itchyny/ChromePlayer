@@ -1,9 +1,13 @@
 // Music file
 
-function Music (file) {
+function Music (file, videoElement) {
   this.file = file;
   this.type = file.type;
   this.name = file.name;
+  this.filetype = file.filetype;
+  if (file.filetype === 'video' && videoElement) {
+    this.videoElement = videoElement;
+  }
 }
 
 Music.prototype = {
@@ -17,22 +21,9 @@ Music.prototype = {
           ? function (file) { return window.webkitURL.createObjectURL (file); }
           : undefined;
     if (createObjectURL) {
-      self.audio = new Audio (createObjectURL (self.file));
-      self.audio.volume = vol;
-      self.audio.addEventListener ('ended', function () {
-          self.release ();
-          next ();
-      });
-      if (startplay) {
-        self.audio.play ();
-      }
-    } else {
-      var reader = new FileReader ();
-      reader.onerror = function (e) {
-        log ("onerror"); log (e);
-      };
-      reader.onload = function (e) {
-        self.audio = new Audio (e.target.result);
+      log (self.file.filetype);
+      if (self.file.filetype === 'audio') {
+        self.audio = new Audio (createObjectURL (self.file));
         self.audio.volume = vol;
         self.audio.addEventListener ('ended', function () {
             self.release ();
@@ -41,8 +32,39 @@ Music.prototype = {
         if (startplay) {
           self.audio.play ();
         }
-      };
-      reader.readAsDataURL (self.file);
+      } else if (self.file.filetype === 'video') {
+        var url = self.videoElement.src = createObjectURL (self.file);
+        self.audio = self.videoElement;
+        self.audio.volume = vol;
+        self.audio.addEventListener ('ended', function () {
+            self.release ();
+            next ();
+        });
+        if (startplay) {
+          self.audio.play ();
+        }
+      }
+    } else {
+      if (self.file.filetype === 'audio') {
+        var reader = new FileReader ();
+        reader.onerror = function (e) {
+          log (e);
+        };
+        reader.onload = function (e) {
+          self.audio = new Audio (e.target.result);
+          self.audio.volume = vol;
+          self.audio.addEventListener ('ended', function () {
+              self.release ();
+              next ();
+          });
+          if (startplay) {
+            self.audio.play ();
+          }
+        };
+        reader.readAsDataURL (self.file);
+      } else {
+        next ();
+      }
     }
   },
 

@@ -49,6 +49,9 @@ var command = {
   Escape:             function (opt) { return function (app) { app.ui.escape (); }; },
   FocusToggle:        function (opt) { return function (app) { app.ui.focusToggle (); }; },
   FocusToggleReverse: function (opt) { return function (app) { app.ui.focusToggleReverse (); }; },
+  FullScreenOn:       function (opt) { return function (app) { app.ui.fullScreenOn (); }; },
+  FullScreenOff:      function (opt) { return function (app) { app.ui.fullScreenOff (); }; },
+  FullScreenToggle:   function (opt) { return function (app) { app.ui.fullScreenToggle (); }; },
 
   /* Special commands */
   Define:             function (opt) { return function () {}; } // TODO

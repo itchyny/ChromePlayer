@@ -20,6 +20,7 @@
 // DONE: スキップされた時に, nextを消す <- 次々とスキップしていくと, 大量の曲が一気に流れる
 // DONE: ファイル削除した時にnextしたときスキップされる
 // TODO: muteにバグ
+// TODO: ui.prototype.fullScreenOn がんばる?
 
 function Player () {
   var self = this;
@@ -88,14 +89,31 @@ Player.prototype = {
 
   nowplaying: 0,
 
+  filetypes: {
+    audio: {
+      regexp: /mp3|ogg|m4a/,
+      string: 'audio'
+    },
+    video: {
+      regexp: /mp4|mkv/,
+      string: 'video'
+    }
+  },
+
   /* file reading */
   readFiles: function (files) {
     var self = this;
     var first = true;
     var musicfiles = [].filter.call (files, function (file) {
-      return file.type.match (/audio\/.*(mp3|ogg|m4a|mp4)/);
+      return file.type.match (self.filetypes.audio.regexp) ||
+             file.type.match (self.filetypes.video.regexp);
     });
     [].forEach.call (musicfiles, function (file, index, files) {
+      file.filetype = file.type.match (self.filetypes.audio.regexp)
+                    ? self.filetypes.audio.string
+                      : file.type.match (self.filetypes.video.regexp)
+                      ? self.filetypes.video.string
+                      : '';
         setTimeout ( (function (file, first, last) {
           return self.readOneFile (file, first, last);
         }) (file, (self.shuffle.value.toString () === 'false'
@@ -110,7 +128,7 @@ Player.prototype = {
     var self = this;
     var n = self.musics.length;
     self.files[n] = file;
-    self.musics[n] = new Music (file);
+    self.musics[n] = new Music (file, file.filetype === 'video' ? self.ui.div.video : null);
     self.musics[n].tagread (
       (function (self, j, starttoplay) {
         return function (tags) {
@@ -144,6 +162,12 @@ Player.prototype = {
       self.playing = self.musics[index];
       self.playing.play (self.volume.value / 256, function () { self.next (); });
       self.ui.play (index);
+      if (self.playing.filetype === 'video') {
+        log ('popup')
+        self.ui.popupvideo ();
+      } else {
+        self.ui.hidevideo ();
+      }
     }
   },
 
