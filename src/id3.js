@@ -30,7 +30,7 @@ function decode (chars) {
                                 |chars.charCodeAt(i++))<<8;
       };
       // return a;
-      return chars.toString();
+      return chars.toString ();
     }
     case 2: { // UTF-16BE without BOM
       // log("UTF-16BE without BOM");
@@ -38,16 +38,16 @@ function decode (chars) {
     case 1: { // UTF-16 with BOM
            // log("UTF-16 with BOM");
       var a = "", StringfromCharCode = String.fromCharCode, kind;
-      for(var i = 1, charslen = chars.length; i < charslen; ) {
-        if(kind === 1 || ((chars.charCodeAt(i) & 0xff) === 0xff)) { // 2bytes
-          if(!kind) {
+      for (var i = 1, charslen = chars.length; i < charslen; ) {
+        if (kind === 1 || ((chars.charCodeAt(i) & 0xff) === 0xff)) { // 2bytes
+          if (!kind) {
             i += 2;
             kind = 1;
           }
           a += StringfromCharCode( chars.charCodeAt(i++)
                                   |(chars.charCodeAt(i++)<<8));
-        } else if(kind === 2 || ((chars.charCodeAt(i) & 0xfe) === 0xfe)) { // 2bytes
-          if(!kind) {
+        } else if (kind === 2 || ((chars.charCodeAt(i) & 0xfe) === 0xfe)) { // 2bytes
+          if (!kind) {
             i += 2;
             kind = 2;
           }
@@ -64,11 +64,11 @@ function decode (chars) {
       var a = "", StringfromCharCode = String.fromCharCode;
       for(var i = 1, charslen = chars.length; i < charslen; ) {
         var charsi = chars.charCodeAt(i);
-        if(charsi & 128) {
-          if(charsi & 32) {
-            if(charsi & 16) {
-              if(charsi & 8) {
-                if(charsi & 4) { // U+04000000 .. U+7FFFFFFF
+        if (charsi & 128) {
+          if (charsi & 32) {
+            if (charsi & 16) {
+              if (charsi & 8) {
+                if (charsi & 4) { // U+04000000 .. U+7FFFFFFF
                   a += StringfromCharCode( (chars.charCodeAt(i++)&1)<<30
                                           |(chars.charCodeAt(i++)&63)<<24
                                           |(chars.charCodeAt(i++)&63)<<18
@@ -138,7 +138,7 @@ ID3.prototype = {
   extendedheader: function () {
     // ??bytes extended header
     //    log("------    extended header   ------");
-    if(this.flags[1] === "1") {
+    if (this.flags[1] === "1") {
       var extendedsize = this.result.slice(this.i, this.i += 4).unsynchsafe();
       //      log("extendedsize: " + extendedsize);
       var extendedheader = this.result.slice(this.i, this.i += extendedsize);
@@ -159,12 +159,12 @@ ID3.prototype = {
       var flamesize = ( function (x) {return lparseInt(x.charCodeAt(3), 10);})(this.result.slice(i, i += 4));
       var flameflg = this.result.slice(i, i += 2).toBin();
       var flametext = ldecode(this.result.slice(i, i += flamesize));
-      if(flamesize) {
+      if (flamesize) {
         //        log("flame id: " + flameid);
         //        log("flame size: " + flamesize);
         //        log("flame flg: " + flameflg);
         //        log("flame text: " + flametext);
-        if(flametext) tags[flameid] = flametext;
+        if (flametext) tags[flameid] = flametext;
       }
     }
     this.tags = tags;

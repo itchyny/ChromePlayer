@@ -1,6 +1,6 @@
 // Main player
-// TODO  !!!!!実装に妥協しない!!!!!! TODO
-// TODO   使いやすく  読みやすく     TODO
+//   !!!!!実装に妥協しない!!!!!!
+//    使いやすく  読みやすく
 //
 // TODO: シャッフル, リピート がいまいち
 // TODO: 読めないタグ
@@ -17,12 +17,12 @@
 // TODO: title="..."にゴミが入る
 // TODO: fixed first row of table
 // TODO: Enterでplayした時に, orderをどうするか
-// DONE: スキップされた時に, nextを消す <- 次々とスキップしていくと, 大量の曲が一気に流れる
-// DONE: ファイル削除した時にnextしたときスキップされる
 // TODO: muteにバグ
 // TODO: ui.prototype.fullScreenOn がんばる?
-// TODO: ビデオ再生時のフルスクリーン対応
-// TODO: not only mp4, but mkv ... 
+// TODO: not only mp4, but mkv ...
+// TODO: フルスクリーン時のUIについて. volumeとかどうする...
+// TODO: filter機能
+// TODO: F1がmacで効かない
 
 function Player () {
   var self = this;
@@ -91,13 +91,11 @@ Player.prototype = {
   nowplaying: 0,
 
   filetypes: {
-    audio: {
-      regexp: /audio\/(mp3|ogg|m4a|x-matroska)/,
-      string: 'audio'
+    audio: { regexp: /audio\/(mp3|ogg|m4a|x-matroska)/
+           , string: 'audio'
     },
-    video: {
-      regexp: /video\/(mp4|mkv|x-matroska)/,
-      string: 'video'
+    video: { regexp: /video\/(mp4|mkv|x-matroska)/
+           , string: 'video'
     }
   },
 
@@ -107,11 +105,8 @@ Player.prototype = {
     var first = true;
     [].forEach.call (files, function (file, index) {
       log (file.type);
-      files[index].filetype = file.type.match (self.filetypes.audio.regexp)
-                            ? self.filetypes.audio.string
-                              : file.type.match (self.filetypes.video.regexp)
-                              ? self.filetypes.video.string
-                              : '';
+      files[index].filetype = file.type.match (self.filetypes.audio.regexp) ? self.filetypes.audio.string
+                            : file.type.match (self.filetypes.video.regexp) ? self.filetypes.video.string : '';
     });
     var mediafiles = [].filter.call (files, function (file) {
       return file.filetype !== '';
@@ -119,10 +114,9 @@ Player.prototype = {
     [].forEach.call (mediafiles, function (file, index, files) {
         setTimeout ( (function (file, first, last) {
           return self.readOneFile (file, first, last);
-        }) (file, (self.shuffle.value.toString () === 'false'
-                       ? index === 0
-                       : index === parseInt (files.length / 2))
-                , index === files.length - 1)
+        }) (file
+           , (self.shuffle.value.toString () === 'false' ? index === 0 : index === parseInt (files.length / 2))
+           , index === files.length - 1)
         , 100 * index);
     });
   },
@@ -147,6 +141,9 @@ Player.prototype = {
     if (last) {
       self.ui.selectableSet ();
       self.ui.setdblclick ();
+      if (self.order.shuffle) {
+        self.order.shuffleOn ();
+      }
     }
   },
 
@@ -154,8 +151,9 @@ Player.prototype = {
   play: function (index) {
     var self = this;
     if (index === undefined) {
-      index = this.order.at (0);
+      index = 0;
     }
+    self.order.at (index);
     self.pause ();
     if (self.playing) {
       self.playing.release ();
@@ -166,7 +164,6 @@ Player.prototype = {
       self.playing.play (self.volume.value / 256, function () { self.next (); });
       self.ui.play (index);
       if (self.playing.filetype === 'video') {
-        log ('popup')
         self.ui.popupvideo ();
       } else {
         self.ui.hidevideo ();
@@ -194,20 +191,36 @@ Player.prototype = {
     }
   },
 
+  nextundefinedcount: 0,
   next: function () {
-    this.ui.pause ();
+    this.pause ();
     var index = this.order.next ();
     if (index === undefined) {
       if (this.playing) {
         this.playing.release ();
       }
-      return;
+      this.nextundefinedcount++;
+      if (this.nextundefinedcount < 2) return;
+      this.nextundefinedcount = 0;
+      index = this.order.head ();
     }
     this.play (index);
   },
 
+  prevundefinedcount: 0,
   prev: function () {
-    // TODO
+    this.pause ();
+    var index = this.order.prev ();
+    if (index === undefined) {
+      if (this.playing) {
+        this.playing.release ();
+      }
+      this.prevundefinedcount++;
+      if (this.prevundefinedcount < 2) return;
+      this.prevundefinedcount = 0;
+      index = this.order.last ();
+    }
+    this.play (index);
   },
 
   seekAt: function (position /* 0 - 1 */ ) {
@@ -272,7 +285,7 @@ Player.prototype = {
 
   shuffle: new Enumstate (['false', 'true'])
 
-}
+};
 
 var player = new Player ();
 window.onload = function () {

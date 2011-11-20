@@ -13,16 +13,16 @@ function Music (file, videoElement) {
 Music.prototype = {
 
   toString: function () {
-    return JSON.stringify ({ type: this.type
-                           , name: this.name
-                           , filetype: this.filetype
-                           , src: this.audio.src
-                           });
+    return JSON.stringify ({ type      : this.type
+                           , name      : this.name
+                           , filetype  : this.filetype
+                           , src       : this.audio.src
+    });
   },
 
   musicread: function (vol, next, startplay) {
     var self = this;
-    var createObjectURL 
+    var createObjectURL
       = window.URL && window.URL.createObjectURL ?
          function (file) { return window.URL.createObjectURL (file); } :
          window.webkitURL && window.webkitURL.createObjectURL ?
@@ -44,8 +44,8 @@ Music.prototype = {
         self.audio = self.videoElement;
         self.audio.volume = vol;
         self.audio.addEventListener ('ended', function () {
-            self.release ();
-            next ();
+          self.release ();
+          next ();
         });
         if (startplay) {
           self.audio.play ();
@@ -61,8 +61,8 @@ Music.prototype = {
           self.audio = new Audio (e.target.result);
           self.audio.volume = vol;
           self.audio.addEventListener ('ended', function () {
-              self.release ();
-              next ();
+            self.release ();
+            next ();
           });
           if (startplay) {
             self.audio.play ();
@@ -94,11 +94,10 @@ Music.prototype = {
     var self = this;
     if (self.audio) {
       self.audio.volume = vol;
-      self.audio.addEventListener ('ended',
-        function () {
-          self.release ();
-          next ();
-        });
+      self.audio.addEventListener ('ended', function () {
+        self.release ();
+        next ();
+      });
       self.audio.play ();
     } else {
       self.musicread (vol, next, true);

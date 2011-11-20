@@ -9,7 +9,6 @@ function Limited (min, max, step, initializer, callback) {
   this.step = step;
   this.initializer = initializer;
   this.callback = callback || function (x) { };
-  this.init ();
 }
 
 Limited.prototype = {

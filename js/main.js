@@ -3,7 +3,7 @@
  *    Chrome Player 2.0
  *
  *    author      : itchyny
- *    last update : Sun Nov 20 11:03:23 2011 +0900
+ *    last update : Sun Nov 20 13:30:43 2011 +0900
  *    source code : https://github.com/itchyny/ChromePlayer
  *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -13,6 +13,11 @@
 function log (x) {
   console.dir (x);
 }
+
+
+Array.prototype.clone = function () {
+    return Array.apply (null,this)
+};
 
 Array.prototype.shuffle = function () {
   var i = this.length, j, t;
@@ -74,7 +79,6 @@ function Limited (min, max, step, initializer, callback) {
   this.step = step;
   this.initializer = initializer;
   this.callback = callback || function (x) { };
-  this.init ();
 }
 
 Limited.prototype = {
@@ -235,8 +239,8 @@ Enum.prototype = {
 
 function Enumstate (array, initializer, callback) {
   this.array = array;
-  this._enum = this.enumclass = new Enum (array);
-  this.length = array.length;
+  this.enumclass = new Enum (array);
+  this.enumarray = array.clone ();
   this.initializer = initializer;
   this.callback = callback || function (x) { };
   this.shuffle = false;
@@ -252,15 +256,24 @@ Enumstate.prototype = {
 
   history: [],
 
+  enumarray: [],
+
   shuffle: false,
 
   repeat: false,
 
   repeatone: false,
 
-  length: 0,
+  head: function () {
+    return this.at (0);
+  },
+
+  last: function () {
+    return this.at (this.enumclass.array.length - 1);
+  },
 
   at: function (i) {
+    console.log('at:');
     if (i === undefined || isNaN (i)) {
       i = this.index;
     }
@@ -268,24 +281,33 @@ Enumstate.prototype = {
     this.value = this.enumclass.toEnum (i);
     this.history = this.history.concat (i);
     this.callback (this.value);
+    log ('enumstate.js: value:' + this.value);
+    log ('enumstate.js: array:' + this.enumclass.array);
     return this.value;
   },
 
   next: function (j) {
+    console.log('next:');
     if (this.repeatone) {
       this.index = this.index;
     } else {
       if (j === undefined || isNaN (j)) {
         j = 1;
       }
+      if (isNaN (this.index)) {
+        this.index = 0;
+      }
       this.index += j;
       this.value = this.enumclass.toEnum (this.index);
       if (this.value === undefined) {
+        log ('this.value === undefined')
         if (this.shuffle) {
           this.enumclass = new Enum (this.enumclass.array.shuffle ());
+        log ('shuffle in next:')
         }
         if (this.repeat) {
-          this.index = 0;
+          var array = this.enumclass.array;
+          this.index = (this.index + array.length * 100) % array.length;
         } else {
           return undefined;
         }
@@ -295,26 +317,37 @@ Enumstate.prototype = {
     return this.value;
   },
 
-  pred: function (j) {
+  prev: function (j) {
+    console.log('prev:');
     return this.next (-1);
   },
 
   shuffleOn: function () {
+    console.log('shuffleOn:');
     this.shuffle = true;
-    this._enum = this.enumclass;
-    this.enumclass = new Enum (this.enumclass.array.shuffle ());
+    this.enumarray = this.enumclass.array;
+    log ('enumstate.js: prevarray:' + this.enumarray);
+    this.enumclass = new Enum (this.enumarray.clone ().shuffle ());
     this.index = this.enumclass.fromEnum (this.value);
+    log ('enumstate.js: value:' + this.value);
+    log ('enumstate.js: array:' + this.enumclass.array);
+    log ('enumstate.js: prevarray:' + this.enumarray);
     return this;
   },
 
   shuffleOff: function () {
+    console.log('shuffleOff:');
     this.shuffle = false;
-    this.enumclass = this._enum;
+    this.enumclass = new Enum (this.enumarray.clone ());
     this.index = this.enumclass.fromEnum (this.value);
+    log ('enumstate.js: value:' + this.value);
+    log ('enumstate.js: array:' + this.enumclass.array);
+    log ('enumstate.js: prevarray:' + this.enumarray);
     return this;
   },
 
   shuffleToggle: function () {
+    console.log('shuffleToggle:');
     if (this.shuffle) {
       return this.shuffleOff ();
     } else {
@@ -323,16 +356,19 @@ Enumstate.prototype = {
   },
 
   repeatOn: function () {
+    console.log('repeatOn:');
     this.repeat = true;
     this.repeatone = false;
   },
 
   repeatOff: function () {
+    console.log('repeatOff:');
     this.repeat = false;
     this.repeatone = false;
   },
 
   repeatToggle: function () {
+    console.log('repeatToggle:');
     if (this.repeat) {
       return this.repeatOff ();
     } else {
@@ -341,10 +377,12 @@ Enumstate.prototype = {
   },
 
   repeatOne: function () {
+    console.log('repeatOne:');
     this.repeatone = true;
   },
 
   init: function (x) {
+    console.log('init:');
     if (x !== undefined) {
       this.at (this.enumclass.fromEnum (x));
     } else if (typeof this.initializer === 'function') {
@@ -352,20 +390,37 @@ Enumstate.prototype = {
     } else {
       this.at (this.enumclass.fromEnum (this.initializer));
     }
+    return this;
   },
 
   concat: function (arr) {
+    console.log('concat:');
     this.enumclass.concat (arr);
+    return this;
   },
 
   splice: function (start, count) {
+    console.log('splice:');
     this.enumclass.splice (start, count);
+    return this;
   },
 
   remove: function (value) {
+    console.log('remove:');
     var index = this.enumclass.fromEnum (value);
     this.splice (index, 1);
-  }
+    return this;
+  },
+
+  changeEnumArray: function (array) {
+    this.array = array;
+    this.enumclass = new Enum (array);
+    this.enumarray = array.clone ();
+    if (this.shuffle) {
+      this.shuffleOn ();
+    }
+    return this;
+  },
 
 };
 
@@ -402,7 +457,7 @@ function decode (chars) {
                                 |chars.charCodeAt(i++))<<8;
       };
       // return a;
-      return chars.toString();
+      return chars.toString ();
     }
     case 2: { // UTF-16BE without BOM
       // log("UTF-16BE without BOM");
@@ -410,16 +465,16 @@ function decode (chars) {
     case 1: { // UTF-16 with BOM
            // log("UTF-16 with BOM");
       var a = "", StringfromCharCode = String.fromCharCode, kind;
-      for(var i = 1, charslen = chars.length; i < charslen; ) {
-        if(kind === 1 || ((chars.charCodeAt(i) & 0xff) === 0xff)) { // 2bytes
-          if(!kind) {
+      for (var i = 1, charslen = chars.length; i < charslen; ) {
+        if (kind === 1 || ((chars.charCodeAt(i) & 0xff) === 0xff)) { // 2bytes
+          if (!kind) {
             i += 2;
             kind = 1;
           }
           a += StringfromCharCode( chars.charCodeAt(i++)
                                   |(chars.charCodeAt(i++)<<8));
-        } else if(kind === 2 || ((chars.charCodeAt(i) & 0xfe) === 0xfe)) { // 2bytes
-          if(!kind) {
+        } else if (kind === 2 || ((chars.charCodeAt(i) & 0xfe) === 0xfe)) { // 2bytes
+          if (!kind) {
             i += 2;
             kind = 2;
           }
@@ -436,11 +491,11 @@ function decode (chars) {
       var a = "", StringfromCharCode = String.fromCharCode;
       for(var i = 1, charslen = chars.length; i < charslen; ) {
         var charsi = chars.charCodeAt(i);
-        if(charsi & 128) {
-          if(charsi & 32) {
-            if(charsi & 16) {
-              if(charsi & 8) {
-                if(charsi & 4) { // U+04000000 .. U+7FFFFFFF
+        if (charsi & 128) {
+          if (charsi & 32) {
+            if (charsi & 16) {
+              if (charsi & 8) {
+                if (charsi & 4) { // U+04000000 .. U+7FFFFFFF
                   a += StringfromCharCode( (chars.charCodeAt(i++)&1)<<30
                                           |(chars.charCodeAt(i++)&63)<<24
                                           |(chars.charCodeAt(i++)&63)<<18
@@ -510,7 +565,7 @@ ID3.prototype = {
   extendedheader: function () {
     // ??bytes extended header
     //    log("------    extended header   ------");
-    if(this.flags[1] === "1") {
+    if (this.flags[1] === "1") {
       var extendedsize = this.result.slice(this.i, this.i += 4).unsynchsafe();
       //      log("extendedsize: " + extendedsize);
       var extendedheader = this.result.slice(this.i, this.i += extendedsize);
@@ -531,12 +586,12 @@ ID3.prototype = {
       var flamesize = ( function (x) {return lparseInt(x.charCodeAt(3), 10);})(this.result.slice(i, i += 4));
       var flameflg = this.result.slice(i, i += 2).toBin();
       var flametext = ldecode(this.result.slice(i, i += flamesize));
-      if(flamesize) {
+      if (flamesize) {
         //        log("flame id: " + flameid);
         //        log("flame size: " + flamesize);
         //        log("flame flg: " + flameflg);
         //        log("flame text: " + flametext);
-        if(flametext) tags[flameid] = flametext;
+        if (flametext) tags[flameid] = flametext;
       }
     }
     this.tags = tags;
@@ -561,16 +616,16 @@ function Music (file, videoElement) {
 Music.prototype = {
 
   toString: function () {
-    return JSON.stringify ({ type: this.type
-                           , name: this.name
-                           , filetype: this.filetype
-                           , src: this.audio.src
-                           });
+    return JSON.stringify ({ type      : this.type
+                           , name      : this.name
+                           , filetype  : this.filetype
+                           , src       : this.audio.src
+    });
   },
 
   musicread: function (vol, next, startplay) {
     var self = this;
-    var createObjectURL 
+    var createObjectURL
       = window.URL && window.URL.createObjectURL ?
          function (file) { return window.URL.createObjectURL (file); } :
          window.webkitURL && window.webkitURL.createObjectURL ?
@@ -592,8 +647,8 @@ Music.prototype = {
         self.audio = self.videoElement;
         self.audio.volume = vol;
         self.audio.addEventListener ('ended', function () {
-            self.release ();
-            next ();
+          self.release ();
+          next ();
         });
         if (startplay) {
           self.audio.play ();
@@ -609,8 +664,8 @@ Music.prototype = {
           self.audio = new Audio (e.target.result);
           self.audio.volume = vol;
           self.audio.addEventListener ('ended', function () {
-              self.release ();
-              next ();
+            self.release ();
+            next ();
           });
           if (startplay) {
             self.audio.play ();
@@ -642,11 +697,10 @@ Music.prototype = {
     var self = this;
     if (self.audio) {
       self.audio.volume = vol;
-      self.audio.addEventListener ('ended',
-        function () {
-          self.release ();
-          next ();
-        });
+      self.audio.addEventListener ('ended', function () {
+        self.release ();
+        next ();
+      });
       self.audio.play ();
     } else {
       self.musicread (vol, next, true);
@@ -889,6 +943,7 @@ var scheme = {
 };
 
 // UI
+// dragenter等々を調べる
 
 var UI = {
 
@@ -898,12 +953,16 @@ var UI = {
     self.div = (function (a, x) {
       a.forEach(function (b) { x[b] = $('#' + b); });
       return x;
-    })(['about', 'conf', 'config', 'current', 'filename', 'fileselect',
-    'firstrow', 'globalcontrol', 'help', 'musicSlider', 'mute', 'next',
-    'open', 'pause', 'play', 'playlist', 'prev', 'property', 'remain',
-    'repeat', 'scheme', 'shuffle', 'tablebody', 'tablediv', 'tagread',
-    'volumeSlider', 'volumeon', 'wrapper', 'filter', 'filterword', 'matchnum'],
-    {tbody: $('#tbody'), thead: $('thead'), table: $('table'), video: document.getElementsByTagName('video')[0] });
+    }) (['about'     , 'conf'         , 'config'  , 'current'    , 'filename' , 'fileselect', 
+         'firstrow'  , 'globalcontrol', 'help'    , 'musicSlider', 'mute'     , 'next'      , 
+         'open'      , 'pause'        , 'play'    , 'playlist'   , 'prev'     , 'property'  , 
+         'remain'    , 'repeat'       , 'scheme'  , 'shuffle'    , 'tablebody', 'tablediv'  , 
+         'tagread'   , 'volumeSlider' , 'volumeon', 'wrapper'    , 'filter'   , 'filterword', 'matchnum'], 
+      { tbody: $('#tbody'),
+        thead: $('thead'),
+        table: $('table'),
+        video: document.getElementsByTagName('video')[0]
+    });
     self.initdrop ();
     self.initbuttons ();
     self.colorset ();
@@ -922,7 +981,7 @@ var UI = {
     document.body.ondragover = function (e) {
       // e.stopPropagation();
       e.preventDefault();
-    };
+    };// TODO
     // document.body.dragenter = function (e) {
     //   e.stopPropagation();
     //   e.preventDefault();
@@ -939,17 +998,17 @@ var UI = {
   initbuttons: function () {
     var self = this;
     var player = self.player;
-    self.div.open.click(function () { self.div.fileselect.click(); });
-    self.div.fileselect.change(function (e) { player.readFiles(e.target.files); });
-    self.div.play.click(function () { player.toggle (); });
-    self.div.pause.click(function () { player.toggle (); });
-    self.div.prev.click(function () { player.prev (); });
-    self.div.next.click(function () { player.next (); });
-    self.div.mute.click(function () { player.mute (); });
-    self.div.volumeon.click(function () { player.resume (); });
-    self.div.repeat.click(function () { player.repeat.next (); });
-    self.div.shuffle.click(function () { player.shuffle.next (); });
-    self.div.conf.click(function () { self.div.config.fadeToggle(200); });
+    self.div.open.click(        function ()  { self.div.fileselect.click(); });
+    self.div.fileselect.change( function (e) { player.readFiles(e.target.files); });
+    self.div.play.click(        function ()  { player.toggle (); });
+    self.div.pause.click(       function ()  { player.toggle (); });
+    self.div.prev.click(        function ()  { player.prev (); });
+    self.div.next.click(        function ()  { player.next (); });
+    self.div.mute.click(        function ()  { player.mute (); });
+    self.div.volumeon.click(    function ()  { player.resume (); });
+    self.div.repeat.click(      function ()  { player.repeat.next (); });
+    self.div.shuffle.click(     function ()  { player.shuffle.next (); });
+    self.div.conf.click(        function ()  { self.div.config.fadeToggle(200); });
     $('img.lbutton, img.rbutton')
       .mouseup(function (e) { $(this).css({ 'top': '50%' }); })
       .mousedown(function (e) { $(this).css({ 'top': parseInt($(this).css('top'), 10) * 1.03 + '%' }); });
@@ -1725,7 +1784,6 @@ var UI = {
 
   fullScreenOn: function () {
     this.fullScreen = true;
-    /// TODO
     if (this.div.video.webkitRequestFullScreen)
       this.div.video.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
     else
@@ -2172,9 +2230,11 @@ var keyconfig = {
   '<home>':     command.SelectHome (),
   'gg':         command.SelectHome (), // vim
   '<s-home>':   command.ExtendToHome (),
+  'vgg':        command.ExtendToHome (), // vim
   '<end>':      command.SelectEnd (),
   '<s-g>':      command.SelectEnd (), // vim
   '<s-end>':    command.ExtendToEnd (),
+  'v<s-g>':     command.ExtendToEnd (), // vim
   '<c-a>':      command.SelectAll (),
   '<c-s-a>':    command.UnselectAll (),
   '<pgdn>':     command.PageDown (),
@@ -2203,8 +2263,8 @@ var keyconfig = {
 
 
 // Main player
-// TODO  !!!!!実装に妥協しない!!!!!! TODO
-// TODO   使いやすく  読みやすく     TODO
+//   !!!!!実装に妥協しない!!!!!!
+//    使いやすく  読みやすく
 //
 // TODO: シャッフル, リピート がいまいち
 // TODO: 読めないタグ
@@ -2221,12 +2281,12 @@ var keyconfig = {
 // TODO: title="..."にゴミが入る
 // TODO: fixed first row of table
 // TODO: Enterでplayした時に, orderをどうするか
-// DONE: スキップされた時に, nextを消す <- 次々とスキップしていくと, 大量の曲が一気に流れる
-// DONE: ファイル削除した時にnextしたときスキップされる
 // TODO: muteにバグ
 // TODO: ui.prototype.fullScreenOn がんばる?
-// TODO: ビデオ再生時のフルスクリーン対応
-// TODO: not only mp4, but mkv ... 
+// TODO: not only mp4, but mkv ...
+// TODO: フルスクリーン時のUIについて. volumeとかどうする...
+// TODO: filter機能
+// TODO: F1がmacで効かない
 
 function Player () {
   var self = this;
@@ -2295,13 +2355,11 @@ Player.prototype = {
   nowplaying: 0,
 
   filetypes: {
-    audio: {
-      regexp: /audio\/(mp3|ogg|m4a|x-matroska)/,
-      string: 'audio'
+    audio: { regexp: /audio\/(mp3|ogg|m4a|x-matroska)/
+           , string: 'audio'
     },
-    video: {
-      regexp: /video\/(mp4|mkv|x-matroska)/,
-      string: 'video'
+    video: { regexp: /video\/(mp4|mkv|x-matroska)/
+           , string: 'video'
     }
   },
 
@@ -2311,11 +2369,8 @@ Player.prototype = {
     var first = true;
     [].forEach.call (files, function (file, index) {
       log (file.type);
-      files[index].filetype = file.type.match (self.filetypes.audio.regexp)
-                            ? self.filetypes.audio.string
-                              : file.type.match (self.filetypes.video.regexp)
-                              ? self.filetypes.video.string
-                              : '';
+      files[index].filetype = file.type.match (self.filetypes.audio.regexp) ? self.filetypes.audio.string
+                            : file.type.match (self.filetypes.video.regexp) ? self.filetypes.video.string : '';
     });
     var mediafiles = [].filter.call (files, function (file) {
       return file.filetype !== '';
@@ -2323,10 +2378,9 @@ Player.prototype = {
     [].forEach.call (mediafiles, function (file, index, files) {
         setTimeout ( (function (file, first, last) {
           return self.readOneFile (file, first, last);
-        }) (file, (self.shuffle.value.toString () === 'false'
-                       ? index === 0
-                       : index === parseInt (files.length / 2))
-                , index === files.length - 1)
+        }) (file
+           , (self.shuffle.value.toString () === 'false' ? index === 0 : index === parseInt (files.length / 2))
+           , index === files.length - 1)
         , 100 * index);
     });
   },
@@ -2351,6 +2405,9 @@ Player.prototype = {
     if (last) {
       self.ui.selectableSet ();
       self.ui.setdblclick ();
+      if (self.order.shuffle) {
+        self.order.shuffleOn ();
+      }
     }
   },
 
@@ -2370,7 +2427,6 @@ Player.prototype = {
       self.playing.play (self.volume.value / 256, function () { self.next (); });
       self.ui.play (index);
       if (self.playing.filetype === 'video') {
-        log ('popup')
         self.ui.popupvideo ();
       } else {
         self.ui.hidevideo ();
@@ -2398,20 +2454,36 @@ Player.prototype = {
     }
   },
 
+  nextundefinedcount: 0,
   next: function () {
-    this.ui.pause ();
+    this.pause ();
     var index = this.order.next ();
     if (index === undefined) {
       if (this.playing) {
         this.playing.release ();
       }
-      return;
+      this.nextundefinedcount++;
+      if (this.nextundefinedcount < 2) return;
+      this.nextundefinedcount = 0;
+      index = this.order.head ();
     }
     this.play (index);
   },
 
+  prevundefinedcount: 0,
   prev: function () {
-    // TODO
+    this.pause ();
+    var index = this.order.prev ();
+    if (index === undefined) {
+      if (this.playing) {
+        this.playing.release ();
+      }
+      this.prevundefinedcount++;
+      if (this.prevundefinedcount < 2) return;
+      this.prevundefinedcount = 0;
+      index = this.order.last ();
+    }
+    this.play (index);
   },
 
   seekAt: function (position /* 0 - 1 */ ) {
@@ -2476,7 +2548,7 @@ Player.prototype = {
 
   shuffle: new Enumstate (['false', 'true'])
 
-}
+};
 
 var player = new Player ();
 window.onload = function () {

@@ -42,9 +42,11 @@ var keyconfig = {
   '<home>':     command.SelectHome (),
   'gg':         command.SelectHome (), // vim
   '<s-home>':   command.ExtendToHome (),
+  'vgg':        command.ExtendToHome (), // vim
   '<end>':      command.SelectEnd (),
   '<s-g>':      command.SelectEnd (), // vim
   '<s-end>':    command.ExtendToEnd (),
+  'v<s-g>':     command.ExtendToEnd (), // vim
   '<c-a>':      command.SelectAll (),
   '<c-s-a>':    command.UnselectAll (),
   '<pgdn>':     command.PageDown (),
@@ -57,7 +59,7 @@ var keyconfig = {
   /* toggle popup menu, ui */
   '<s-/>':      command.ToggleHelp (),
   '<f1>':       command.ToggleAbout (), // TODO
-  '<[>':       command.ToggleAbout (), // TODO
+  '<[>':        command.ToggleAbout (), // TODO
   '<c-,>':      command.ToggleConfig (),
   '<delete>':   command.DeleteSelected (),
   'd':          command.DeleteSelected (), // vim

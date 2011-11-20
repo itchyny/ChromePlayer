@@ -1,7 +1,7 @@
 {
   "name": "Local Player",
   "description": "Music Player on your Browser",
-  "version": "1.60",
+  "version": "2.0",
   "app": {
     "launch": {
       "local_path": "index.html"

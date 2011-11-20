@@ -9,12 +9,16 @@ var UI = {
     self.div = (function (a, x) {
       a.forEach(function (b) { x[b] = $('#' + b); });
       return x;
-    })(['about', 'conf', 'config', 'current', 'filename', 'fileselect',
-    'firstrow', 'globalcontrol', 'help', 'musicSlider', 'mute', 'next',
-    'open', 'pause', 'play', 'playlist', 'prev', 'property', 'remain',
-    'repeat', 'scheme', 'shuffle', 'tablebody', 'tablediv', 'tagread',
-    'volumeSlider', 'volumeon', 'wrapper', 'filter', 'filterword', 'matchnum'],
-    {tbody: $('#tbody'), thead: $('thead'), table: $('table'), video: document.getElementsByTagName('video')[0] });
+    }) (['about'     , 'conf'         , 'config'  , 'current'    , 'filename' , 'fileselect', 
+         'firstrow'  , 'globalcontrol', 'help'    , 'musicSlider', 'mute'     , 'next'      , 
+         'open'      , 'pause'        , 'play'    , 'playlist'   , 'prev'     , 'property'  , 
+         'remain'    , 'repeat'       , 'scheme'  , 'shuffle'    , 'tablebody', 'tablediv'  , 
+         'tagread'   , 'volumeSlider' , 'volumeon', 'wrapper'    , 'filter'   , 'filterword', 'matchnum'], 
+      { tbody: $('#tbody'),
+        thead: $('thead'),
+        table: $('table'),
+        video: document.getElementsByTagName('video')[0]
+    });
     self.initdrop ();
     self.initbuttons ();
     self.colorset ();
@@ -50,17 +54,17 @@ var UI = {
   initbuttons: function () {
     var self = this;
     var player = self.player;
-    self.div.open.click(function () { self.div.fileselect.click(); });
-    self.div.fileselect.change(function (e) { player.readFiles(e.target.files); });
-    self.div.play.click(function () { player.toggle (); });
-    self.div.pause.click(function () { player.toggle (); });
-    self.div.prev.click(function () { player.prev (); });
-    self.div.next.click(function () { player.next (); });
-    self.div.mute.click(function () { player.mute (); });
-    self.div.volumeon.click(function () { player.resume (); });
-    self.div.repeat.click(function () { player.repeat.next (); });
-    self.div.shuffle.click(function () { player.shuffle.next (); });
-    self.div.conf.click(function () { self.div.config.fadeToggle(200); });
+    self.div.open.click(        function ()  { self.div.fileselect.click(); });
+    self.div.fileselect.change( function (e) { player.readFiles(e.target.files); });
+    self.div.play.click(        function ()  { player.toggle (); });
+    self.div.pause.click(       function ()  { player.toggle (); });
+    self.div.prev.click(        function ()  { player.prev (); });
+    self.div.next.click(        function ()  { player.next (); });
+    self.div.mute.click(        function ()  { player.mute (); });
+    self.div.volumeon.click(    function ()  { player.resume (); });
+    self.div.repeat.click(      function ()  { player.repeat.next (); });
+    self.div.shuffle.click(     function ()  { player.shuffle.next (); });
+    self.div.conf.click(        function ()  { self.div.config.fadeToggle(200); });
     $('img.lbutton, img.rbutton')
       .mouseup(function (e) { $(this).css({ 'top': '50%' }); })
       .mousedown(function (e) { $(this).css({ 'top': parseInt($(this).css('top'), 10) * 1.03 + '%' }); });
@@ -836,7 +840,6 @@ var UI = {
 
   fullScreenOn: function () {
     this.fullScreen = true;
-    /// TODO
     if (this.div.video.webkitRequestFullScreen)
       this.div.video.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
     else

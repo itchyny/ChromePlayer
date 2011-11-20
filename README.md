@@ -1,5 +1,5 @@
 # !!! WARNING: THIS IS UNSTABLE VERSION !!!
-# Stable version is available at https://github.com/itchyny/ChromePlayer/tree/3005dd77af29be16e808684dfc5d5df1691b49ce          
+# Stable version (version 1.58, without video feature) is available at https://github.com/itchyny/ChromePlayer/tree/3005dd77af29be16e808684dfc5d5df1691b49ce          
 
 
 # This is the source code of Chrome Player
@@ -48,7 +48,7 @@ You may wonder why this App accesses "all data from your website". Actually, thi
 If you want see the script, open a site (www.google.com for example) and right click → inspect → Scripts, find chrome-extension://chkhjlbdflppmaddpjmjecgdagdljimc/js/shortcuts.js. "chkhjlbdflppmaddpjmjecgdagdljimc" is the id number for this App.
 
 ## Contact or comment
-### Write a review below ↓↓.
+### Write a review!!!
 ### Any impression on this app is welcome.
 
 ## Enjoy!

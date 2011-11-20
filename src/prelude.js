@@ -2,6 +2,11 @@ function log (x) {
   console.dir (x);
 }
 
+
+Array.prototype.clone = function () {
+    return Array.apply (null,this)
+};
+
 Array.prototype.shuffle = function () {
   var i = this.length, j, t;
   var mathRandom = Math.random;
