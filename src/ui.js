@@ -1,4 +1,5 @@
 // UI
+// dragenter等々を調べる
 
 var UI = {
 
@@ -30,13 +31,13 @@ var UI = {
   initdrop: function () {
     var self = this;
     document.body.ondragover = function (e) {
-      e.stopPropagation();
+      // e.stopPropagation();
       e.preventDefault();
-    };
-    document.body.dragenter = function (e) {
-      e.stopPropagation();
-      e.preventDefault();
-    };
+    };// TODO
+    // document.body.dragenter = function (e) {
+    //   e.stopPropagation();
+    //   e.preventDefault();
+    // };
     document.body.ondrop = function (e) {
       e.stopPropagation();
       e.preventDefault();
@@ -836,13 +837,19 @@ var UI = {
   fullScreenOn: function () {
     this.fullScreen = true;
     /// TODO
-    this.setVideoSize (window.outerWidth, window.outerHeight);
+    if (this.div.video.webkitRequestFullScreen)
+      this.div.video.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+    else
+      this.setVideoSize (window.outerWidth, window.outerHeight);
   },
 
   fullScreenOff: function () {
     this.fullScreen = false;
     var width;
-    this.setVideoSize (width = window.outerWidth * 0.6, width / 16 * 9);
+    if (document.webkitCancelFullScreen)
+      document.webkitCancelFullScreen();
+    else
+      this.setVideoSize (width = window.outerWidth * 0.6, width / 16 * 9);
   },
 
   fullScreenToggle: function () {

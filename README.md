@@ -9,7 +9,7 @@
 
 
 ## Usage
-- A music player on your browser for LOCAL FILES.
+- A media player on your browser for LOCAL FILES.
 - Drag mp3/ogg files from file browser into the window.
 - Or, you can also add music files from a file dialog, which appears when you click the '+' button.
 - You'll find the file name show up.
@@ -30,7 +30,8 @@ And as for Mac users, Command key can be also used
 where it is written as: <Ctrl>.)
 
 ## Supported file types
-mp3, ogg, aac, m4a
+music: mp3, ogg, aac, m4a
+video: mp4
 
 ## Not implemented features, unfixed bugs
 Save the file list

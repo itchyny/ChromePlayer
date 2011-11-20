@@ -66,7 +66,6 @@ function Player () {
         self.playing.setvolume (volume / 256);
       }
     });
-  self.start ();
 }
 
 Player.prototype = {
@@ -107,6 +106,7 @@ Player.prototype = {
     var self = this;
     var first = true;
     [].forEach.call (files, function (file, index) {
+      log (file.type);
       files[index].filetype = file.type.match (self.filetypes.audio.regexp)
                             ? self.filetypes.audio.string
                               : file.type.match (self.filetypes.video.regexp)
@@ -274,7 +274,10 @@ Player.prototype = {
 
 }
 
+var player = new Player ();
 window.onload = function () {
-  var player = new Player ();
+  player.start ();
 };
+
+
 

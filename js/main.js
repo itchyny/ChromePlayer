@@ -1,9 +1,9 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\
  *
- *    Chrome Player 1.60
+ *    Chrome Player 2.0
  *
  *    author      : itchyny
- *    last update : Sat Nov 19 23:38:49 2011 +0900
+ *    last update : Sun Nov 20 11:03:23 2011 +0900
  *    source code : https://github.com/itchyny/ChromePlayer
  *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -560,16 +560,23 @@ function Music (file, videoElement) {
 
 Music.prototype = {
 
+  toString: function () {
+    return JSON.stringify ({ type: this.type
+                           , name: this.name
+                           , filetype: this.filetype
+                           , src: this.audio.src
+                           });
+  },
+
   musicread: function (vol, next, startplay) {
     var self = this;
     var createObjectURL 
-      = window.createObjectURL
-        ? function (file) { return window.createObjectURL (file); }
-        : window.webkitURL.createObjectURL
-          ? function (file) { return window.webkitURL.createObjectURL (file); }
-          : undefined;
+      = window.URL && window.URL.createObjectURL ?
+         function (file) { return window.URL.createObjectURL (file); } :
+         window.webkitURL && window.webkitURL.createObjectURL ?
+           function (file) { return window.webkitURL.createObjectURL (file); } :
+           undefined;
     if (createObjectURL) {
-      log (self.file.filetype);
       if (self.file.filetype === 'audio') {
         self.audio = new Audio (createObjectURL (self.file));
         self.audio.volume = vol;
@@ -913,9 +920,15 @@ var UI = {
   initdrop: function () {
     var self = this;
     document.body.ondragover = function (e) {
+      // e.stopPropagation();
       e.preventDefault();
     };
+    // document.body.dragenter = function (e) {
+    //   e.stopPropagation();
+    //   e.preventDefault();
+    // };
     document.body.ondrop = function (e) {
+      e.stopPropagation();
       e.preventDefault();
       if (e.dataTransfer && e.dataTransfer.files) {
         self.player.readFiles (e.dataTransfer.files);
@@ -1675,7 +1688,7 @@ var UI = {
     return [ $('#tbody')
            , $('div#musicSlider a')
            , $('div#volumeSlider a')
-           ]; 
+           ];
   },
 
   focusUpdate: function () {
@@ -1712,13 +1725,20 @@ var UI = {
 
   fullScreenOn: function () {
     this.fullScreen = true;
-    this.setVideoSize (window.outerWidth, window.outerHeight);
+    /// TODO
+    if (this.div.video.webkitRequestFullScreen)
+      this.div.video.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+    else
+      this.setVideoSize (window.outerWidth, window.outerHeight);
   },
 
   fullScreenOff: function () {
     this.fullScreen = false;
     var width;
-    this.setVideoSize (width = window.outerWidth / 2, width / 16 * 9);
+    if (document.webkitCancelFullScreen)
+      document.webkitCancelFullScreen();
+    else
+      this.setVideoSize (width = window.outerWidth * 0.6, width / 16 * 9);
   },
 
   fullScreenToggle: function () {
@@ -2167,6 +2187,7 @@ var keyconfig = {
   /* toggle popup menu, ui */
   '<s-/>':      command.ToggleHelp (),
   '<f1>':       command.ToggleAbout (), // TODO
+  '<[>':       command.ToggleAbout (), // TODO
   '<c-,>':      command.ToggleConfig (),
   '<delete>':   command.DeleteSelected (),
   'd':          command.DeleteSelected (), // vim
@@ -2175,7 +2196,8 @@ var keyconfig = {
   '<a-enter>':  command.ViewInformation (),
   '<tab>':      command.FocusToggle (),
   '<s-tab>':    command.FocusToggleReverse (),
-  'f':          command.FullScreenToggle ()
+  'f':          command.FullScreenToggle (),
+  '<c-s-f>':    command.FullScreenToggle ()
 
 };
 
@@ -2202,6 +2224,9 @@ var keyconfig = {
 // DONE: スキップされた時に, nextを消す <- 次々とスキップしていくと, 大量の曲が一気に流れる
 // DONE: ファイル削除した時にnextしたときスキップされる
 // TODO: muteにバグ
+// TODO: ui.prototype.fullScreenOn がんばる?
+// TODO: ビデオ再生時のフルスクリーン対応
+// TODO: not only mp4, but mkv ... 
 
 function Player () {
   var self = this;
@@ -2245,7 +2270,6 @@ function Player () {
         self.playing.setvolume (volume / 256);
       }
     });
-  self.start ();
 }
 
 Player.prototype = {
@@ -2272,11 +2296,11 @@ Player.prototype = {
 
   filetypes: {
     audio: {
-      regexp: /mp3|ogg|m4a/,
+      regexp: /audio\/(mp3|ogg|m4a|x-matroska)/,
       string: 'audio'
     },
     video: {
-      regexp: /mp4|mkv/,
+      regexp: /video\/(mp4|mkv|x-matroska)/,
       string: 'video'
     }
   },
@@ -2285,16 +2309,18 @@ Player.prototype = {
   readFiles: function (files) {
     var self = this;
     var first = true;
-    var musicfiles = [].filter.call (files, function (file) {
-      return file.type.match (self.filetypes.audio.regexp) ||
-             file.type.match (self.filetypes.video.regexp);
+    [].forEach.call (files, function (file, index) {
+      log (file.type);
+      files[index].filetype = file.type.match (self.filetypes.audio.regexp)
+                            ? self.filetypes.audio.string
+                              : file.type.match (self.filetypes.video.regexp)
+                              ? self.filetypes.video.string
+                              : '';
     });
-    [].forEach.call (musicfiles, function (file, index, files) {
-      file.filetype = file.type.match (self.filetypes.audio.regexp)
-                    ? self.filetypes.audio.string
-                      : file.type.match (self.filetypes.video.regexp)
-                      ? self.filetypes.video.string
-                      : '';
+    var mediafiles = [].filter.call (files, function (file) {
+      return file.filetype !== '';
+    });
+    [].forEach.call (mediafiles, function (file, index, files) {
         setTimeout ( (function (file, first, last) {
           return self.readOneFile (file, first, last);
         }) (file, (self.shuffle.value.toString () === 'false'
@@ -2452,9 +2478,12 @@ Player.prototype = {
 
 }
 
+var player = new Player ();
 window.onload = function () {
-  var player = new Player ();
+  player.start ();
 };
+
+
 
 })();
 /*jslint devel: true, browser: true, continue: true, sloppy: true, vars: true, white: true, passfail: false, plusplus: true, maxerr: 50, indent: 2 */

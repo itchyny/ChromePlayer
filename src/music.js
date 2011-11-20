@@ -22,14 +22,12 @@ Music.prototype = {
 
   musicread: function (vol, next, startplay) {
     var self = this;
-    var createObjectURL
-      = window.createObjectURL
-        ? function (file) { return window.createObjectURL (file); }
-        : window.URL && window.URL.createObjectURL
-          ? function (file) { return window.URL.createObjectURL (file); }
-          : window.webkitURL.createObjectURL
-            ? function (file) { return window.webkitURL.createObjectURL (file); }
-            : undefined;
+    var createObjectURL 
+      = window.URL && window.URL.createObjectURL ?
+         function (file) { return window.URL.createObjectURL (file); } :
+         window.webkitURL && window.webkitURL.createObjectURL ?
+           function (file) { return window.webkitURL.createObjectURL (file); } :
+           undefined;
     if (createObjectURL) {
       if (self.file.filetype === 'audio') {
         self.audio = new Audio (createObjectURL (self.file));
