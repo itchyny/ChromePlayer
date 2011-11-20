@@ -53,6 +53,7 @@ Music.prototype = {
           self.audio.play ();
         }
       }
+    } else {
       if (self.file.filetype === 'audio') {
         var reader = new FileReader ();
         reader.onerror = function (e) {

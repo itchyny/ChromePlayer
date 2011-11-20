@@ -93,11 +93,11 @@ Player.prototype = {
 
   filetypes: {
     audio: {
-      regexp: /mp3|ogg|m4a/,
+      regexp: /audio\/(mp3|ogg|m4a|x-matroska)/,
       string: 'audio'
     },
     video: {
-      regexp: /mp4|mkv/,
+      regexp: /video\/(mp4|mkv|x-matroska)/,
       string: 'video'
     }
   },
