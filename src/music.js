@@ -12,16 +12,25 @@ function Music (file, videoElement) {
 
 Music.prototype = {
 
+  toString: function () {
+    return JSON.stringify ({ type: this.type
+                           , name: this.name
+                           , filetype: this.filetype
+                           , src: this.audio.src
+                           });
+  },
+
   musicread: function (vol, next, startplay) {
     var self = this;
-    var createObjectURL 
+    var createObjectURL
       = window.createObjectURL
         ? function (file) { return window.createObjectURL (file); }
-        : window.webkitURL.createObjectURL
-          ? function (file) { return window.webkitURL.createObjectURL (file); }
-          : undefined;
+        : window.URL && window.URL.createObjectURL
+          ? function (file) { return window.URL.createObjectURL (file); }
+          : window.webkitURL.createObjectURL
+            ? function (file) { return window.webkitURL.createObjectURL (file); }
+            : undefined;
     if (createObjectURL) {
-      log (self.file.filetype);
       if (self.file.filetype === 'audio') {
         self.audio = new Audio (createObjectURL (self.file));
         self.audio.volume = vol;
@@ -44,7 +53,6 @@ Music.prototype = {
           self.audio.play ();
         }
       }
-    } else {
       if (self.file.filetype === 'audio') {
         var reader = new FileReader ();
         reader.onerror = function (e) {

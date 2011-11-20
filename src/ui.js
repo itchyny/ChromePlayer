@@ -30,9 +30,15 @@ var UI = {
   initdrop: function () {
     var self = this;
     document.body.ondragover = function (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    };
+    document.body.dragenter = function (e) {
+      e.stopPropagation();
       e.preventDefault();
     };
     document.body.ondrop = function (e) {
+      e.stopPropagation();
       e.preventDefault();
       if (e.dataTransfer && e.dataTransfer.files) {
         self.player.readFiles (e.dataTransfer.files);
@@ -792,7 +798,7 @@ var UI = {
     return [ $('#tbody')
            , $('div#musicSlider a')
            , $('div#volumeSlider a')
-           ]; 
+           ];
   },
 
   focusUpdate: function () {
@@ -829,8 +835,8 @@ var UI = {
 
   fullScreenOn: function () {
     this.fullScreen = true;
-    var resize = 0.98; // TODO
-    this.setVideoSize (window.outerWidth * resize, window.outerHeight * resize);
+    /// TODO
+    this.setVideoSize (window.outerWidth, window.outerHeight);
   },
 
   fullScreenOff: function () {

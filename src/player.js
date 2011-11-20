@@ -21,6 +21,8 @@
 // DONE: ファイル削除した時にnextしたときスキップされる
 // TODO: muteにバグ
 // TODO: ui.prototype.fullScreenOn がんばる?
+// TODO: ビデオ再生時のフルスクリーン対応
+// TODO: not only mp4, but mkv ... 
 
 function Player () {
   var self = this;
@@ -104,16 +106,17 @@ Player.prototype = {
   readFiles: function (files) {
     var self = this;
     var first = true;
-    var musicfiles = [].filter.call (files, function (file) {
-      return file.type.match (self.filetypes.audio.regexp) ||
-             file.type.match (self.filetypes.video.regexp);
+    [].forEach.call (files, function (file, index) {
+      files[index].filetype = file.type.match (self.filetypes.audio.regexp)
+                            ? self.filetypes.audio.string
+                              : file.type.match (self.filetypes.video.regexp)
+                              ? self.filetypes.video.string
+                              : '';
     });
-    [].forEach.call (musicfiles, function (file, index, files) {
-      file.filetype = file.type.match (self.filetypes.audio.regexp)
-                    ? self.filetypes.audio.string
-                      : file.type.match (self.filetypes.video.regexp)
-                      ? self.filetypes.video.string
-                      : '';
+    var mediafiles = [].filter.call (files, function (file) {
+      return file.filetype !== '';
+    });
+    [].forEach.call (mediafiles, function (file, index, files) {
         setTimeout ( (function (file, first, last) {
           return self.readOneFile (file, first, last);
         }) (file, (self.shuffle.value.toString () === 'false'
