@@ -3,7 +3,7 @@
  *    Chrome Player 2.0
  *
  *    author      : itchyny
- *    last update : Mon Nov 21 20:36:30 2011 +0900
+ *    last update : Mon Nov 21 21:19:10 2011 +0900
  *    source code : https://github.com/itchyny/ChromePlayer
  *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -2753,9 +2753,9 @@ Player.prototype = {
 
   order: new Enumstate ([]),
 
-  repeat: new Enumstate (['false', 'true', 'one']),
+  repeat: new Enumcycle (['false', 'true', 'one']),
 
-  shuffle: new Enumstate (['false', 'true'])
+  shuffle: new Enumcycle (['false', 'true'])
 
 };
 

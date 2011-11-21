@@ -1,5 +1,5 @@
 SOURCE_FILES =\
-	header.js \
+	_header.js \
 	prelude.js \
 	limited.js \
 	enum.js \
@@ -15,7 +15,7 @@ SOURCE_FILES =\
 	command.js \
 	keyconfig.js \
 	player.js \
-	footer.js
+	_footer.js
 
 DATE=$(shell git log -1 --pretty=format:%ad)
 SED_DATE = sed "s/@DATE/${DATE}/"
