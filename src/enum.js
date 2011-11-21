@@ -1,25 +1,17 @@
 // Enum data class
+//
+// An instance of Enum is just a data type,
+// which has the nature of Enum.
+//
 
+// Enum Constructor
 function Enum (array) {
   this.array = array;
-  this.init ();
 }
 
 Enum.prototype = {
 
-  array: [],
-
-  length: undefined,
-
-  head: undefined,
-
-  last: undefined,
-
-  init: function () {
-    this.length = this.array.length;
-    this.head = this.array[0];
-    this.last = this.array[this.array.length - 1];
-  },
+  array: [], //:: [A]
 
   succ: function (x) {
     return this.toEnum (+ 1 + this.fromEnum (x));
@@ -30,7 +22,8 @@ Enum.prototype = {
   },
 
   toEnum: function (i) {
-    if (0 <= i && i < this.length) {
+    /*! return undefined if index is out of array */
+    if (0 <= i && i < this.array.length) {
       return this.array[i];
     } else {
       return undefined;
@@ -38,21 +31,22 @@ Enum.prototype = {
   },
 
   fromEnum: function (x) {
-    for (var i = 0, l = this.length; i < l; i++) {
+    /*! return undefined if value is not found in array */
+    for (var i = 0, l = this.array.length; i < l; i++) {
       if (this.array[i] === x) return i;
     }
     return undefined;
   },
 
   enumFrom: function (x) {
-    return this.enumFromTo (x, this.last);
+    return this.enumFromTo (x, this.array[this.array.length - 1]);
   },
 
   enumFromThen: function (x, y) {
     var i = this.fromEnum (x);
     var j = this.fromEnum (y);
     var ans = [];
-    for (var k = i; 0 <= k && k < this.length; k += (j - i)) {
+    for (var k = i; 0 <= k && k < this.array.length; k += (j - i)) {
       ans = ans.concat (this.array[k]);
     }
     return ans;
@@ -71,7 +65,7 @@ Enum.prototype = {
     if (0 === d) {
       ans = ans.concat (this.array[i]);
     } else if (0 < d) {
-      for (var l = i; l <= k && l < this.length; l += d) {
+      for (var l = i; l <= k && l < this.array.length; l += d) {
         ans = ans.concat (this.array[l]);
       }
     } else {
@@ -80,17 +74,14 @@ Enum.prototype = {
       }
     }
     return ans;
-  },
-
-  concat: function (arr) {
-    this.array = this.array.concat (arr);
-    this.init ();
-  },
-
-  splice: function (start, count) {
-    this.array.splice (start, count);
-    this.init ();
   }
 
 };
+
+// export Enum 
+this.Enum = Enum;
+
+
+
+
 

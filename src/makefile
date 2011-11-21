@@ -3,6 +3,8 @@ SOURCE_FILES =\
 	prelude.js \
 	limited.js \
 	enum.js \
+	enumlinear.js \
+	enumcycle.js \
 	enumstate.js \
 	id3.js \
 	music.js \
@@ -15,21 +17,21 @@ SOURCE_FILES =\
 	player.js \
 	footer.js
 
-
 DATE=$(shell git log -1 --pretty=format:%ad)
 SED_DATE = sed "s/@DATE/${DATE}/"
 
 VERSION = $(shell cat version.txt)
 SED_VER = sed "s/@VERSION/${VERSION}/"
 
-TARGET = main.js
+main.js : ${SOURCE_FILES}
+	@cat $< | ${SED_DATE} | ${SED_VER} > $@
+	@cp $@ ../js/
 
-main.js : ${SOURCE_FILES} makefile
-	@cat ${SOURCE_FILES} |\
-		${SED_DATE} | ${SED_VER} > ${TARGET}
-	cp ${TARGET} ../js/
+manifest.json : manifest_base.json version.txt
+	@cat manifest_base.json | ${SED_VER} > $@
+	@cp $@ ../
 
 all:
-	cd ../
-	make all
+	make main.js
+	make manifest.json
 

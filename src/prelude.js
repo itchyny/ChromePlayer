@@ -2,22 +2,22 @@ function log (x) {
   console.dir (x);
 }
 
-
 Array.prototype.clone = function () {
-    return Array.apply (null,this)
+    return Array.apply (null,this);
 };
 
 Array.prototype.shuffle = function () {
-  var i = this.length, j, t;
+  var xs = this.clone ();
+  var i = xs.length, j, t;
   var mathRandom = Math.random;
   var mathFloor = Math.floor;
   while (i) {
     j = mathFloor( mathRandom() * i );
-    t = this[--i];
-    this[i] = this[j];
-    this[j] = t;
+    t = xs[--i];
+    xs[i] = xs[j];
+    xs[j] = t;
   }
-  return this;
+  return xs;
 };
 
 Array.prototype.unique = function () {
@@ -36,13 +36,17 @@ Array.prototype.unique = function () {
   return ans;
 };
 
-$.fn.unique = Array.prototype.unique;
+if (typeof $ !== 'undefined') {
 
-$.fn.join = Array.prototype.join;
+  // $.fn.unique = Array.prototype.unique;
 
-$.fn.texttitle = function (t) {
-  return this.text(t).attr('title', t);
-};
+  // $.fn.join = Array.prototype.join;
+
+  $.fn.texttitle = function (t) {
+    return this.text(t).attr('title', t);
+  };
+
+}
 
 function aboutEqual (x, y) {
   return Math.abs (x - y) < 1e-9;
@@ -55,4 +59,11 @@ function viewname (x) {
     test (line + space + x + space + line, function () {});
   }
 }
+
+// export Enumstate class
+this.log = log;
+
+
+
+
 

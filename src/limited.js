@@ -1,8 +1,12 @@
-// Limited number
+// Limited data class
+//
+// Limited can be used for changing number,
+// which has minBound and maxBound.
+//
 
 function Limited (min, max, step, initializer, callback) {
   if (min > max) {
-    min = [max, max = min][0];
+    min = [max, max = min][0]; // swap
   }
   this.min = min;
   this.max = max;

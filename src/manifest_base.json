@@ -1,0 +1,28 @@
+{
+  "name": "Local Player",
+  "description": "Music Player on your Browser",
+  "version": "@VERSION",
+  "app": {
+    "launch": {
+      "local_path": "index.html"
+    }
+  },
+  "icons": {
+    "16": "icon_16.png",
+    "128": "icon_128.png"
+  },
+  "permissions": [
+    "unlimitedStorage"
+  ],
+  "content_scripts":[
+    {
+      "matches": [
+        "http://*/*",
+        "ftp://*/*"
+      ],
+      "js": [
+        "js/shortcuts.js"
+      ]
+    }
+  ]
+}

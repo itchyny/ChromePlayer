@@ -94,7 +94,8 @@ Player.prototype = {
     audio: { regexp: /audio\/(mp3|ogg|m4a|x-matroska)/
            , string: 'audio'
     },
-    video: { regexp: /video\/(mp4|mkv|x-matroska)/
+    // video: { regexp: /video\/(mp4|mkv|x-matroska)/
+    video: { regexp: /video\/(mp4)/
            , string: 'video'
     }
   },
@@ -200,7 +201,7 @@ Player.prototype = {
         this.playing.release ();
       }
       this.nextundefinedcount++;
-      if (this.nextundefinedcount < 2) return;
+      if (this.nextundefinedcount < 3) return;
       this.nextundefinedcount = 0;
       index = this.order.head ();
     }
@@ -216,7 +217,7 @@ Player.prototype = {
         this.playing.release ();
       }
       this.prevundefinedcount++;
-      if (this.prevundefinedcount < 2) return;
+      if (this.prevundefinedcount < 3) return;
       this.prevundefinedcount = 0;
       index = this.order.last ();
     }

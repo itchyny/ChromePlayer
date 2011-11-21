@@ -1,9 +1,17 @@
 // Enumerable (ordered) state
 
+
+// requirements
+if (typeof window === 'undefined') {
+  var Enum = require('./enum').Enum;
+}
+
+
+// An instance of Enumstate has current position.
 function Enumstate (array, initializer, callback) {
   this.array = array;
   this.enumclass = new Enum (array);
-  this.enumarray = array.clone ();
+  this.enumarray = array;
   this.initializer = initializer;
   this.callback = callback || function (x) { };
   this.shuffle = false;
@@ -43,14 +51,14 @@ Enumstate.prototype = {
     this.at (index);
   },
 
-  at: function (i) {
+  at: function (index) {
     console.log('at:');
-    if (i === undefined || isNaN (i)) {
-      i = this.index;
+    if (index === undefined || isNaN (index)) {
+      index = this.index;
     }
-    this.index = i;
-    this.value = this.enumclass.toEnum (i);
-    this.history = this.history.concat (i);
+    this.index = index;
+    this.value = this.enumclass.toEnum (index);
+    this.history = this.history.concat (index);
     this.callback (this.value);
     log ('enumstate.js: value:' + this.value);
     log ('enumstate.js: array:' + this.enumclass.array);
@@ -98,7 +106,7 @@ Enumstate.prototype = {
     this.shuffle = true;
     this.enumarray = this.enumclass.array;
     log ('enumstate.js: prevarray:' + this.enumarray);
-    this.enumclass = new Enum (this.enumarray.clone ().shuffle ());
+    this.enumclass = new Enum (this.enumarray.shuffle ());
     this.index = this.enumclass.fromEnum (this.value);
     log ('enumstate.js: value:' + this.value);
     log ('enumstate.js: array:' + this.enumclass.array);
@@ -153,7 +161,6 @@ Enumstate.prototype = {
   },
 
   init: function (x) {
-    console.log('init:');
     if (x !== undefined) {
       this.at (this.enumclass.fromEnum (x));
     } else if (typeof this.initializer === 'function') {
@@ -165,22 +172,15 @@ Enumstate.prototype = {
   },
 
   concat: function (arr) {
-    console.log('concat:');
-    this.enumclass.concat (arr);
-    return this;
+    return this.changeEnumArray (this.enumclass.array.concat (arr));
   },
 
   splice: function (start, count) {
-    console.log('splice:');
-    this.enumclass.splice (start, count);
-    return this;
+    return this.changeEnumArray (this.enumclass.array.splice (start, count));
   },
 
   remove: function (value) {
-    console.log('remove:');
-    var index = this.enumclass.fromEnum (value);
-    this.splice (index, 1);
-    return this;
+    return this.splice (this.enumclass.fromEnum (value), 1);
   },
 
   changeEnumArray: function (array) {
@@ -194,5 +194,11 @@ Enumstate.prototype = {
   },
 
 };
+
+// export Enumstate
+this.Enumstate = Enumstate;
+
+
+
 
 
