@@ -33,18 +33,13 @@ Enumlinear.prototype = {
     return this.at (this.enumclass.array.length - 1);
   },
 
-  fromEnum: function (value) {
-    /*! return value; return undefined if value is not found in array */
-    var index = this.enumclass.fromEnum (value);
-    if (index === undefined) {
-      return undefined;
-    }
-    this.at (index);
+  nonvalidIndex: function (index) {
+    return index === undefined || isNaN (index) || typeof index !== 'number';
   },
 
   at: function (index) {
     /*! return value; return undefined if index if out of array */
-    if (index === undefined || isNaN (index)) {
+    if (this.nonvalidIndex (index)) {
       index = this.index;
     }
     var value = this.enumclass.toEnum (index);
@@ -58,9 +53,18 @@ Enumlinear.prototype = {
     return this.value;
   },
 
+  atfromEnum: function (value) {
+    /*! return value; return undefined if value is not found in array */
+    var index = this.enumclass.fromEnum (value);
+    if (index === undefined) {
+      return undefined;
+    }
+    return this.at (index);
+  },
+
   next: function (j) {
     /*! return undefined if out of array after moving */
-    if (j === undefined || isNaN (j)) {
+    if (this.nonvalidIndex (j)) {
       j = 1;
     }
     return this.at (this.index + j);
@@ -68,7 +72,7 @@ Enumlinear.prototype = {
 
   prev: function (j) {
     /*! return undefined if out of array after backward */
-    if (j === undefined || isNaN (j)) {
+    if (this.nonvalidIndex (j)) {
       j = -1;
     }
     return this.next (j);
@@ -78,12 +82,20 @@ Enumlinear.prototype = {
     /*! return value; return undefined if value is not found in array */
     if (value === undefined) {
       if (typeof this.initializer === 'function') {
-        value = this.initializer ();
+        try {
+          value = this.initializer ();
+        } catch (e) {
+          value = this.array[0];
+        }
       } else {
         value = this.initializer;
       }
     }
-    return this.fromEnum (value);
+    value = this.atfromEnum (value);
+    // If initialization fails, begin at head of the array, with no error.
+    if (value === undefined) {
+      return this.at (0);
+    }
   },
 
   concat: function (arr) {

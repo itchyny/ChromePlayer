@@ -1,4 +1,4 @@
-// Enum cycle
+// Enum cycle, whose bound is connected
 
 
 // requirements
@@ -6,23 +6,37 @@ if (typeof window === 'undefined') {
   var Enumlinear = require('./enumlinear').Enumlinear;
 }
 
+// Enumcycle provides exactly same functions as Enumlinear does.
+// What is different from Enumlinear is, that
+// prototype.(at|next|prev) never returns undefined.
+// Only function which can fail is prototype.init (when
+// initializer was not found in the array.)
 function Enumcycle (array, initializer, callback) {
   var self = this;
-  self.callback = callback || function (x) { };
-  this.enumlinear = new Enumlinear (array, initializer
-  , function (value) {
-      self.value = value;
-      self.index = self.enumlinear.index;
-  });
+  callback = callback || function (x) { };
+  this.enumlinear = new Enumlinear
+                  ( array
+                  , initializer
+                  , (function (f) {
+                      return function (value) {
+                        self.value = value;
+                        self.index = self.enumlinear.index;
+                        callback (value);
+                      };
+                  } (callback)));
   for (var x in this.enumlinear) {
     if (this.enumlinear.hasOwnProperty (x)) {
       this[x] = this.enumlinear[x]; 
     }
   }
 }
+
 Enumcycle.prototype = new Enumlinear ();
+// prototype.at never fails with its circulant structure.
+// Note that if argument was not a Number, status
+// doesn't change with no Error.
 Enumcycle.prototype.at = function (index) {
-  if (index === undefined || isNaN (index)) {
+  if (this.nonvalidIndex (index)) {
     index = this.index;
   }
   var length = this.array.length;
@@ -35,18 +49,11 @@ Enumcycle.prototype.changeArray = function (array) {
 };
 
 
-var x = new Enumcycle ([1,3,5,7,9,11,13],0);
-console.log(x)
-x.concat ([15,17,19,21]);
-for (var i=0; i < 20; i++) {
-  console.log(x.next ());
-};
-console.log(x)
-
-
-
-
-
 // export Enumcycle
 this.Enumcycle = Enumcycle;
+
+
+
+
+
 

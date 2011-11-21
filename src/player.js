@@ -28,44 +28,42 @@ function Player () {
   var self = this;
   self.ui = UI;
   self.key = new Key (self, keyconfig);
-  self.repeat = new Enumstate (['false', 'true', 'one'],
-    function () { return local.get('repeat') || 'false'; },
-    function (repeat) {
-      local.set ('repeat', repeat);
-      self.ui.setrepeat (repeat);
-      if (repeat === 'one') {
-        self.order.repeatOne ();
-      } else if (repeat === 'true') {
-        self.order.repeatOn ();
-      } else {
-        self.order.repeatOff ();
-      }
-    });
-  self.repeat.repeatOn ();
-  self.shuffle = new Enumstate (['false', 'true'],
-    function () { return local.get ('shuffle') || 'false'; },
-    function (shuffle) {
-      local.set ('shuffle', shuffle);
-      self.ui.setshuffle (shuffle);
-      if (shuffle === 'true') {
-        self.order.shuffleOn ();
-      } else {
-        self.order.shuffleOff ();
-      }
-    });
-  self.shuffle.repeatOn ();
-  self.volume = new Limited (0, 256, 16,
-    function () {
-      var vol = parseInt (local.get ('volume'), 10);
-      return vol !== undefined ? vol : 127;  // vol can be 0
-    },
-    function (volume) {
-      local.set ('volume', volume);
-      self.ui.setvolume (volume);
-      if (self.playing) {
-        self.playing.setvolume (volume / 256);
-      }
-    });
+  self.repeat = new Enumcycle ( ['false', 'true', 'one']
+              , function () { return local.get('repeat') || 'false'; }
+              , function (repeat) {
+                local.set ('repeat', repeat);
+                self.ui.setrepeat (repeat);
+                if (repeat === 'one') {
+                  self.order.repeatOne ();
+                } else if (repeat === 'true') {
+                  self.order.repeatOn ();
+                } else {
+                  self.order.repeatOff ();
+                }
+              });
+  self.shuffle = new Enumcycle ( ['false', 'true' ]
+               , function () { return local.get('shuffle') || 'false'; }
+               , function (shuffle) {
+                 local.set ('shuffle', shuffle);
+                 self.ui.setshuffle (shuffle);
+                 if (shuffle === 'true') {
+                   self.order.shuffleOn ();
+                 } else {
+                   self.order.shuffleOff ();
+                 }
+               });
+  self.volume = new Limited (0, 256, 16
+              , function () {
+                var vol = parseInt (local.get ('volume'), 10);
+                return vol !== undefined ? vol : 127;  // vol can be 0
+              }
+              , function (volume) {
+                local.set ('volume', volume);
+                self.ui.setvolume (volume);
+                if (self.playing) {
+                  self.playing.setvolume (volume / 256);
+                }
+              });
 }
 
 Player.prototype = {
@@ -282,9 +280,9 @@ Player.prototype = {
 
   order: new Enumstate ([]),
 
-  repeat: new Enumstate (['false', 'true', 'one']),
+  repeat: new Enumcycle (['false', 'true', 'one']),
 
-  shuffle: new Enumstate (['false', 'true'])
+  shuffle: new Enumcycle (['false', 'true'])
 
 };
 
