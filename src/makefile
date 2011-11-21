@@ -17,7 +17,7 @@ SOURCE_FILES =\
 	player.js \
 	_footer.js
 
-DATE=$(shell git log -1 --pretty=format:%ad)
+DATE=$(shell TZ=GMT date '+%Y\/%m\/%d %T (GMT)')
 SED_DATE = sed "s/@DATE/${DATE}/"
 
 VERSION = $(shell cat version.txt)
