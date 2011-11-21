@@ -73,7 +73,10 @@ var keyconfig = {
   '<tab>':       command.FocusToggle (),
   '<s-tab>':     command.FocusToggleReverse (),
   'f':           command.FullScreenToggle (),
-  '<c-s-f>':     command.FullScreenToggle ()
+  '<c-s-f>':     command.FullScreenToggle (),
+
+  /* special command */
+  '<nop>':       command.Nop ()
 
 };
 

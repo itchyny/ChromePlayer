@@ -54,7 +54,8 @@ var command = {
   FullScreenToggle:   function (opt) { return function (app) { app.ui.fullScreenToggle (); }; },
 
   /* Special commands */
-  Define:             function (opt) { return function () {}; } // TODO
+  Nop:                function (opt) { return function (app) {}; },
+  Define:             function (opt) { return function (app) {}; } // TODO
 
 };
 

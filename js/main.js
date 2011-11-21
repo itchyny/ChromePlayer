@@ -3,7 +3,7 @@
  *    Chrome Player 2.0
  *
  *    author      : itchyny
- *    last update : 2011/11/21 15:29:04 (GMT)
+ *    last update : 2011/11/21 16:10:03 (GMT)
  *    source code : https://github.com/itchyny/ChromePlayer
  *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -2211,7 +2211,7 @@ Key.prototype = {
   },
 
   triggerInstantly: function () {
-    var key = this.keyqueue.join ('');
+    var key = this.keyqueue.join (' ');
     var index = this.keys.indexOf (key);
     if (index < 0) {
       return false;
@@ -2424,7 +2424,8 @@ var command = {
   FullScreenToggle:   function (opt) { return function (app) { app.ui.fullScreenToggle (); }; },
 
   /* Special commands */
-  Define:             function (opt) { return function () {}; } // TODO
+  Nop:                function (opt) { return function (app) {}; },
+  Define:             function (opt) { return function (app) {}; } // TODO
 
 };
 
@@ -2503,7 +2504,10 @@ var keyconfig = {
   '<tab>':       command.FocusToggle (),
   '<s-tab>':     command.FocusToggleReverse (),
   'f':           command.FullScreenToggle (),
-  '<c-s-f>':     command.FullScreenToggle ()
+  '<c-s-f>':     command.FullScreenToggle (),
+
+  /* special command */
+  '<nop>':       command.Nop ()
 
 };
 
@@ -2513,13 +2517,14 @@ var keyconfig = {
 //    使いやすく  読みやすく
 //
 // 優先
+// TODO: wavチェック
+// TODO: keyconfigを各自で設定できるように
 // TODO: シャッフル, リピート がいまいち
 // TODO: filter機能
 // TODO: ソート
 // TODO: album art from id3 tag
 // TODO: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/ http://phpjavascriptroom.com/?t=ajax&p=jquery_plugin_contextmenu
 // TODO: tableクリックでslideからのfocus out
-// TODO: keyconfigを各自で設定できるように
 //
 // TODO: 読めないタグ
 // TODO: キーだけでファイルの入れ替え

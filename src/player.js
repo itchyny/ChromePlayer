@@ -3,13 +3,14 @@
 //    使いやすく  読みやすく
 //
 // 優先
+// TODO: wavチェック
+// TODO: keyconfigを各自で設定できるように
 // TODO: シャッフル, リピート がいまいち
 // TODO: filter機能
 // TODO: ソート
 // TODO: album art from id3 tag
 // TODO: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/ http://phpjavascriptroom.com/?t=ajax&p=jquery_plugin_contextmenu
 // TODO: tableクリックでslideからのfocus out
-// TODO: keyconfigを各自で設定できるように
 //
 // TODO: 読めないタグ
 // TODO: キーだけでファイルの入れ替え

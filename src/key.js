@@ -8,8 +8,9 @@ function Key (app, config) {
     for (key in config) {
       if (config.hasOwnProperty (key)) {
         if (config[key]) {
-          this.set (this.parse (key), config[key]);
-          this.keys.push (key);
+          var keyformatted = this.parse (key);
+          this.set (keyformatted, config[key]);
+          this.keys.push (keyformatted);
         }
       }
     }
@@ -59,7 +60,7 @@ Key.prototype = {
   },
 
   triggerInstantly: function () {
-    var key = this.keyqueue.join ('');
+    var key = this.keyqueue.join (' ');
     var index = this.keys.indexOf (key);
     if (index < 0) {
       return false;
