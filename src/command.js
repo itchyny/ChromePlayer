@@ -18,9 +18,9 @@ var command = {
   /* volume */
   VolumeUp:           function (opt) { return function (app) { app.volumeup (); }; },
   VolumeDown:         function (opt) { return function (app) { app.volumedown (); }; },
-  VolumeMute:         function (opt) { return function (app) { app.mute (); }; },
-  VolumeResume:       function (opt) { return function (app) { app.resume (); }; },
-  VolumeToggleMute:   function (opt) { return function (app) { app.togglemute (); }; },
+  VolumeMute:         function (opt) { return function (app) { app.ui.click ('mute'); }; },
+  VolumeResume:       function (opt) { return function (app) { app.ui.click ('volumeon'); }; },
+  VolumeToggleMute:   function (opt) { return function (app) { app.ui.click (app.ismute () ? 'volumeon' : 'mute'); }; },
 
 
   /* select, extend */

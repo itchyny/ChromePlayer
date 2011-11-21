@@ -840,19 +840,21 @@ var UI = {
 
   fullScreenOn: function () {
     this.fullScreen = true;
-    if (this.div.video.webkitRequestFullScreen)
+    if (this.div.video.webkitRequestFullScreen) {
       this.div.video.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
-    else
+    } else {
       this.setVideoSize (window.outerWidth, window.outerHeight);
+    }
   },
 
   fullScreenOff: function () {
     this.fullScreen = false;
     var width;
-    if (document.webkitCancelFullScreen)
+    if (document.webkitCancelFullScreen) {
       document.webkitCancelFullScreen();
-    else
+    } else {
       this.setVideoSize (width = window.outerWidth * 0.6, width / 16 * 9);
+    }
   },
 
   fullScreenToggle: function () {

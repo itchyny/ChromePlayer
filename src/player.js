@@ -2,27 +2,27 @@
 //   !!!!!実装に妥協しない!!!!!!
 //    使いやすく  読みやすく
 //
+// 優先
 // TODO: シャッフル, リピート がいまいち
-// TODO: 読めないタグ
-// TODO: ui.jsのaddfile高速化
-// TODO: tableクリックでslideからのfocus out
+// TODO: filter機能
+// TODO: ソート
 // TODO: album art from id3 tag
-// TODO: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/
-// http://phpjavascriptroom.com/?t=ajax&p=jquery_plugin_contextmenu
+// TODO: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/ http://phpjavascriptroom.com/?t=ajax&p=jquery_plugin_contextmenu
+// TODO: tableクリックでslideからのfocus out
 // TODO: keyconfigを各自で設定できるように
+//
+// TODO: 読めないタグ
 // TODO: キーだけでファイルの入れ替え
 // TODO: ファイル順入れ替えた時にorder更新
-// TODO: ソート
 // TODO: C-zで削除キャンセルなど
 // TODO: title="..."にゴミが入る
 // TODO: fixed first row of table
 // TODO: Enterでplayした時に, orderをどうするか
-// TODO: muteにバグ
-// TODO: ui.prototype.fullScreenOn がんばる?
 // TODO: not only mp4, but mkv ...
 // TODO: フルスクリーン時のUIについて. volumeとかどうする...
-// TODO: filter機能
-// TODO: F1がmacで効かない
+// TODO: F1, delがmacで効かない
+// TODO: ui.jsのaddfile高速化
+// TODO: id3タグの読み込みをUArrayってやつで高速化
 
 function Player () {
   var self = this;
@@ -248,21 +248,25 @@ Player.prototype = {
   },
 
   mute: function () {
-    this.predvol = this.volume;
+    this.prevol = this.volume.value;
     this.volume.setToMin ();
   },
 
   resume: function () {
-    this.volume.at (this.predvol);
-    delete this.predvol;
+    this.volume.at (this.prevol);
+    delete this.prevol;
   },
 
   togglemute: function () {
-    if (this.volume.value === 0 && this.prevol !== undefined) {
+    if (this.ismute ()) {
       this.resume ();
     } else {
       this.mute ();
     }
+  },
+
+  ismute: function () {
+    return this.volume.value === 0 && this.prevol !== undefined;
   },
 
   volumeup: function () {

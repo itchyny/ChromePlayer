@@ -37,20 +37,24 @@ Key.prototype = {
   },
 
   keydown: function (e) {
+    if (!this.onlyMeta (e)) {
+      this.keydownstr (this.convert (e), e);
+    }
+  },
+
+  keydownstr: function (s, e) {
     var self = this;
-    if (!self.onlyMeta (e)) {
-      self.keyqueue.push (self.convert (e));
-      if (self.triggerTimer) {
-        clearTimeout (self.triggerTimer);
-        self.triggerTimer = undefined;
-      }
-      if (self.triggerInstantly ()) {
+    self.keyqueue.push (s);
+    if (self.triggerTimer) {
+      clearTimeout (self.triggerTimer);
+      self.triggerTimer = undefined;
+    }
+    if (self.triggerInstantly ()) {
+      self.trigger (e);
+    } else {
+      self.triggerTimer = setTimeout (function () {
         self.trigger (e);
-      } else {
-        self.triggerTimer = setTimeout (function () {
-          self.trigger (e);
-        }, self.watingTime);
-      }
+      }, self.watingTime);
     }
   },
 
@@ -77,8 +81,8 @@ Key.prototype = {
 
   trigger: function (e) {
     var self = this;
-    var f = self.callback [self.keyqueue.join ('')];
-    log (self.keyqueue.join (''));
+    var f = self.callback [self.keyqueue.join (' ')];
+    log (self.keyqueue.join (' '));
     if (f) {
       self.prevent (e);
       f (self.app, e);
@@ -93,15 +97,17 @@ Key.prototype = {
   watingTime: 300,
 
   prevent: function (e) {
-    if (e.preventDefault) {
+    if (e && e.preventDefault) {
       e.preventDefault();
     }
   },
 
   convert: function (e) {
     var meta = this.meta (e);
-    var key = (meta !== '' || this.codes[e.keyCode]) ? '<' + meta + this.keyCode (e.keyCode) + '>'
-                                                     :              this.keyCode (e.keyCode);
+    var key = (meta !== '' ||
+               this.codes[e.keyCode] && this.codes[e.keyCode].length > 1)
+            ? '<' + meta + this.keyCode (e.keyCode) + '>'
+            :              this.keyCode (e.keyCode);
     return key;
   },
 
@@ -110,11 +116,36 @@ Key.prototype = {
   },
 
   parse: function (key) {
-    return key.toLowerCase ();
+    key = key.toLowerCase ().replace (/ /g, '');
+    var arr = [];
+    var onekey = [];
+    while (key) {
+      if (!(onekey = key.match (/^<[^<>]*>/))) {
+        onekey = [key[0]];
+      }
+      arr = arr.concat (onekey);
+      key = key.slice (onekey[0].length);
+    }
+    return arr.join (' ');
   },
 
   set: function (key, callback) {
-    this.callback [key] = callback;
+    var self = this;
+    if (typeof callback === 'function') {
+      self.callback [key] = callback;
+    } else if (typeof callback === 'string') {
+      self.callback [key] = (function (env) {
+        return function () {
+          var keyseq = self.parse (callback).split (' ');
+          for (var i = 0; i < keyseq.length; i++) {
+            setTimeout ( (function (i) { return function () {
+              self.keydownstr (keyseq [i]);
+            };}) (i)
+            , 10);
+          }
+        };
+      }) (self.callback);
+    }
   },
 
   codes: {

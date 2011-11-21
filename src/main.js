@@ -3,7 +3,7 @@
  *    Chrome Player 2.0
  *
  *    author      : itchyny
- *    last update : 2011/11/21 13:12:45 (GMT)
+ *    last update : 2011/11/21 15:29:04 (GMT)
  *    source code : https://github.com/itchyny/ChromePlayer
  *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -1993,19 +1993,21 @@ var UI = {
 
   fullScreenOn: function () {
     this.fullScreen = true;
-    if (this.div.video.webkitRequestFullScreen)
+    if (this.div.video.webkitRequestFullScreen) {
       this.div.video.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
-    else
+    } else {
       this.setVideoSize (window.outerWidth, window.outerHeight);
+    }
   },
 
   fullScreenOff: function () {
     this.fullScreen = false;
     var width;
-    if (document.webkitCancelFullScreen)
+    if (document.webkitCancelFullScreen) {
       document.webkitCancelFullScreen();
-    else
+    } else {
       this.setVideoSize (width = window.outerWidth * 0.6, width / 16 * 9);
+    }
   },
 
   fullScreenToggle: function () {
@@ -2187,20 +2189,24 @@ Key.prototype = {
   },
 
   keydown: function (e) {
+    if (!this.onlyMeta (e)) {
+      this.keydownstr (this.convert (e), e);
+    }
+  },
+
+  keydownstr: function (s, e) {
     var self = this;
-    if (!self.onlyMeta (e)) {
-      self.keyqueue.push (self.convert (e));
-      if (self.triggerTimer) {
-        clearTimeout (self.triggerTimer);
-        self.triggerTimer = undefined;
-      }
-      if (self.triggerInstantly ()) {
+    self.keyqueue.push (s);
+    if (self.triggerTimer) {
+      clearTimeout (self.triggerTimer);
+      self.triggerTimer = undefined;
+    }
+    if (self.triggerInstantly ()) {
+      self.trigger (e);
+    } else {
+      self.triggerTimer = setTimeout (function () {
         self.trigger (e);
-      } else {
-        self.triggerTimer = setTimeout (function () {
-          self.trigger (e);
-        }, self.watingTime);
-      }
+      }, self.watingTime);
     }
   },
 
@@ -2227,8 +2233,8 @@ Key.prototype = {
 
   trigger: function (e) {
     var self = this;
-    var f = self.callback [self.keyqueue.join ('')];
-    log (self.keyqueue.join (''));
+    var f = self.callback [self.keyqueue.join (' ')];
+    log (self.keyqueue.join (' '));
     if (f) {
       self.prevent (e);
       f (self.app, e);
@@ -2243,15 +2249,17 @@ Key.prototype = {
   watingTime: 300,
 
   prevent: function (e) {
-    if (e.preventDefault) {
+    if (e && e.preventDefault) {
       e.preventDefault();
     }
   },
 
   convert: function (e) {
     var meta = this.meta (e);
-    var key = (meta !== '' || this.codes[e.keyCode]) ? '<' + meta + this.keyCode (e.keyCode) + '>'
-                                                     :              this.keyCode (e.keyCode);
+    var key = (meta !== '' ||
+               this.codes[e.keyCode] && this.codes[e.keyCode].length > 1)
+            ? '<' + meta + this.keyCode (e.keyCode) + '>'
+            :              this.keyCode (e.keyCode);
     return key;
   },
 
@@ -2260,11 +2268,36 @@ Key.prototype = {
   },
 
   parse: function (key) {
-    return key.toLowerCase ();
+    key = key.toLowerCase ().replace (/ /g, '');
+    var arr = [];
+    var onekey = [];
+    while (key) {
+      if (!(onekey = key.match (/^<[^<>]*>/))) {
+        onekey = [key[0]];
+      }
+      arr = arr.concat (onekey);
+      key = key.slice (onekey[0].length);
+    }
+    return arr.join (' ');
   },
 
   set: function (key, callback) {
-    this.callback [key] = callback;
+    var self = this;
+    if (typeof callback === 'function') {
+      self.callback [key] = callback;
+    } else if (typeof callback === 'string') {
+      self.callback [key] = (function (env) {
+        return function () {
+          var keyseq = self.parse (callback).split (' ');
+          for (var i = 0; i < keyseq.length; i++) {
+            setTimeout ( (function (i) { return function () {
+              self.keydownstr (keyseq [i]);
+            };}) (i)
+            , 10);
+          }
+        };
+      }) (self.callback);
+    }
   },
 
   codes: {
@@ -2355,9 +2388,9 @@ var command = {
   /* volume */
   VolumeUp:           function (opt) { return function (app) { app.volumeup (); }; },
   VolumeDown:         function (opt) { return function (app) { app.volumedown (); }; },
-  VolumeMute:         function (opt) { return function (app) { app.mute (); }; },
-  VolumeResume:       function (opt) { return function (app) { app.resume (); }; },
-  VolumeToggleMute:   function (opt) { return function (app) { app.togglemute (); }; },
+  VolumeMute:         function (opt) { return function (app) { app.ui.click ('mute'); }; },
+  VolumeResume:       function (opt) { return function (app) { app.ui.click ('volumeon'); }; },
+  VolumeToggleMute:   function (opt) { return function (app) { app.ui.click (app.ismute () ? 'volumeon' : 'mute'); }; },
 
 
   /* select, extend */
@@ -2400,73 +2433,77 @@ var command = {
 var keyconfig = {
 
   /* operate player */
-  '<space>':    command.PlayPause (),
-  '<c-space>':  command.PlayPause (),
-  '<c-right>':  command.NextMusic (),
-  '<c-left>':   command.PreviousMusic (),
-  '<c-o>':      command.OpenFile (),
-  '<right>':    command.SeekForward ([10]),
-  '<s-right>':  command.SeekForward ([30]),
-  'l':          command.SeekForward ([10]), // vim
-  'w':          command.SeekForward ([30]), // vim
-  '<left>':     command.SeekBackward ([10]),
-  '<s-left>':   command.SeekBackward ([30]),
-  'h':          command.SeekBackward ([10]), // vim
-  'b':          command.SeekBackward ([30]), // vim
-  '0':          command.SeekPercent ([0]), // vim
-  '<s-4>':      command.SeekPercent ([100]), // vim
+  '<space>':     command.PlayPause (),
+  '<c-space>':   '<space>',
+  '<c-right>':   command.NextMusic (),
+  '<c-left>':    command.PreviousMusic (),
+  '<c-o>':       command.OpenFile (),
+  ':o':          '<c-o>', // vim
+  ':e':          '<c-o>', // vim
+  '<right>':     command.SeekForward ([10]),
+  '<s-right>':   command.SeekForward ([30]),
+  'l':           '<right>', // vim
+  'w':           '<s-right>', // vim
+  '<left>':      command.SeekBackward ([10]),
+  '<s-left>':    command.SeekBackward ([30]),
+  'h':           '<left>', // vim
+  'b':           '<s-left>', // vim
+  '0':           command.SeekPercent ([0]), // vim
+  '<s-4>':       command.SeekPercent ([100]), // vim
 
-  /* change setting */
-  '<c-r>':      command.ToggleRepeat (),
-  '<c-u>':      command.ToggleShuffle (),
+  /* change sett ing */
+  '<c-r>':       command.ToggleRepeat (),
+  '<c-u>':       command.ToggleShuffle (),
 
   /* volume */
-  '<c-up>':     command.VolumeUp (),
-  '<c-down>':   command.VolumeDown (),
-  '<c-a-down>': command.VolumeToggleMute (),
-  '9':          command.VolumeDown (), // mplayer
-  // '0':       command.VolumeUp (), // mplayer
+  '<c-up>':      command.VolumeUp (),
+  '<c-down>':    command.VolumeDown (),
+  '<c-a-down>':  command.VolumeToggleMute (),
+  '9':           command.VolumeDown (), // mplayer
+  // '0':        command.VolumeUp (), // mplayer
 
-  /* select, expand */
-  '<down>':     command.SelectDown (),
-  'j':          command.SelectDown (), // vim
-  '<s-down>':   command.ExtendDown (),
-  '<s-j>':      command.ExtendDown (), // vim
-  '<up>':       command.SelectUp (),
-  'k':          command.SelectUp (), // vim
-  '<s-up>':     command.ExtendUp (),
-  '<s-k>':      command.ExtendUp (), // vim
-  '<home>':     command.SelectHome (),
-  'gg':         command.SelectHome (), // vim
-  '<s-home>':   command.ExtendToHome (),
-  'vgg':        command.ExtendToHome (), // vim
-  '<end>':      command.SelectEnd (),
-  '<s-g>':      command.SelectEnd (), // vim
-  '<s-end>':    command.ExtendToEnd (),
-  'v<s-g>':     command.ExtendToEnd (), // vim
-  '<c-a>':      command.SelectAll (),
-  '<c-s-a>':    command.UnselectAll (),
-  '<pgdn>':     command.PageDown (),
-  '<c-f>':      command.PageDown (), // vim
-  '<s-pgdn>':   command.ExtendPageDown (),
-  '<pdup>':     command.PageUp (),
-  '<c-b>':      command.PageUp (), // vim
-  '<s-pdup>':   command.ExtendPageUp (),
+  /* select, exp and */
+  '<down>':      command.SelectDown (),
+  'j':           '<down>', // vim
+  '<s-down>':    command.ExtendDown (),
+  '<s-j>':       '<s-down>', // vim
+  '<up>':        command.SelectUp (),
+  'k':           '<up>', // vim
+  '<s-up>':      command.ExtendUp (),
+  '<s-k>':       '<s-up>', // vim
+  '<home>':      command.SelectHome (),
+  'gg':          '<home>', // vim
+  '<s-home>':    command.ExtendToHome (),
+  'vgg':         '<s-home>', // vim
+  '<end>':       command.SelectEnd (),
+  '<s-g>':       '<end>', // vim
+  '<s-end>':     command.ExtendToEnd (),
+  'v<s-g>':      '<s-end>', // vim
+  '<c-a>':       command.SelectAll (),
+  '<c-s-a>':     command.UnselectAll (),
+  '<pgdn>':      command.PageDown (),
+  '<c-f>':       '<pgdn>', // vim
+  '<s-pgdn>':    command.ExtendPageDown (),
+  '<pdup>':      command.PageUp (),
+  '<c-b>':       '<pgup>', // vim
+  '<s-pdup>':    command.ExtendPageUp (),
 
-  /* toggle popup menu, ui */
-  '<s-/>':      command.ToggleHelp (),
-  '<f1>':       command.ToggleAbout (), // TODO
-  '<[>':        command.ToggleAbout (), // TODO
-  '<c-,>':      command.ToggleConfig (),
-  '<delete>':   command.DeleteSelected (),
-  'd':          command.DeleteSelected (), // vim
-  '<esc>':      command.Escape (),
-  '<enter>':    command.DefaultEnter (),
-  '<a-enter>':  command.ViewInformation (),
-  '<tab>':      command.FocusToggle (),
-  '<s-tab>':    command.FocusToggleReverse (),
-  'f':          command.FullScreenToggle (),
-  '<c-s-f>':    command.FullScreenToggle ()
+  /* toggle popu p menu, ui */
+  '<s-/>':       command.ToggleHelp (),
+  '<f1>':        command.ToggleAbout (), // TODO
+  '<[>':         command.ToggleAbout (), // TODO
+  '<c-,>':       command.ToggleConfig (),
+  '<delete>':    command.DeleteSelected (),
+  '<backspace>': '<delete>',
+  'd':           '<delete>', // vim
+  '<esc>':       command.Escape (),
+  '<c-[>':       '<esc>', // vim
+  '<enter>':     command.DefaultEnter (),
+  '<a-enter>':   command.ViewInformation (),
+  '<tab>':       command.FocusToggle (),
+  '<s-tab>':     command.FocusToggleReverse (),
+  'f':           command.FullScreenToggle (),
+  '<c-s-f>':     command.FullScreenToggle ()
 
 };
 
@@ -2475,27 +2512,27 @@ var keyconfig = {
 //   !!!!!実装に妥協しない!!!!!!
 //    使いやすく  読みやすく
 //
+// 優先
 // TODO: シャッフル, リピート がいまいち
-// TODO: 読めないタグ
-// TODO: ui.jsのaddfile高速化
-// TODO: tableクリックでslideからのfocus out
+// TODO: filter機能
+// TODO: ソート
 // TODO: album art from id3 tag
-// TODO: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/
-// http://phpjavascriptroom.com/?t=ajax&p=jquery_plugin_contextmenu
+// TODO: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/ http://phpjavascriptroom.com/?t=ajax&p=jquery_plugin_contextmenu
+// TODO: tableクリックでslideからのfocus out
 // TODO: keyconfigを各自で設定できるように
+//
+// TODO: 読めないタグ
 // TODO: キーだけでファイルの入れ替え
 // TODO: ファイル順入れ替えた時にorder更新
-// TODO: ソート
 // TODO: C-zで削除キャンセルなど
 // TODO: title="..."にゴミが入る
 // TODO: fixed first row of table
 // TODO: Enterでplayした時に, orderをどうするか
-// TODO: muteにバグ
-// TODO: ui.prototype.fullScreenOn がんばる?
 // TODO: not only mp4, but mkv ...
 // TODO: フルスクリーン時のUIについて. volumeとかどうする...
-// TODO: filter機能
-// TODO: F1がmacで効かない
+// TODO: F1, delがmacで効かない
+// TODO: ui.jsのaddfile高速化
+// TODO: id3タグの読み込みをUArrayってやつで高速化
 
 function Player () {
   var self = this;
@@ -2721,21 +2758,25 @@ Player.prototype = {
   },
 
   mute: function () {
-    this.predvol = this.volume;
+    this.prevol = this.volume.value;
     this.volume.setToMin ();
   },
 
   resume: function () {
-    this.volume.at (this.predvol);
-    delete this.predvol;
+    this.volume.at (this.prevol);
+    delete this.prevol;
   },
 
   togglemute: function () {
-    if (this.volume.value === 0 && this.prevol !== undefined) {
+    if (this.ismute ()) {
       this.resume ();
     } else {
       this.mute ();
     }
+  },
+
+  ismute: function () {
+    return this.volume.value === 0 && this.prevol !== undefined;
   },
 
   volumeup: function () {

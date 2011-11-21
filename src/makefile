@@ -24,7 +24,7 @@ VERSION = $(shell cat version.txt)
 SED_VER = sed "s/@VERSION/${VERSION}/"
 
 main.js : ${SOURCE_FILES}
-	cat ${SOURCE_FILES} | ${SED_DATE} | ${SED_VER} > $@
+	@cat ${SOURCE_FILES} | ${SED_DATE} | ${SED_VER} > $@
 	@cp $@ ../js/
 
 manifest.json : manifest_base.json version.txt
