@@ -79,10 +79,8 @@ Enumstate.prototype = {
       this.index += j;
       this.value = this.enumclass.toEnum (this.index);
       if (this.value === undefined) {
-        log ('this.value === undefined')
         if (this.shuffle) {
           this.enumclass = new Enum (this.enumclass.array.shuffle ());
-        log ('shuffle in next:')
         }
         if (this.repeat) {
           var array = this.enumclass.array;

@@ -42,7 +42,7 @@ function Player () {
                   self.order.repeatOff ();
                 }
               });
-  self.shuffle = new Enumcycle ( ['false', 'true' ]
+  self.shuffle = new Enumcycle ( ['false', 'true']
                , function () { return local.get('shuffle') || 'false'; }
                , function (shuffle) {
                  local.set ('shuffle', shuffle);
@@ -56,7 +56,7 @@ function Player () {
   self.volume = new Limited (0, 256, 16
               , function () {
                 var vol = parseInt (local.get ('volume'), 10);
-                return vol !== undefined ? vol : 127;  // vol can be 0
+                return vol !== undefined ? vol : 128;  // vol can be 0
               }
               , function (volume) {
                 local.set ('volume', volume);
@@ -69,7 +69,7 @@ function Player () {
 
 Player.prototype = {
 
-  version: '1.60',
+  version: '@VERSION',
 
   start: function () {
     this.key.start ();

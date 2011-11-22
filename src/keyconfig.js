@@ -61,7 +61,7 @@ var keyconfig = {
   /* toggle popu p menu, ui */
   '<s-/>':       command.ToggleHelp (),
   '<f1>':        command.ToggleAbout (), // TODO
-  '<[>':         command.ToggleAbout (), // TODO
+  '[':           '<f1>', // TODO
   '<c-,>':       command.ToggleConfig (),
   '<delete>':    command.DeleteSelected (),
   '<backspace>': '<delete>',

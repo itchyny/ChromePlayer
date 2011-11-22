@@ -19,9 +19,10 @@ function Enumcycle (array, initializer, callback) {
                   , initializer
                   , (function (f) {
                       return function (value) {
-                        self.value = value;
                         self.index = self.enumlinear.index;
-                        callback (value);
+                        self.value = value;
+                        self.history = self.history.concat (self.value);
+                        f (value);
                       };
                   } (callback)));
   for (var x in this.enumlinear) {
@@ -46,6 +47,7 @@ Enumcycle.prototype.at = function (index) {
 Enumcycle.prototype.changeArray = function (array) {
   this.enumlinear.changeArray (array);
   this.array = this.enumlinear.array;
+  this.enumclass = this.enumlinear.enumclass;
 };
 
 
