@@ -4,6 +4,7 @@
 //
 // 優先
 // TODO: wavチェック
+// TODO: 曲を<delete>で消した時にorderから消えてない
 // TODO: keyconfigを各自で設定できるように
 // TODO: シャッフル, リピート がいまいち
 // TODO: filter機能
@@ -117,7 +118,7 @@ Player.prototype = {
         }) (file
            , (self.shuffle.value.toString () === 'false' ? index === 0 : index === parseInt (files.length / 2))
            , index === files.length - 1)
-        , 100 * index);
+        , 10 * index);
     });
   },
 

@@ -3,7 +3,7 @@
  *    Chrome Player 2.0
  *
  *    author      : itchyny
- *    last update : 2011/11/22 00:39:36 (GMT)
+ *    last update : 2011/11/22 15:51:59 (GMT)
  *    source code : https://github.com/itchyny/ChromePlayer
  *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -49,10 +49,6 @@ Array.prototype.unique = function () {
 };
 
 if (typeof $ !== 'undefined') {
-
-  // $.fn.unique = Array.prototype.unique;
-
-  // $.fn.join = Array.prototype.join;
 
   $.fn.texttitle = function (t) {
     return this.text(t).attr('title', t);
@@ -2393,7 +2389,7 @@ Key.prototype = {
 
   triggerTimer: undefined,
 
-  watingTime: 300,
+  watingTime: 480,
 
   prevent: function (e) {
     if (e && e.preventDefault) {
@@ -2665,6 +2661,7 @@ var keyconfig = {
 //
 // 優先
 // TODO: wavチェック
+// TODO: 曲を<delete>で消した時にorderから消えてない
 // TODO: keyconfigを各自で設定できるように
 // TODO: シャッフル, リピート がいまいち
 // TODO: filter機能
@@ -2778,7 +2775,7 @@ Player.prototype = {
         }) (file
            , (self.shuffle.value.toString () === 'false' ? index === 0 : index === parseInt (files.length / 2))
            , index === files.length - 1)
-        , 100 * index);
+        , 10 * index);
     });
   },
 

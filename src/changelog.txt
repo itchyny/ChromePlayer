@@ -1,0 +1,52 @@
+v1.0 (2010/12/28)
+Publish
+
+v1.1 (2010/12/30)
+Add a button to add files from dialog
+Add buttons to pause, play, and play next/preveous file
+Add a volume controller
+Allow you to drop files into the whole window (not only into the drop region)
+Support for ogg files
+
+v1.2 (2011/01/03)
+Save and resume volume
+Delete sidebar area on the left
+Hide audio tag and add the information area on the current file
+
+v1.3 (2011/01/04)
+Select and manual sort the file list
+Delete files from the file list with delete key
+Add some key binding
+
+v1.4x (2011/01/08-)
+Move the volume controller on the right
+Fix the bug on click without ctrl key
+Sort files by filenames
+Scroll follows the current selection
+Select the current file by clicking the filename in the information area
+Shuffle and Repeat play
+Support for m4a, aac
+Fix the style in dragging files
+Fast rendering on setup
+
+v1.5x (2011/02/06-)
+Shift + Click
+Color scheme
+Keyboard Shortcuts with ? key
+Infomation on this app with F1 key
+Global keyboard shortcuts
+ID3v2 tag reader
+Property with Alt+Enter
+Support in keyboard shortcuts for Mac users.
+Filter(Find) with C-F.
+
+v1.6x (2011/11/20-)
+Support for videos
+Support for huge size of files
+Import from a directory
+
+v2.0 (20?? - )
+Source code refined
+
+
+

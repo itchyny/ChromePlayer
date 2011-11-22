@@ -1,10 +1,8 @@
 viewname ("prelude.js");
 test ("existence", function() {
-  expect(5);
+  expect(3);
   ok( Array.prototype.shuffle, "Array.prototype.shuffle()" );
   ok( Array.prototype.unique, "Array.prototype.unique()" );
-  ok( $.fn.join, "$.fn.join()" );
-  ok( $.fn.unique, "$.fn.unique()" );
   ok( $.fn.texttitle, "$.fn.texttitle()" );
 });
 

@@ -95,7 +95,7 @@ Key.prototype = {
 
   triggerTimer: undefined,
 
-  watingTime: 300,
+  watingTime: 480,
 
   prevent: function (e) {
     if (e && e.preventDefault) {

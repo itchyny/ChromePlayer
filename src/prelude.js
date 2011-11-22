@@ -38,10 +38,6 @@ Array.prototype.unique = function () {
 
 if (typeof $ !== 'undefined') {
 
-  // $.fn.unique = Array.prototype.unique;
-
-  // $.fn.join = Array.prototype.join;
-
   $.fn.texttitle = function (t) {
     return this.text(t).attr('title', t);
   };
