@@ -13,6 +13,10 @@ if (typeof window === 'undefined') {
 // initializer was not found in the array.)
 function Enumcycle (array, initializer, callback) {
   var self = this;
+  this.enumclass = new Enum (array);
+  this.array = this.enumclass.array;
+  this.initializer = initializer;
+  this.callback = callback || function (x) { };
   callback = callback || function (x) { };
   this.enumlinear = new Enumlinear
                   ( array

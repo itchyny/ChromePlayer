@@ -16,14 +16,14 @@
 // TODO: キーだけでファイルの入れ替え
 // TODO: ファイル順入れ替えた時にorder更新
 // TODO: C-zで削除キャンセルなど
-// TODO: title="..."にゴミが入る
 // TODO: fixed first row of table
 // TODO: Enterでplayした時に, orderをどうするか
-// TODO: not only mp4, but mkv ...
 // TODO: フルスクリーン時のUIについて. volumeとかどうする...
+// TODO: 音楽のフルスクリーン時のインターフェース, アルバムアートなど
 // TODO: F1, delがmacで効かない
 // TODO: ui.jsのaddfile高速化
 // TODO: id3タグの読み込みをUArrayってやつで高速化
+// TODO: title="..."にゴミが入る ? 
 
 function Player () {
   var self = this;
@@ -283,7 +283,7 @@ Player.prototype = {
     this.order.remove (index);
   },
 
-  order: new Enumstate ([]),
+  order: new Enumdinamic ([], null, function (order) {}),
 
   repeat: new Enumcycle (['false', 'true', 'one']),
 

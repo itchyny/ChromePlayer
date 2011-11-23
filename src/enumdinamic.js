@@ -14,6 +14,10 @@ if (typeof window === 'undefined') {
 
 function Enumdinamic (array, initializer, callback) {
   var self = this;
+  this.enumclass = new Enum (array);
+  this.array = this.enumclass.array;
+  this.initializer = initializer;
+  this.callback = callback || function (x) { };
   callback = callback || function (x) { };
   this.enumlinear = new Enumlinear
                   ( array
@@ -24,6 +28,7 @@ function Enumdinamic (array, initializer, callback) {
                         self.value = value;
                         self.history = self.history.concat (self.value);
                         self.array = self.enumlinear.array;
+                        self.enumclass = self.enumlinear.enumclass;
                         f (self.value);
                       };
                   } (callback)));
@@ -105,9 +110,13 @@ Enumdinamic.prototype.next = function (j) {
   this.at (index);
   return this.value;
 };
+Enumdinamic.prototype.concat = function (arr) {
+  var basearray = this.array || [];
+  return this.changeArray (basearray.concat (arr));
+};
 Enumdinamic.prototype.changeArray = function (array) {
   this.enumlinear.changeArray (array);
-  this.array = this.enumlinear.array;
+  this.array = this.enumlinear.array || [];
   this.enumclass = this.enumlinear.enumclass;
 };
 

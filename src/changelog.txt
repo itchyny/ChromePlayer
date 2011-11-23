@@ -41,9 +41,10 @@ Support in keyboard shortcuts for Mac users.
 Filter(Find) with C-F.
 
 v1.6x (2011/11/20-)
-Support for videos
-Support for huge size of files
+Support for videos (avi)
+Music or videos of large size
 Import from a directory
+Watch video in full screen (f key)
 
 v2.0 (20?? - )
 Source code refined

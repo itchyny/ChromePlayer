@@ -28,7 +28,7 @@ Key.prototype = {
     var self = this;
     $(window).keypress (function (e) {
       switch (e.target.localName) {
-        case 'input': return;
+        case 'input': case 'textarea': return;
         default:
           self.prevent (e);
       }
@@ -36,7 +36,7 @@ Key.prototype = {
     $(window).keydown (function (e) {
       log (e.target.localName);
       switch (e.target.localName) {
-        case 'input': return;
+        case 'input': case 'textarea': return;
         default:
           self.keydown (e);
           if (self.callback [ self.convert (e) ]) {

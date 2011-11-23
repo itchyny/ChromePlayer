@@ -3,7 +3,7 @@
  *    Chrome Player 2.0
  *
  *    author      : itchyny
- *    last update : 2011/11/23 10:47:18 (GMT)
+ *    last update : 2011/11/23 11:02:43 (GMT)
  *    source code : https://github.com/itchyny/ChromePlayer
  *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -2444,7 +2444,7 @@ Key.prototype = {
     var self = this;
     $(window).keypress (function (e) {
       switch (e.target.localName) {
-        case 'input': return;
+        case 'input': case 'textarea': return;
         default:
           self.prevent (e);
       }
@@ -2452,7 +2452,7 @@ Key.prototype = {
     $(window).keydown (function (e) {
       log (e.target.localName);
       switch (e.target.localName) {
-        case 'input': return;
+        case 'input': case 'textarea': return;
         default:
           self.keydown (e);
           if (self.callback [ self.convert (e) ]) {
@@ -2732,14 +2732,14 @@ var command = {
   ExtendPageUp:       function (opt) { return function (app) { app.ui.extendPageUp (); }; },
   DeleteSelected:     function (opt) { return function (app) { app.ui.deleteSelected (); }; },
   ShiftLock:          function (opt) { return function (app) { app.key.lock ('shiftKey'); }; },
-  CtrlLock:          function (opt) { return function (app) { app.key.lock ('ctrlKey'); }; },
-  AltLock:          function (opt) { return function (app) { app.key.lock ('altKey'); }; },
+  CtrlLock:           function (opt) { return function (app) { app.key.lock ('ctrlKey'); }; },
+  AltLock:            function (opt) { return function (app) { app.key.lock ('altKey'); }; },
   ShiftUnlock:        function (opt) { return function (app) { app.key.unlock ('shiftKey'); }; },
-  CtrlUnlock:        function (opt) { return function (app) { app.key.unlock ('ctrlKey'); }; },
-  AltUnlock:        function (opt) { return function (app) { app.key.unlock ('altKey'); }; },
-  ShiftToggleLock:  function (opt) { return function (app) { app.key.togglelock ('shiftKey'); }; },
-  CtrlToggleLock:  function (opt) { return function (app) { app.key.togglelock ('ctrlKey'); }; },
-  AltToggleLock:  function (opt) { return function (app) { app.key.togglelock ('altKey'); }; },
+  CtrlUnlock:         function (opt) { return function (app) { app.key.unlock ('ctrlKey'); }; },
+  AltUnlock:          function (opt) { return function (app) { app.key.unlock ('altKey'); }; },
+  ShiftToggleLock:    function (opt) { return function (app) { app.key.togglelock ('shiftKey'); }; },
+  CtrlToggleLock:     function (opt) { return function (app) { app.key.togglelock ('ctrlKey'); }; },
+  AltToggleLock:      function (opt) { return function (app) { app.key.togglelock ('altKey'); }; },
 
   /* vim setting */
   VisualModeOn:       function (opt) { return function (app) { app.vim.visual.at (1); }; },
@@ -2824,7 +2824,7 @@ var keyconfig = {
   '<pdup>':      command.PageUp (),
   '<c-b>':       '<pgup>', // vim
   '<s-pdup>':    command.ExtendPageUp (),
-  'v':           command.ShiftLock (), // vim // TODO
+  // 'v':           command.ShiftLock (), // vim // TODO
 
   /* toggle popu p menu, ui */
   '<s-/>':       command.ToggleHelp (),
@@ -2873,14 +2873,14 @@ var keyconfig = {
 // TODO: キーだけでファイルの入れ替え
 // TODO: ファイル順入れ替えた時にorder更新
 // TODO: C-zで削除キャンセルなど
-// TODO: title="..."にゴミが入る
 // TODO: fixed first row of table
 // TODO: Enterでplayした時に, orderをどうするか
-// TODO: not only mp4, but mkv ...
 // TODO: フルスクリーン時のUIについて. volumeとかどうする...
+// TODO: 音楽のフルスクリーン時のインターフェース, アルバムアートなど
 // TODO: F1, delがmacで効かない
 // TODO: ui.jsのaddfile高速化
 // TODO: id3タグの読み込みをUArrayってやつで高速化
+// TODO: title="..."にゴミが入る ? 
 
 function Player () {
   var self = this;

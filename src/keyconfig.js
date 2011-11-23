@@ -55,7 +55,7 @@ var keyconfig = {
   '<pdup>':      command.PageUp (),
   '<c-b>':       '<pgup>', // vim
   '<s-pdup>':    command.ExtendPageUp (),
-  'v':           command.ShiftLock (), // vim // TODO
+  // 'v':           command.ShiftLock (), // vim // TODO
 
   /* toggle popu p menu, ui */
   '<s-/>':       command.ToggleHelp (),
