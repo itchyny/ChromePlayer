@@ -44,36 +44,40 @@ var keyconfig = {
   '<home>':      command.SelectHome (),
   'gg':          '<home>', // vim
   '<s-home>':    command.ExtendToHome (),
-  'vgg':         '<s-home>', // vim
   '<end>':       command.SelectEnd (),
   '<s-g>':       '<end>', // vim
   '<s-end>':     command.ExtendToEnd (),
-  'v<s-g>':      '<s-end>', // vim
   '<c-a>':       command.SelectAll (),
   '<c-s-a>':     command.UnselectAll (),
   '<pgdn>':      command.PageDown (),
-  '<c-f>':       '<pgdn>', // vim
+  // '<c-f>':       '<pgdn>', // vim
   '<s-pgdn>':    command.ExtendPageDown (),
   '<pdup>':      command.PageUp (),
   '<c-b>':       '<pgup>', // vim
   '<s-pdup>':    command.ExtendPageUp (),
+  'v':           command.ShiftLock (), // vim // TODO
 
   /* toggle popu p menu, ui */
   '<s-/>':       command.ToggleHelp (),
-  '<f1>':        command.ToggleAbout (), // TODO
-  '[':           '<f1>', // TODO
+  '<f1>':        command.ToggleAbout (),
+  '[':           '<f1>',
   '<c-,>':       command.ToggleConfig (),
   '<delete>':    command.DeleteSelected (),
   '<backspace>': '<delete>',
   'd':           '<delete>', // vim
   '<esc>':       command.Escape (),
+  '<s-esc>':     '<esc>',
   '<c-[>':       '<esc>', // vim
+  '<c-s-[>':     '<esc>', // vim
   '<enter>':     command.DefaultEnter (),
   '<a-enter>':   command.ViewInformation (),
   '<tab>':       command.FocusToggle (),
   '<s-tab>':     command.FocusToggleReverse (),
   'f':           command.FullScreenToggle (),
   '<c-s-f>':     command.FullScreenToggle (),
+
+  /* filter interface */
+  '<c-f>':       command.FilterStart (),
 
   /* special command */
   '<nop>':       command.Nop ()

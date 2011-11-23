@@ -3,17 +3,16 @@
 //    使いやすく  読みやすく
 //
 // 優先
-// TODO: wavチェック
 // TODO: 曲を<delete>で消した時にorderから消えてない
 // TODO: keyconfigを各自で設定できるように
 // TODO: シャッフル, リピート がいまいち
-// TODO: filter機能
 // TODO: ソート
-// TODO: album art from id3 tag
+// TODO: album art from id3 tag https://github.com/aadsm/JavaScript-ID3-Reader
 // TODO: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/ http://phpjavascriptroom.com/?t=ajax&p=jquery_plugin_contextmenu
 // TODO: tableクリックでslideからのfocus out
 //
 // TODO: 読めないタグ
+// TODO: vim, visual mode
 // TODO: キーだけでファイルの入れ替え
 // TODO: ファイル順入れ替えた時にorder更新
 // TODO: C-zで削除キャンセルなど
@@ -91,7 +90,7 @@ Player.prototype = {
   nowplaying: 0,
 
   filetypes: {
-    audio: { regexp: /audio\/(mp3|ogg|m4a|x-matroska)/
+    audio: { regexp: /audio\/(mp3|wav|ogg|m4a|x-matroska)/
            , string: 'audio'
     },
     // video: { regexp: /video\/(mp4|mkv|x-matroska)/
@@ -105,7 +104,7 @@ Player.prototype = {
     var self = this;
     var first = true;
     [].forEach.call (files, function (file, index) {
-      log (file.type);
+      log ('filetype: ' + file.type);
       files[index].filetype = file.type.match (self.filetypes.audio.regexp) ? self.filetypes.audio.string
                             : file.type.match (self.filetypes.video.regexp) ? self.filetypes.video.string : '';
     });
@@ -288,8 +287,15 @@ Player.prototype = {
 
   repeat: new Enumcycle (['false', 'true', 'one']),
 
-  shuffle: new Enumcycle (['false', 'true'])
+  shuffle: new Enumcycle (['false', 'true']),
 
+};
+
+
+Player.prototype.vim = {
+  visual: new Enumcycle ([false, true], false, function (visual) {
+    // TODO
+  }),
 };
 
 var player = new Player ();

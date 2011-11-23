@@ -39,6 +39,19 @@ var command = {
   PageUp:             function (opt) { return function (app) { app.ui.pageUp (); }; },
   ExtendPageUp:       function (opt) { return function (app) { app.ui.extendPageUp (); }; },
   DeleteSelected:     function (opt) { return function (app) { app.ui.deleteSelected (); }; },
+  ShiftLock:          function (opt) { return function (app) { app.key.lock ('shiftKey'); }; },
+  CtrlLock:          function (opt) { return function (app) { app.key.lock ('ctrlKey'); }; },
+  AltLock:          function (opt) { return function (app) { app.key.lock ('altKey'); }; },
+  ShiftUnlock:        function (opt) { return function (app) { app.key.unlock ('shiftKey'); }; },
+  CtrlUnlock:        function (opt) { return function (app) { app.key.unlock ('ctrlKey'); }; },
+  AltUnlock:        function (opt) { return function (app) { app.key.unlock ('altKey'); }; },
+  ShiftToggleLock:  function (opt) { return function (app) { app.key.togglelock ('shiftKey'); }; },
+  CtrlToggleLock:  function (opt) { return function (app) { app.key.togglelock ('ctrlKey'); }; },
+  AltToggleLock:  function (opt) { return function (app) { app.key.togglelock ('altKey'); }; },
+
+  /* vim setting */
+  VisualModeOn:       function (opt) { return function (app) { app.vim.visual.at (1); }; },
+  VisualModeoff:      function (opt) { return function (app) { app.vim.visual.at (0); }; },
 
   /* toggle popup menu */
   ToggleHelp:         function (opt) { return function (app) { app.ui.toggleHelp (); }; },
@@ -52,6 +65,9 @@ var command = {
   FullScreenOn:       function (opt) { return function (app) { app.ui.fullScreenOn (); }; },
   FullScreenOff:      function (opt) { return function (app) { app.ui.fullScreenOff (); }; },
   FullScreenToggle:   function (opt) { return function (app) { app.ui.fullScreenToggle (); }; },
+
+  /* filter interface */
+  FilterStart:        function (opt) { return function (app) { app.ui.filterStart (); }; },
 
   /* Special commands */
   Nop:                function (opt) { return function (app) {}; },

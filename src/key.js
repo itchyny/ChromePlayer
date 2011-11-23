@@ -27,12 +27,21 @@ Key.prototype = {
   start: function () {
     var self = this;
     $(window).keypress (function (e) {
-      self.prevent (e);
+      switch (e.target.localName) {
+        case 'input': return;
+        default:
+          self.prevent (e);
+      }
     });
     $(window).keydown (function (e) {
-      self.keydown (e);
-      if (self.callback [ self.convert (e) ]) {
-        self.prevent (e);
+      log (e.target.localName);
+      switch (e.target.localName) {
+        case 'input': return;
+        default:
+          self.keydown (e);
+          if (self.callback [ self.convert (e) ]) {
+            self.prevent (e);
+          }
       }
     });
   },
@@ -113,7 +122,10 @@ Key.prototype = {
   },
 
   meta: function (e) {
-    return ((e.global ? 'g-' : '') + (e.ctrlKey || e.metaKey ? 'c-' : '') + (e.shiftKey ? 's-' : '') + (e.altKey ? 'a-' : ''));
+    return ((e.global ? 'g-' : '')
+          + (e.ctrlKey || e.metaKey || this.lockconfig.ctrlKey ? 'c-' : '')
+          + (e.shiftKey || this.lockconfig.shiftKey ? 's-' : '')
+          + (e.altKey || this.lockconfig.altKey ? 'a-' : ''));
   },
 
   parse: function (key) {
@@ -147,6 +159,51 @@ Key.prototype = {
         };
       }) (self.callback);
     }
+  },
+
+  lock: function (key) {
+    if (this.lockconfig[key] !== undefined) {
+    log ('lock' + key);
+      this.lockconfig[key] = true;
+    }
+    return this;
+  },
+
+  lockAll: function () {
+    for (var key in this.lockconfig) {
+      if (this.lockconfig.hasOwnProperty (key)) {
+        this.lockconfig[key] = true;
+      }
+    }
+  },
+
+  unlock: function (key) {
+    if (this.lockconfig[key] !== undefined) {
+      this.lockconfig[key] = false;
+    }
+    return this;
+  },
+
+  unlockAll: function () {
+    for (var key in this.lockconfig) {
+      if (this.lockconfig.hasOwnProperty (key)) {
+        this.lockconfig[key] = false;
+      }
+    }
+  },
+
+  togglelock: function (key) {
+    if (this.lockconfig[key] !== undefined) {
+      this.lockconfig[key] = !this.lockconfig[key];
+    }
+    return this;
+  },
+
+  lockconfig: {
+    shiftKey: false,
+    ctrlKey: false,
+    altKey: false,
+    metaKey: false
   },
 
   codes: {

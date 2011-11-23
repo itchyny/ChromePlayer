@@ -18,7 +18,7 @@ String.prototype.unsynchsafe = function () {
 
 function decode (chars) {
   switch (chars.charCodeAt(0)) {
-    case 0: { // ISO-8859-1
+    case 0:  // ISO-8859-1
       // log("ISO-8859-1"); // UTF-16?
       // console.log(chars);
       var a = "";
@@ -31,7 +31,6 @@ function decode (chars) {
       };
       // return a;
       return chars.toString ();
-    }
     case 2: { // UTF-16BE without BOM
       // log("UTF-16BE without BOM");
     }
@@ -106,12 +105,12 @@ function decode (chars) {
   }
 }
 
-function ID3 (result) {
+function _ID3 (result) {
   this.result = result;
   this.i = 0;
 }
 
-ID3.prototype = {
+_ID3.prototype = {
 
   read: function () {
     // log ("id3 read")
@@ -164,11 +163,28 @@ ID3.prototype = {
         //        log("flame size: " + flamesize);
         //        log("flame flg: " + flameflg);
         //        log("flame text: " + flametext);
-        if (flametext) tags[flameid] = flametext;
+        if (flametext) {
+          tags[flameid] = flametext;
+          if (this.shortcuts[flameid]) {
+            tags[this.shortcuts[flameid]] = flametext;
+          }
+        }
       }
     }
     this.tags = tags;
   },
+
+  shortcuts: {
+    TIT2: "title",
+    TPE1: "artist",
+    TALB: "album",
+    TYER: "year",
+    COMM: "comment",
+    TRCK: "track",
+    TCON: "genre",
+    APIC: "picture",
+    USLT: "lyrics"
+  }
 
 };
 

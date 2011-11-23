@@ -28,6 +28,7 @@ var UI = {
     self.initsplitter ();
     self.resizableSet ();
     self.selectableSet ();
+    self.initFilter ();
     $(window).resize(function () { self.initsize (); });
     $('div#appname a').text('Local Player v' + player.version);
   },
@@ -194,16 +195,16 @@ var UI = {
   ontagread: function (tags, index) {
     $('tr[number=' + index + ']')
     .find('.artist')
-    .texttitle(tags['TPE1'] || '')
+    .texttitle(tags.artist || '')
     .end()
     .find('.track')
-    .texttitle(tags['TRCK'] || '')
+    .texttitle(tags.track || '')
     .end()
     .find('.title')
-    .texttitle(tags['TIT2'] || '')
+    .texttitle(tags.title || '')
     .end()
     .find('.album')
-    .texttitle(tags['TALB'] || '');
+    .texttitle(tags.album || '');
   },
 
   setdblclick: function () {
@@ -236,10 +237,25 @@ var UI = {
       this.div.video.parentNode.style.visibility = 'hidden';
   },
 
+  showAlbumArt: function (file) {
+    var art = $('img#art')[0];
+    if (file.picture) {
+      var image = file.picture;
+      art.src = "data:" + image.format + ";base64," + Base64.encodeBytes(image.data);
+      art.style.display = "block";
+      log ("displaying image")
+    } else {
+      art.style.display = "none";
+      log ("hiding image")
+    }
+  },
+
   play: function (index) {
     var self = this;
     self.div.musicSlider.slider ('enable');
-    self.showFileName (self.player.playing.name, index);
+    var file = self.player.playing;
+    self.showAlbumArt (file);
+    self.showFileName (file.name, index);
     $('tr.nP')
       .removeClass('nP')
       .find('img')
@@ -760,6 +776,8 @@ var UI = {
 
   escape: function () {
     var self = this;
+    self.player.key.unlockAll ();
+    self.filterEnd ();
     switch($('#help:visible,#config:visible,#about:visible,#property:visible,#filter:visible').size()) {
       case 0:
         if($('div#musicSlider a:focus, div#volumeSlider a:focus').size()) {
@@ -864,6 +882,78 @@ var UI = {
       this.fullScreenOn ();
     }
   },
+
+  initFilter: function () {
+    var self = this;
+    this.div.filterword.keydown(function (e) { self.filterKeydown (e); });
+  },
+
+  filterStart: function () {
+    var tags = [], trs = [], index = 0, selected = $('ui-selected');
+    this.div.filter.fadeIn(200);
+    var input = this.div.filterword.focus()[0];//.val('');
+    input.selectionStart = 0;
+    input.selectionEnd = input.value.length;
+    $('tr', this.div.tbody).each(function (i, x) {
+      tags[i] = ((function (x) {
+        var a = [];
+        for (i in x) {
+          a.push(x[i])
+        }
+        return a;
+      })(self.player.musics[$(x).attr('number')].tags)).join('__').toLowerCase();
+    });
+    this.div.matchnum.text('');
+    this.filterTags = tags;
+  },
+
+  filterKeydown: function (e) {
+    var self = this;
+    setTimeout( function () {
+      if (e.keyCode === 13) { self.filterBlink (); return; };
+      if (e.keyCode === 27) { self.filterEnd (); return; };
+      var s = (e.target.value).toLowerCase();
+      var matched = [];
+      var $trs = $('tr', self.div.tbody);
+      $('tr.ui-selected', self.div.tbody).UNSELECT(true);
+      if (!s) {
+        self.div.matchnum.text(0 + '/' + $trs.length);
+        return;
+      }
+      try {
+      self.filterTags.forEach(function (t, i) {
+        if (t.match(s) !== null) {
+          matched.push(i);
+        }
+      });
+      matched.forEach(function (n) {
+        $trs.eq(n).SELECT(true);
+      });
+      self.div.matchnum.text(matched.length + '/' + $trs.length);
+      var selected = $('tr.ui-selected');
+      } catch (e){};
+      //if (matched.length < 3) $trs.eq(matched[0]).SELECT().LASTSELECT();
+    }, 20);
+  },
+
+  filterEnd: function () {
+    this.div.filter.fadeOut(200);
+    this.div.filterword.focusout ();
+    // this.div.table.focusin ();
+    this.focusUpdate ();
+  },
+
+  filterIndex: 0,
+  filterBlink: function () {
+    log ('filterBlink');
+    if (isNaN(this.filterIndex)) {
+      this.filterIndex = 0;
+    };
+    var selected = $('tr.ui-selected');
+    var x = selected.eq(this.filterIndex).UNSELECT(true);
+    setTimeout( function () { x.SELECT(false, true); }, 200);
+    this.filterIndex = (++this.filterIndex) % selected.size();
+  }
 
 };
 
@@ -996,4 +1086,3 @@ $.fn.drag_drop_multi_select.defaults.after_drop_action = function ($item, $old, 
 ////             //.children()
 ////             //.resizable({ handles: 'e, w' });
 ////             //.resizable();
-////             this.div.filterword.keydown(filter.start);

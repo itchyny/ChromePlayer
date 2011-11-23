@@ -76,18 +76,35 @@ Music.prototype = {
   },
 
   ontagload: function (e, f) {
-    this.tags = new ID3 (e.target.result).read();
+    this.tags = new _ID3 (e.target.result).read();
+    this.tags.type = this.type;
+    this.tags.name = this.name;
     f (this.tags);
   },
 
-  tagread: function (f) {
+  mytagreader: function (f) {
     var self = this;
     var binaryReader = new FileReader();
     binaryReader.onload = function (e) {
       self.ontagload (e, f);
     };
     binaryReader.readAsBinaryString (this.file.webkitSlice(0, 1000));
-    // binaryReader.readAsBinaryString (this.file.slice(0, 1000));
+  },
+
+  tagread: function (f) {
+    var self = this;
+    var url = webkitURL.createObjectURL (this.file);
+    self.mytagreader (f);
+    ID3.loadTags (url, function () {
+                   var tags = ID3.getAllTags(url);
+                   log (tags);
+                   if (tags && tags.picture) {
+                     self.picture = tags.picture;
+                   }
+                 }, { tags: [ //"artist", "title", "album", "year", "comment", "track", "genre", "lyrics",
+                   "picture"]
+                    , dataReader: FileAPIReader (this.file)
+                 });
   },
 
   play: function (vol, next) {
