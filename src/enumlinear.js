@@ -10,11 +10,12 @@ if (typeof window === 'undefined') {
 
 // An instance of Enumlinear has current position.
 // initializer can be a function
-function Enumlinear (array, initializer, callback) {
+function Enumlinear (array, initializer, callback, parent) {
   this.enumclass = new Enum (array);
   this.array = this.enumclass.array;
   this.initializer = initializer;
   this.callback = callback || function (x) { };
+  this.parent = parent;
 }
 
 Enumlinear.prototype = {
@@ -26,10 +27,12 @@ Enumlinear.prototype = {
   history: [], //:: [Value]
 
   head: function () {
+logfn ('Enumlinear.prototype.head');
     return this.at (0);
   },
 
   last: function () {
+logfn ('Enumlinear.prototype.last');
     return this.at (this.enumclass.array.length - 1);
   },
 
@@ -38,6 +41,7 @@ Enumlinear.prototype = {
   },
 
   at: function (index) {
+logfn ('Enumlinear.prototype.at');
     /*! return value; return undefined if index if out of array */
     if (this.nonvalidIndex (index)) {
       index = this.index;
@@ -48,13 +52,16 @@ Enumlinear.prototype = {
     }
     this.value = value;
     this.index = index;
+    this.array = this.enumclass.array;
     this.history = this.history.concat (this.value);
-    this.callback (this.value);
+    this.callback (this.value, this.parent);
     return this.value;
   },
 
   atfromEnum: function (value) {
+logfn ('Enumlinear.prototype.atfromEnum');
     /*! return value; return undefined if value is not found in array */
+console.log ('atfromEnum value: ' + value);
     var index = this.enumclass.fromEnum (value);
     if (index === undefined) {
       return undefined;
@@ -63,6 +70,7 @@ Enumlinear.prototype = {
   },
 
   next: function (j) {
+logfn ('Enumlinear.prototype.next');
     /*! return undefined if out of array after moving */
     if (this.nonvalidIndex (j)) {
       j = 1;
@@ -71,6 +79,7 @@ Enumlinear.prototype = {
   },
 
   prev: function (j) {
+logfn ('Enumlinear.prototype.prev');
     /*! return undefined if out of array after backward */
     if (this.nonvalidIndex (j)) {
       j = -1;
@@ -79,6 +88,7 @@ Enumlinear.prototype = {
   },
 
   init: function (value) {
+logfn ('Enumlinear.prototype.init');
     /*! return value; return undefined if value is not found in array */
     if (value === undefined) {
       if (typeof this.initializer === 'function') {
@@ -99,20 +109,26 @@ Enumlinear.prototype = {
   },
 
   concat: function (arr) {
+logfn ('Enumlinear.prototype.concat');
     return this.changeArray (this.enumclass.array.concat (arr));
   },
 
   splice: function (start, count) {
+logfn ('Enumlinear.prototype.splice');
     return this.changeArray (this.enumclass.array.splice (start, count));
   },
 
   remove: function (value) {
+logfn ('Enumlinear.prototype.remove');
     return this.splice (this.enumclass.fromEnum (value), 1);
   },
 
   changeArray: function (array) {
+logfn ('Enumlinear.prototype.changeArray');
     this.enumclass = new Enum (array);
     this.array = this.enumclass.array;
+    var index = this.enumclass.fromEnum (this.value) || 0;
+    this.at (index);
     return this;
   }
 

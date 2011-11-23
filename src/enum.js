@@ -23,6 +23,7 @@ Enum.prototype = {
 
   toEnum: function (i) {
     /*! return undefined if index is out of array */
+    if (!this.array) return;
     if (0 <= i && i < this.array.length) {
       return this.array[i];
     } else {
@@ -32,6 +33,7 @@ Enum.prototype = {
 
   fromEnum: function (x) {
     /*! return undefined if value is not found in array */
+    if (!this.array) return;
     for (var i = 0, l = this.array.length; i < l; i++) {
       if (this.array[i] === x) return i;
     }
@@ -39,10 +41,12 @@ Enum.prototype = {
   },
 
   enumFrom: function (x) {
+    if (!this.array) return;
     return this.enumFromTo (x, this.array[this.array.length - 1]);
   },
 
   enumFromThen: function (x, y) {
+    if (!this.array) return;
     var i = this.fromEnum (x);
     var j = this.fromEnum (y);
     var ans = [];
@@ -57,6 +61,7 @@ Enum.prototype = {
   },
 
   enumFromThenTo: function (x, y, z) {
+    if (!this.array) return;
     var i = this.fromEnum (x);
     var j = this.fromEnum (y);
     var k = this.fromEnum (z);

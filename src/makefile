@@ -6,7 +6,6 @@ SOURCE_FILES =\
 	enumlinear.js \
 	enumcycle.js \
 	enumdinamic.js \
-	enumstate.js \
 	id3.js \
 	music.js \
 	local.js \

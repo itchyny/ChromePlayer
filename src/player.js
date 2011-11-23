@@ -5,7 +5,7 @@
 // 優先
 // TODO: 曲を<delete>で消した時にorderから消えてない
 // TODO: keyconfigを各自で設定できるように
-// TODO: シャッフル, リピート がいまいち
+// TODO: シャッフル, リピート バグがちょっとだけある shuffleon, repeaton で起動 -> next
 // TODO: ソート
 // TODO: album art from id3 tag https://github.com/aadsm/JavaScript-ID3-Reader
 // TODO: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/ http://phpjavascriptroom.com/?t=ajax&p=jquery_plugin_contextmenu
@@ -20,10 +20,9 @@
 // TODO: Enterでplayした時に, orderをどうするか
 // TODO: フルスクリーン時のUIについて. volumeとかどうする...
 // TODO: 音楽のフルスクリーン時のインターフェース, アルバムアートなど
-// TODO: F1, delがmacで効かない
 // TODO: ui.jsのaddfile高速化
 // TODO: id3タグの読み込みをUArrayってやつで高速化
-// TODO: title="..."にゴミが入る ? 
+// TODO: title="..."にゴミが入る ?
 
 function Player () {
   var self = this;
@@ -72,6 +71,7 @@ Player.prototype = {
   version: '@VERSION',
 
   start: function () {
+logfn ('Player.prototype.start');
     this.key.start ();
     this.ui.start (this);
     this.repeat.init ();
@@ -101,6 +101,7 @@ Player.prototype = {
 
   /* file reading */
   readFiles: function (files) {
+logfn ('Player.prototype.readFiles');
     var self = this;
     var first = true;
     [].forEach.call (files, function (file, index) {
@@ -122,6 +123,7 @@ Player.prototype = {
   },
 
   readOneFile: function (file, first, last) {
+logfn ('Player.prototype.readOneFile');
     var self = this;
     var n = self.musics.length;
     self.files[n] = file;
@@ -141,7 +143,7 @@ Player.prototype = {
     if (last) {
       self.ui.selectableSet ();
       self.ui.setdblclick ();
-      if (self.order.shuffle) {
+      if (self.order.shuffle.value === 'true') {
         self.order.shuffleOn ();
       }
     }
@@ -149,11 +151,15 @@ Player.prototype = {
 
   /* basic player operations */
   play: function (index) {
+logfn ('Player.prototype.play');
+console.log ('- player.prototype.play---');
+console.log ('index: ' + index);
     var self = this;
     if (index === undefined) {
       index = 0;
     }
-    self.order.at (index);
+    console.dir (self.order);
+    self.order.atfromEnum (index);
     self.pause ();
     if (self.playing) {
       self.playing.release ();
@@ -172,6 +178,7 @@ Player.prototype = {
   },
 
   pause: function () {
+logfn ('Player.prototype.pause');
     this.ui.pause ();
     if (this.playing) {
       this.playing.pause ();
@@ -179,6 +186,7 @@ Player.prototype = {
   },
 
   toggle: function () {
+logfn ('Player.prototype.toggle');
     var self = this;
     if (!self.playing) {
       return;
@@ -193,6 +201,8 @@ Player.prototype = {
 
   nextundefinedcount: 0,
   next: function () {
+logfn ('Player.prototype.next');
+    console.dir (this.order);
     this.pause ();
     var index = this.order.next ();
     if (index === undefined) {
@@ -209,6 +219,7 @@ Player.prototype = {
 
   prevundefinedcount: 0,
   prev: function () {
+logfn ('Player.prototype.prev');
     this.pause ();
     var index = this.order.prev ();
     if (index === undefined) {
@@ -224,6 +235,7 @@ Player.prototype = {
   },
 
   seekAt: function (position /* 0 - 1 */ ) {
+logfn ('Player.prototype.seekAt');
     if (this.playing !== undefined && this.playing.audio) {
       position = Math.max (0, Math.min (1, position));
       this.playing.audio.currentTime = this.playing.audio.duration * position;
@@ -233,6 +245,7 @@ Player.prototype = {
   },
 
   seekBy: function (sec) {
+logfn ('Player.prototype.seekBy');
     if (this.nowplaying !== undefined && this.playing && this.playing.audio) {
       var prev = this.playing.seekBy (sec);
       if (prev) {
@@ -245,20 +258,24 @@ Player.prototype = {
   volume: new Limited (0, 256, 16, 127),
 
   updatevolume: function () {
+logfn ('Player.prototype.updatevolume');
     this.volume.at (this.ui.volume);
   },
 
   mute: function () {
+logfn ('Player.prototype.mute');
     this.prevol = this.volume.value;
     this.volume.setToMin ();
   },
 
   resume: function () {
+logfn ('Player.prototype.resume');
     this.volume.at (this.prevol);
     delete this.prevol;
   },
 
   togglemute: function () {
+logfn ('Player.prototype.togglemute');
     if (this.ismute ()) {
       this.resume ();
     } else {
@@ -267,20 +284,26 @@ Player.prototype = {
   },
 
   ismute: function () {
+logfn ('Player.prototype.ismute');
     return this.volume.value === 0 && this.prevol !== undefined;
   },
 
   volumeup: function () {
+logfn ('Player.prototype.volumeup');
     this.volume.increase ();
   },
 
   volumedown: function () {
+logfn ('Player.prototype.volumedown');
     this.volume.decrease ();
   },
 
   remove: function (index) {
+logfn ('Player.prototype.remove');
     this[index] = null;
     this.order.remove (index);
+    log (this.order);
+    log (this.order.array);
   },
 
   order: new Enumdinamic ([], null, function (order) {}),

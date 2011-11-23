@@ -2,9 +2,25 @@ function log (x) {
   console.dir (x);
 }
 
+function logfn (x) {
+  console.log ('--------------- ' + x + ' ---------------');
+}
+
 Array.prototype.clone = function () {
     return Array.apply (null,this);
 };
+
+Array.prototype.drop = function (x) {
+  var arr = [];
+  for (var i = 0; i < this.length; i++) {
+    if (this[i] !== x) {
+      arr = arr.concat ([this[i]]);
+    }
+  }
+  return arr;
+};
+
+console.log ([1,2,3,4,5].drop (4));
 
 Array.prototype.shuffle = function () {
   var xs = this.clone ();
@@ -58,6 +74,7 @@ function viewname (x) {
 
 // export Enumstate class
 this.log = log;
+this.logfn = logfn;
 
 
 

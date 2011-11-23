@@ -3,6 +3,7 @@
 
 // requirements
 if (typeof window === 'undefined') {
+  var Enum = require('./enum').Enum;
   var Enumlinear = require('./enumlinear').Enumlinear;
 }
 
@@ -11,13 +12,14 @@ if (typeof window === 'undefined') {
 // prototype.(at|next|prev) never returns undefined.
 // Only function which can fail is prototype.init (when
 // initializer was not found in the array.)
-function Enumcycle (array, initializer, callback) {
-  var self = this;
+function Enumcycle (array, initializer, callback, parent) {
   this.enumclass = new Enum (array);
   this.array = this.enumclass.array;
   this.initializer = initializer;
   this.callback = callback || function (x) { };
+  this.parent = parent;
   callback = callback || function (x) { };
+  var self = this;
   this.enumlinear = new Enumlinear
                   ( array
                   , initializer
@@ -26,7 +28,7 @@ function Enumcycle (array, initializer, callback) {
                         self.index = self.enumlinear.index;
                         self.value = value;
                         self.history = self.history.concat (self.value);
-                        f (value);
+                        f (value, self.parent);
                       };
                   } (callback)));
   for (var x in this.enumlinear) {

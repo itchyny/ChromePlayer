@@ -4,7 +4,9 @@
 
 // requirements
 if (typeof window === 'undefined') {
-  require ('./prelude');
+  p = require ('./prelude');
+  logfn = p.logfn;
+  log = p.log;
   var Enum = require('./enum').Enum;
   var Enumlinear = require('./enumlinear').Enumlinear;
   var Enumcycle = require('./enumcycle').Enumcycle;
@@ -13,17 +15,19 @@ if (typeof window === 'undefined') {
 
 
 function Enumdinamic (array, initializer, callback) {
-  var self = this;
   this.enumclass = new Enum (array);
   this.array = this.enumclass.array;
   this.initializer = initializer;
   this.callback = callback || function (x) { };
   callback = callback || function (x) { };
+  var self = this;
   this.enumlinear = new Enumlinear
                   ( array
                   , initializer
                   , (function (f) {
-                      return function (value) {
+                      return function (value, self) {
+                        logfn ('this.enumlinear callback');
+                        log ('value: ' + value);
                         self.index = self.enumlinear.index;
                         self.value = value;
                         self.history = self.history.concat (self.value);
@@ -31,42 +35,51 @@ function Enumdinamic (array, initializer, callback) {
                         self.enumclass = self.enumlinear.enumclass;
                         f (self.value);
                       };
-                  } (callback)));
+                  } (callback)), this);
+  this.repeat = new Enumcycle ( ['false', 'true', 'one'], 'false'
+              , function (repeat) {
+                console.log ('repeat:' + repeat);
+              });
+  this.shuffle = new Enumcycle ( ['false', 'true']
+               , 'false'
+               , function (shuffle) {
+                console.log ('shuffle:' + shuffle);
+                if (!self.orderedarray) {
+                  self.orderedarray = self.array || self.enumlinear.array || self.enumlinear.enumclass.array || [];
+                }
+                switch (shuffle) {
+                  case 'true':
+                    var arr = [self.value].concat (self.orderedarray.shuffle ().drop (self.value));
+                    self.changeArray (arr);
+                    break;
+                  default:
+                    self.changeArray (self.orderedarray);
+                    delete self.orderedarray;
+                    break;
+                }
+               }, this);
+  this.repeat.init ();
+  this.shuffle.init ();
+  this.enumlinear.init ();
   for (var x in this.enumlinear) {
     if (this.enumlinear.hasOwnProperty (x)) {
       this[x] = this.enumlinear[x]; 
     }
   }
-  this.repeat = new Enumcycle ( ['false', 'true', 'one'], 'false'
-              , function (repeat) {
-              });
-  this.shuffle = new Enumcycle ( ['false', 'true']
-               , 'false'
-               , function (shuffle) {
-                switch (shuffle) {
-                  case 'true':
-                    if (!self.orderedarray) {
-                      self.orderedarray = self.enumclass.array;
-                    }
-                    self.changeArray (self.orderedarray.shuffle ());
-                    self.at (self.enumclass.fromEnum (self.value));
-                    break;
-                  default:
-                    self.changeArray (self.orderedarray);
-                    delete self.orderedarray;
-                    self.at (self.enumclass.fromEnum (self.value));
-                }
-               })
 }
 
 Enumdinamic.prototype = new Enumlinear ();
 Enumdinamic.prototype.at = function (index) {
+logfn ('Enumdinamic.prototype.at');
   if (this.nonvalidIndex (index)) {
     index = this.index;
   }
   return this.enumlinear.at (index);
 };
 Enumdinamic.prototype.next = function (j) {
+logfn ('Enumdinamic.prototype.next');
+  // console.log ('Enumdinamic next:' + this.index);
+  // console.log ('Enumdinamic next:' + this.array);
   /*! when goes out of the array:
    *                |                               repeat                            |
    *                |   false                        |   true     |    one            |
@@ -79,7 +92,7 @@ Enumdinamic.prototype.next = function (j) {
   if (j === undefined || isNaN (j)) {
     j = 1;
   }
-  var index = this.index + j;
+  var index = this.index === undefined ? 0 : (this.index + j);
   switch (this.repeat.value) {
     case 'one': index = this.index; break;
     case 'true':
@@ -87,7 +100,8 @@ Enumdinamic.prototype.next = function (j) {
       if (value === undefined) {
         switch (this.shuffle.value) {
           case 'true':
-            this.enumclass = new Enum (this.enumclass.array.shuffle ());
+            this.shuffleOn ();
+            index++;
           default:
             var length = this.array.length;
             index = ((index % length) + length) % length;
@@ -99,7 +113,8 @@ Enumdinamic.prototype.next = function (j) {
       if (value === undefined) {
         switch (this.shuffle.value) {
           case 'true':
-            this.enumclass = new Enum (this.enumclass.array.shuffle ());
+            this.shuffleOn ();
+            index++;
             var length = this.array.length;
             index = ((index % length) + length) % length;
           default:
@@ -111,13 +126,25 @@ Enumdinamic.prototype.next = function (j) {
   return this.value;
 };
 Enumdinamic.prototype.concat = function (arr) {
+logfn ('Enumdinamic.prototype.concat');
   var basearray = this.array || [];
   return this.changeArray (basearray.concat (arr));
 };
 Enumdinamic.prototype.changeArray = function (array) {
+logfn ('Enumdinamic.prototype.changeArray');
+log (this.value);
   this.enumlinear.changeArray (array);
-  this.array = this.enumlinear.array || [];
+  this.array = this.enumlinear.array;
+log ("this.array: " + this.array.join (','));
+log ("this.value: " + this.value);
   this.enumclass = this.enumlinear.enumclass;
+  this.atfromEnum (this.value);
+  for (var x in this.enumlinear) {
+    if (this.enumlinear.hasOwnProperty (x)) {
+      this[x] = this.enumlinear[x]; 
+    }
+  }
+  return this;
 };
 
 Enumdinamic.prototype.setRepeat = function (repeat) { this.repeat.atfromEnum (repeat); };
@@ -144,12 +171,22 @@ this.Enumdinamic = Enumdinamic;
 
 
 
-
-
-
-
-
-
-
-
-
+var x = new Enumdinamic ([]);
+x.repeatOn ();
+x.shuffleOn ();
+x.concat ([1]);
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+x.concat ([2]);
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
