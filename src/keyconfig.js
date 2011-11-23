@@ -78,6 +78,7 @@ var keyconfig = {
 
   /* filter interface */
   '<c-f>':       command.FilterStart (),
+  '/':           '<c-f>', // vim
 
   /* special command */
   '<nop>':       command.Nop ()

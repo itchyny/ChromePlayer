@@ -3,7 +3,7 @@
  *    Chrome Player 2.0
  *
  *    author      : itchyny
- *    last update : 2011/11/22 15:51:59 (GMT)
+ *    last update : 2011/11/23 10:47:18 (GMT)
  *    source code : https://github.com/itchyny/ChromePlayer
  *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -796,7 +796,7 @@ String.prototype.unsynchsafe = function () {
 
 function decode (chars) {
   switch (chars.charCodeAt(0)) {
-    case 0: { // ISO-8859-1
+    case 0:  // ISO-8859-1
       // log("ISO-8859-1"); // UTF-16?
       // console.log(chars);
       var a = "";
@@ -809,7 +809,6 @@ function decode (chars) {
       };
       // return a;
       return chars.toString ();
-    }
     case 2: { // UTF-16BE without BOM
       // log("UTF-16BE without BOM");
     }
@@ -884,12 +883,12 @@ function decode (chars) {
   }
 }
 
-function ID3 (result) {
+function _ID3 (result) {
   this.result = result;
   this.i = 0;
 }
 
-ID3.prototype = {
+_ID3.prototype = {
 
   read: function () {
     // log ("id3 read")
@@ -942,11 +941,28 @@ ID3.prototype = {
         //        log("flame size: " + flamesize);
         //        log("flame flg: " + flameflg);
         //        log("flame text: " + flametext);
-        if (flametext) tags[flameid] = flametext;
+        if (flametext) {
+          tags[flameid] = flametext;
+          if (this.shortcuts[flameid]) {
+            tags[this.shortcuts[flameid]] = flametext;
+          }
+        }
       }
     }
     this.tags = tags;
   },
+
+  shortcuts: {
+    TIT2: "title",
+    TPE1: "artist",
+    TALB: "album",
+    TYER: "year",
+    COMM: "comment",
+    TRCK: "track",
+    TCON: "genre",
+    APIC: "picture",
+    USLT: "lyrics"
+  }
 
 };
 
@@ -1030,18 +1046,35 @@ Music.prototype = {
   },
 
   ontagload: function (e, f) {
-    this.tags = new ID3 (e.target.result).read();
+    this.tags = new _ID3 (e.target.result).read();
+    this.tags.type = this.type;
+    this.tags.name = this.name;
     f (this.tags);
   },
 
-  tagread: function (f) {
+  mytagreader: function (f) {
     var self = this;
     var binaryReader = new FileReader();
     binaryReader.onload = function (e) {
       self.ontagload (e, f);
     };
     binaryReader.readAsBinaryString (this.file.webkitSlice(0, 1000));
-    // binaryReader.readAsBinaryString (this.file.slice(0, 1000));
+  },
+
+  tagread: function (f) {
+    var self = this;
+    var url = webkitURL.createObjectURL (this.file);
+    self.mytagreader (f);
+    ID3.loadTags (url, function () {
+                   var tags = ID3.getAllTags(url);
+                   log (tags);
+                   if (tags && tags.picture) {
+                     self.picture = tags.picture;
+                   }
+                 }, { tags: [ //"artist", "title", "album", "year", "comment", "track", "genre", "lyrics",
+                   "picture"]
+                    , dataReader: FileAPIReader (this.file)
+                 });
   },
 
   play: function (vol, next) {
@@ -1323,6 +1356,7 @@ var UI = {
     self.initsplitter ();
     self.resizableSet ();
     self.selectableSet ();
+    self.initFilter ();
     $(window).resize(function () { self.initsize (); });
     $('div#appname a').text('Local Player v' + player.version);
   },
@@ -1489,16 +1523,16 @@ var UI = {
   ontagread: function (tags, index) {
     $('tr[number=' + index + ']')
     .find('.artist')
-    .texttitle(tags['TPE1'] || '')
+    .texttitle(tags.artist || '')
     .end()
     .find('.track')
-    .texttitle(tags['TRCK'] || '')
+    .texttitle(tags.track || '')
     .end()
     .find('.title')
-    .texttitle(tags['TIT2'] || '')
+    .texttitle(tags.title || '')
     .end()
     .find('.album')
-    .texttitle(tags['TALB'] || '');
+    .texttitle(tags.album || '');
   },
 
   setdblclick: function () {
@@ -1531,10 +1565,25 @@ var UI = {
       this.div.video.parentNode.style.visibility = 'hidden';
   },
 
+  showAlbumArt: function (file) {
+    var art = $('img#art')[0];
+    if (file.picture) {
+      var image = file.picture;
+      art.src = "data:" + image.format + ";base64," + Base64.encodeBytes(image.data);
+      art.style.display = "block";
+      log ("displaying image")
+    } else {
+      art.style.display = "none";
+      log ("hiding image")
+    }
+  },
+
   play: function (index) {
     var self = this;
     self.div.musicSlider.slider ('enable');
-    self.showFileName (self.player.playing.name, index);
+    var file = self.player.playing;
+    self.showAlbumArt (file);
+    self.showFileName (file.name, index);
     $('tr.nP')
       .removeClass('nP')
       .find('img')
@@ -2055,6 +2104,8 @@ var UI = {
 
   escape: function () {
     var self = this;
+    self.player.key.unlockAll ();
+    self.filterEnd ();
     switch($('#help:visible,#config:visible,#about:visible,#property:visible,#filter:visible').size()) {
       case 0:
         if($('div#musicSlider a:focus, div#volumeSlider a:focus').size()) {
@@ -2159,6 +2210,78 @@ var UI = {
       this.fullScreenOn ();
     }
   },
+
+  initFilter: function () {
+    var self = this;
+    this.div.filterword.keydown(function (e) { self.filterKeydown (e); });
+  },
+
+  filterStart: function () {
+    var tags = [], trs = [], index = 0, selected = $('ui-selected');
+    this.div.filter.fadeIn(200);
+    var input = this.div.filterword.focus()[0];//.val('');
+    input.selectionStart = 0;
+    input.selectionEnd = input.value.length;
+    $('tr', this.div.tbody).each(function (i, x) {
+      tags[i] = ((function (x) {
+        var a = [];
+        for (i in x) {
+          a.push(x[i])
+        }
+        return a;
+      })(self.player.musics[$(x).attr('number')].tags)).join('__').toLowerCase();
+    });
+    this.div.matchnum.text('');
+    this.filterTags = tags;
+  },
+
+  filterKeydown: function (e) {
+    var self = this;
+    setTimeout( function () {
+      if (e.keyCode === 13) { self.filterBlink (); return; };
+      if (e.keyCode === 27) { self.filterEnd (); return; };
+      var s = (e.target.value).toLowerCase();
+      var matched = [];
+      var $trs = $('tr', self.div.tbody);
+      $('tr.ui-selected', self.div.tbody).UNSELECT(true);
+      if (!s) {
+        self.div.matchnum.text(0 + '/' + $trs.length);
+        return;
+      }
+      try {
+      self.filterTags.forEach(function (t, i) {
+        if (t.match(s) !== null) {
+          matched.push(i);
+        }
+      });
+      matched.forEach(function (n) {
+        $trs.eq(n).SELECT(true);
+      });
+      self.div.matchnum.text(matched.length + '/' + $trs.length);
+      var selected = $('tr.ui-selected');
+      } catch (e){};
+      //if (matched.length < 3) $trs.eq(matched[0]).SELECT().LASTSELECT();
+    }, 20);
+  },
+
+  filterEnd: function () {
+    this.div.filter.fadeOut(200);
+    this.div.filterword.focusout ();
+    // this.div.table.focusin ();
+    this.focusUpdate ();
+  },
+
+  filterIndex: 0,
+  filterBlink: function () {
+    log ('filterBlink');
+    if (isNaN(this.filterIndex)) {
+      this.filterIndex = 0;
+    };
+    var selected = $('tr.ui-selected');
+    var x = selected.eq(this.filterIndex).UNSELECT(true);
+    setTimeout( function () { x.SELECT(false, true); }, 200);
+    this.filterIndex = (++this.filterIndex) % selected.size();
+  }
 
 };
 
@@ -2291,7 +2414,6 @@ $.fn.drag_drop_multi_select.defaults.after_drop_action = function ($item, $old, 
 ////             //.children()
 ////             //.resizable({ handles: 'e, w' });
 ////             //.resizable();
-////             this.div.filterword.keydown(filter.start);
 // Key maneger
 // TODO: expansion of commands :: String
 
@@ -2321,12 +2443,21 @@ Key.prototype = {
   start: function () {
     var self = this;
     $(window).keypress (function (e) {
-      self.prevent (e);
+      switch (e.target.localName) {
+        case 'input': return;
+        default:
+          self.prevent (e);
+      }
     });
     $(window).keydown (function (e) {
-      self.keydown (e);
-      if (self.callback [ self.convert (e) ]) {
-        self.prevent (e);
+      log (e.target.localName);
+      switch (e.target.localName) {
+        case 'input': return;
+        default:
+          self.keydown (e);
+          if (self.callback [ self.convert (e) ]) {
+            self.prevent (e);
+          }
       }
     });
   },
@@ -2407,7 +2538,10 @@ Key.prototype = {
   },
 
   meta: function (e) {
-    return ((e.global ? 'g-' : '') + (e.ctrlKey || e.metaKey ? 'c-' : '') + (e.shiftKey ? 's-' : '') + (e.altKey ? 'a-' : ''));
+    return ((e.global ? 'g-' : '')
+          + (e.ctrlKey || e.metaKey || this.lockconfig.ctrlKey ? 'c-' : '')
+          + (e.shiftKey || this.lockconfig.shiftKey ? 's-' : '')
+          + (e.altKey || this.lockconfig.altKey ? 'a-' : ''));
   },
 
   parse: function (key) {
@@ -2441,6 +2575,51 @@ Key.prototype = {
         };
       }) (self.callback);
     }
+  },
+
+  lock: function (key) {
+    if (this.lockconfig[key] !== undefined) {
+    log ('lock' + key);
+      this.lockconfig[key] = true;
+    }
+    return this;
+  },
+
+  lockAll: function () {
+    for (var key in this.lockconfig) {
+      if (this.lockconfig.hasOwnProperty (key)) {
+        this.lockconfig[key] = true;
+      }
+    }
+  },
+
+  unlock: function (key) {
+    if (this.lockconfig[key] !== undefined) {
+      this.lockconfig[key] = false;
+    }
+    return this;
+  },
+
+  unlockAll: function () {
+    for (var key in this.lockconfig) {
+      if (this.lockconfig.hasOwnProperty (key)) {
+        this.lockconfig[key] = false;
+      }
+    }
+  },
+
+  togglelock: function (key) {
+    if (this.lockconfig[key] !== undefined) {
+      this.lockconfig[key] = !this.lockconfig[key];
+    }
+    return this;
+  },
+
+  lockconfig: {
+    shiftKey: false,
+    ctrlKey: false,
+    altKey: false,
+    metaKey: false
   },
 
   codes: {
@@ -2552,6 +2731,19 @@ var command = {
   PageUp:             function (opt) { return function (app) { app.ui.pageUp (); }; },
   ExtendPageUp:       function (opt) { return function (app) { app.ui.extendPageUp (); }; },
   DeleteSelected:     function (opt) { return function (app) { app.ui.deleteSelected (); }; },
+  ShiftLock:          function (opt) { return function (app) { app.key.lock ('shiftKey'); }; },
+  CtrlLock:          function (opt) { return function (app) { app.key.lock ('ctrlKey'); }; },
+  AltLock:          function (opt) { return function (app) { app.key.lock ('altKey'); }; },
+  ShiftUnlock:        function (opt) { return function (app) { app.key.unlock ('shiftKey'); }; },
+  CtrlUnlock:        function (opt) { return function (app) { app.key.unlock ('ctrlKey'); }; },
+  AltUnlock:        function (opt) { return function (app) { app.key.unlock ('altKey'); }; },
+  ShiftToggleLock:  function (opt) { return function (app) { app.key.togglelock ('shiftKey'); }; },
+  CtrlToggleLock:  function (opt) { return function (app) { app.key.togglelock ('ctrlKey'); }; },
+  AltToggleLock:  function (opt) { return function (app) { app.key.togglelock ('altKey'); }; },
+
+  /* vim setting */
+  VisualModeOn:       function (opt) { return function (app) { app.vim.visual.at (1); }; },
+  VisualModeoff:      function (opt) { return function (app) { app.vim.visual.at (0); }; },
 
   /* toggle popup menu */
   ToggleHelp:         function (opt) { return function (app) { app.ui.toggleHelp (); }; },
@@ -2565,6 +2757,9 @@ var command = {
   FullScreenOn:       function (opt) { return function (app) { app.ui.fullScreenOn (); }; },
   FullScreenOff:      function (opt) { return function (app) { app.ui.fullScreenOff (); }; },
   FullScreenToggle:   function (opt) { return function (app) { app.ui.fullScreenToggle (); }; },
+
+  /* filter interface */
+  FilterStart:        function (opt) { return function (app) { app.ui.filterStart (); }; },
 
   /* Special commands */
   Nop:                function (opt) { return function (app) {}; },
@@ -2618,36 +2813,41 @@ var keyconfig = {
   '<home>':      command.SelectHome (),
   'gg':          '<home>', // vim
   '<s-home>':    command.ExtendToHome (),
-  'vgg':         '<s-home>', // vim
   '<end>':       command.SelectEnd (),
   '<s-g>':       '<end>', // vim
   '<s-end>':     command.ExtendToEnd (),
-  'v<s-g>':      '<s-end>', // vim
   '<c-a>':       command.SelectAll (),
   '<c-s-a>':     command.UnselectAll (),
   '<pgdn>':      command.PageDown (),
-  '<c-f>':       '<pgdn>', // vim
+  // '<c-f>':       '<pgdn>', // vim
   '<s-pgdn>':    command.ExtendPageDown (),
   '<pdup>':      command.PageUp (),
   '<c-b>':       '<pgup>', // vim
   '<s-pdup>':    command.ExtendPageUp (),
+  'v':           command.ShiftLock (), // vim // TODO
 
   /* toggle popu p menu, ui */
   '<s-/>':       command.ToggleHelp (),
-  '<f1>':        command.ToggleAbout (), // TODO
-  '[':           '<f1>', // TODO
+  '<f1>':        command.ToggleAbout (),
+  '[':           '<f1>',
   '<c-,>':       command.ToggleConfig (),
   '<delete>':    command.DeleteSelected (),
   '<backspace>': '<delete>',
   'd':           '<delete>', // vim
   '<esc>':       command.Escape (),
+  '<s-esc>':     '<esc>',
   '<c-[>':       '<esc>', // vim
+  '<c-s-[>':     '<esc>', // vim
   '<enter>':     command.DefaultEnter (),
   '<a-enter>':   command.ViewInformation (),
   '<tab>':       command.FocusToggle (),
   '<s-tab>':     command.FocusToggleReverse (),
   'f':           command.FullScreenToggle (),
   '<c-s-f>':     command.FullScreenToggle (),
+
+  /* filter interface */
+  '<c-f>':       command.FilterStart (),
+  '/':           '<c-f>', // vim
 
   /* special command */
   '<nop>':       command.Nop ()
@@ -2660,17 +2860,16 @@ var keyconfig = {
 //    使いやすく  読みやすく
 //
 // 優先
-// TODO: wavチェック
 // TODO: 曲を<delete>で消した時にorderから消えてない
 // TODO: keyconfigを各自で設定できるように
 // TODO: シャッフル, リピート がいまいち
-// TODO: filter機能
 // TODO: ソート
-// TODO: album art from id3 tag
+// TODO: album art from id3 tag https://github.com/aadsm/JavaScript-ID3-Reader
 // TODO: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/ http://phpjavascriptroom.com/?t=ajax&p=jquery_plugin_contextmenu
 // TODO: tableクリックでslideからのfocus out
 //
 // TODO: 読めないタグ
+// TODO: vim, visual mode
 // TODO: キーだけでファイルの入れ替え
 // TODO: ファイル順入れ替えた時にorder更新
 // TODO: C-zで削除キャンセルなど
@@ -2748,7 +2947,7 @@ Player.prototype = {
   nowplaying: 0,
 
   filetypes: {
-    audio: { regexp: /audio\/(mp3|ogg|m4a|x-matroska)/
+    audio: { regexp: /audio\/(mp3|wav|ogg|m4a|x-matroska)/
            , string: 'audio'
     },
     // video: { regexp: /video\/(mp4|mkv|x-matroska)/
@@ -2762,7 +2961,7 @@ Player.prototype = {
     var self = this;
     var first = true;
     [].forEach.call (files, function (file, index) {
-      log (file.type);
+      log ('filetype: ' + file.type);
       files[index].filetype = file.type.match (self.filetypes.audio.regexp) ? self.filetypes.audio.string
                             : file.type.match (self.filetypes.video.regexp) ? self.filetypes.video.string : '';
     });
@@ -2945,8 +3144,15 @@ Player.prototype = {
 
   repeat: new Enumcycle (['false', 'true', 'one']),
 
-  shuffle: new Enumcycle (['false', 'true'])
+  shuffle: new Enumcycle (['false', 'true']),
 
+};
+
+
+Player.prototype.vim = {
+  visual: new Enumcycle ([false, true], false, function (visual) {
+    // TODO
+  }),
 };
 
 var player = new Player ();
