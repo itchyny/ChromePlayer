@@ -9,7 +9,6 @@
 // TODO: ソート
 // TODO: album art from id3 tag https://github.com/aadsm/JavaScript-ID3-Reader
 // TODO: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/ http://phpjavascriptroom.com/?t=ajax&p=jquery_plugin_contextmenu
-// TODO: tableクリックでslideからのfocus out
 //
 // TODO: 読めないタグ
 // TODO: vim, visual mode
@@ -17,13 +16,13 @@
 // TODO: ファイル順入れ替えた時にorder更新
 // TODO: C-zで削除キャンセルなど
 // TODO: fixed first row of table
-// TODO: Enterでplayした時に, orderをどうするか
-// TODO: フルスクリーン時のUIについて. volumeとかどうする...
+// TODO: フルスクリーン時のUIについて. volumeとかどうする... カーソル消す
 // TODO: 音楽のフルスクリーン時のインターフェース, アルバムアートなど
 // TODO: ui.jsのaddfile高速化
 // TODO: id3タグの読み込みをUArrayってやつで高速化
 // TODO: title="..."にゴミが入る ?
-
+// 3) save playlists implement some sort of media library, so we don't have to add files every time
+// 6) allow us to "pop-out" the media player to a new, smaller window, always-on-top if possible.
 function Player () {
   var self = this;
   self.ui = UI;
@@ -116,7 +115,8 @@ logfn ('Player.prototype.readFiles');
         setTimeout ( (function (file, first, last) {
           return self.readOneFile (file, first, last);
         }) (file
-           , (self.shuffle.value.toString () === 'false' ? index === 0 : index === parseInt (files.length / 2))
+           , (self.shuffle.value === undefined || self.shuffle.value === 'false'
+                 ? index === 0 : index === parseInt (files.length / 2))
            , index === files.length - 1)
         , 10 * index);
     });
@@ -259,7 +259,7 @@ logfn ('Player.prototype.seekBy');
 
   updatevolume: function () {
 logfn ('Player.prototype.updatevolume');
-    this.volume.at (this.ui.volume);
+    this.volume.at (this.ui.getvolume ());
   },
 
   mute: function () {
@@ -311,7 +311,7 @@ logfn ('Player.prototype.remove');
 
   repeat: new Enumcycle (['false', 'true', 'one']),
 
-  shuffle: new Enumcycle (['false', 'true']),
+  shuffle: new Enumcycle (['false', 'true'])
 
 };
 
@@ -319,7 +319,7 @@ logfn ('Player.prototype.remove');
 Player.prototype.vim = {
   visual: new Enumcycle ([false, true], false, function (visual) {
     // TODO
-  }),
+  })
 };
 
 var player = new Player ();

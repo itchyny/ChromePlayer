@@ -83,9 +83,9 @@ Enum.prototype = {
 
 };
 
-// export Enum 
-this.Enum = Enum;
-
+if (typeof exports !== 'undefined') {
+  exports.Enum = Enum;
+}
 
 
 

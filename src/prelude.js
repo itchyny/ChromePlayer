@@ -73,9 +73,11 @@ function viewname (x) {
   }
 }
 
-// export Enumstate class
-this.log = log;
-this.logfn = logfn;
+// export logger functions
+if (typeof exports !== 'undefined') {
+  exports.log = log;
+  exports.logfn = logfn;
+}
 
 
 

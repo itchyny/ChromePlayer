@@ -57,8 +57,9 @@ Enumcycle.prototype.changeArray = function (array) {
 };
 
 
-// export Enumcycle
-this.Enumcycle = Enumcycle;
+if (typeof exports !== 'undefined') {
+  exports.Enumcycle = Enumcycle;
+}
 
 
 

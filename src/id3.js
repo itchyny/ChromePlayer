@@ -20,22 +20,23 @@ function decode (chars) {
   switch (chars.charCodeAt(0)) {
     case 0:  // ISO-8859-1
       // log("ISO-8859-1"); // UTF-16?
-      // console.log(chars);
-      var a = "";
-      for (var i = -1; i < chars.length; ) { // TODO
-        // console.log(chars.charCodeAt(i++))
-        // console.log(chars.charCodeAt(i++))
-        // console.log(" --- ")
-        a += String.fromCharCode((chars.charCodeAt(i++))
-                                |chars.charCodeAt(i++))<<8;
-      };
-      // return a;
-      return chars.toString ();
+    // console.log(chars);
+    var a = "";
+    for (var i = -1; i < chars.length; ) { // TODO
+      // console.log(chars.charCodeAt(i++))
+      // console.log(chars.charCodeAt(i++))
+      // console.log(" --- ")
+      a += String.fromCharCode((chars.charCodeAt(i++))
+                               |chars.charCodeAt(i++))<<8;
+    };
+    // log ("a: " + a);
+    // return a;
+    return chars.toString ();
     case 2: { // UTF-16BE without BOM
       // log("UTF-16BE without BOM");
     }
     case 1: { // UTF-16 with BOM
-           // log("UTF-16 with BOM");
+      // log("UTF-16 with BOM");
       var a = "", StringfromCharCode = String.fromCharCode, kind;
       for (var i = 1, charslen = chars.length; i < charslen; ) {
         if (kind === 1 || ((chars.charCodeAt(i) & 0xff) === 0xff)) { // 2bytes
@@ -59,7 +60,7 @@ function decode (chars) {
       return a;
     }
     case 3: { // UTF-8
-           // log("UTF-8");
+      // log("UTF-8");
       var a = "", StringfromCharCode = String.fromCharCode;
       for(var i = 1, charslen = chars.length; i < charslen; ) {
         var charsi = chars.charCodeAt(i);
@@ -122,32 +123,32 @@ _ID3.prototype = {
 
   header: function () {
     // 10bytes header
-    //    log("------    header   ------");
+    // log("------    header   ------");
     this.header = this.result.slice (this.i, this.i += 10);
     this.headerid = this.header.slice(0, 3);
-    //    log("headerid: " + this.headerid);
+    // log("headerid: " + this.headerid);
     this.version = [this.header.charCodeAt(3), this.header.charCodeAt(4)];
-    //    log("tagver : " + this.version);
+    // log("tagver : " + this.version);
     this.flags = this.header.slice(5, 6).toBin();
-    //    log("flags : " + this.flags);
+    // log("flags : " + this.flags);
     this.tagsize = this.header.slice(6, 10).unsynchsafe();
-    //    log("tagsize : " + this.tagsize);
+    // log("tagsize : " + this.tagsize);
   },
 
   extendedheader: function () {
     // ??bytes extended header
-    //    log("------    extended header   ------");
+    // log("------    extended header   ------");
     if (this.flags[1] === "1") {
       var extendedsize = this.result.slice(this.i, this.i += 4).unsynchsafe();
-      //      log("extendedsize: " + extendedsize);
+      // log("extendedsize: " + extendedsize);
       var extendedheader = this.result.slice(this.i, this.i += extendedsize);
-      //      log("extendedheader: " + extendedheader);
+      // log("extendedheader: " + extendedheader);
     }
   },
 
   frames: function () {
     // ??bytes frames
-    //    log("------    frames   ------");
+    // log("------    frames   ------");
     var tags = {};
     var i = this.i;
     var ldecode = decode;
@@ -159,10 +160,10 @@ _ID3.prototype = {
       var flameflg = this.result.slice(i, i += 2).toBin();
       var flametext = ldecode(this.result.slice(i, i += flamesize));
       if (flamesize) {
-        //        log("flame id: " + flameid);
-        //        log("flame size: " + flamesize);
-        //        log("flame flg: " + flameflg);
-        //        log("flame text: " + flametext);
+        // log("flame id: " + flameid);
+        // log("flame size: " + flamesize);
+        // log("flame flg: " + flameflg);
+        // log("flame text: " + flametext);
         if (flametext) {
           tags[flameid] = flametext;
           if (this.shortcuts[flameid]) {
@@ -187,6 +188,13 @@ _ID3.prototype = {
   }
 
 };
+
+
+
+if (typeof exports !== 'undefined') {
+  exports._ID3 = _ID3;
+}
+
 
 
 

@@ -31,14 +31,14 @@ SED_CHANGELOG = sed "s/@CHANGELOG/${CHANGELOG}/"
 
 
 main.js : ${SOURCE_FILES}
-	@cat ${SOURCE_FILES} | ${SED_DATE} | ${SED_VER} > $@
+	@cat ${SOURCE_FILES} | node closure-command.js | ${SED_DATE} | ${SED_VER} > $@
 	@cp $@ ../js/
 
 manifest.json : manifest_base.json version.txt
 	@cat manifest_base.json | ${SED_VER} > $@
 	@cp $@ ../
 
-index.html : index_base.html changelog.txt makefile
+index.html : index_base.html changelog.txt
 	@cat index_base.html | ${SED_CHANGELOG} > $@
 	@cp $@ ../
 

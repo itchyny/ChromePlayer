@@ -73,3 +73,13 @@ Limited.prototype = {
 
 
 
+
+if (typeof exports !== 'undefined') {
+  exports.Limited = Limited;
+}
+
+
+
+
+
+

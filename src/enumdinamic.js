@@ -5,8 +5,6 @@
 // requirements
 if (typeof window === 'undefined') {
   p = require ('./prelude');
-  logfn = p.logfn;
-  log = p.log;
   var Enum = require('./enum').Enum;
   var Enumlinear = require('./enumlinear').Enumlinear;
   var Enumcycle = require('./enumcycle').Enumcycle;
@@ -171,66 +169,22 @@ Enumdinamic.prototype.repeatOff = function (repeat) { this.setRepeat ('false'); 
 Enumdinamic.prototype.repeatOn = function (repeat) { this.setRepeat ('true'); };
 Enumdinamic.prototype.repeatOne = function (repeat) { this.setRepeat ('one'); };
 Enumdinamic.prototype.repeatToggle = function (repeat) { this.repeat.next (); };
-Enumdinamic.prototype.repeatToggleOnOff = function (repeat) { this.repeat.atfromEnum (this.repeat.value === 'false' ? 'true' : 'false'); };
+Enumdinamic.prototype.repeatToggleOnOff = function (repeat) { this.setRepeat (this.repeat.value === 'false' ? 'true' : 'false'); };
 
 Enumdinamic.prototype.setShuffle = function (shuffle) { this.shuffle.atfromEnum (shuffle); };
 Enumdinamic.prototype.shuffleOff = function (shuffle) { this.setShuffle ('false'); };
 Enumdinamic.prototype.shuffleOn = function (shuffle) { this.setShuffle ('true'); };
 Enumdinamic.prototype.shuffleToggle = function (shuffle) { this.shuffle.next (); };
-Enumdinamic.prototype.shuffleToggleOnOff = function (shuffle) { this.shuffle.atfromEnum (this.shuffle.value === 'false' ? 'true' : 'false'); };
+Enumdinamic.prototype.shuffleToggleOnOff = function (shuffle) { this.setShuffle (this.shuffle.value === 'false' ? 'true' : 'false'); };
 
 
 
 
 
 
-// export Enumdinamic
-this.Enumdinamic = Enumdinamic;
+if (typeof exports !== 'undefined') {
+  exports.Enumdinamic = Enumdinamic;
+}
 
 
 
-
-var x = new Enumdinamic ([]);
-console.dir ("-----------")
-console.dir (x)
-x.concat ([1,2,3,4,5]);
-x.repeatOn ();
-x.shuffleOn ();
-console.log(x.next ());
-console.log(x.next ());
-x.concat ([11,12,13,14,15]);
-x.concat ([21,22,23,24,25]);
-console.log(x.next ());
-console.log(x.next ());
-console.log(x.next ());
-console.log(x.next ());
-console.log(x.next ());
-console.log(x.next ());
-console.log(x.next ());
-console.log(x.next ());
-console.log(x.next ());
-console.log(x.next ());
-x.remove (1);
-x.remove (2);
-x.remove (3);
-x.remove (4);
-console.log(x.next ());
-console.log(x.next ());
-console.log(x.next ());
-console.log(x.next ());
-console.log(x.next ());
-console.log(x.next ());
-console.log(x.next ());
-console.log(x.next ());
-console.log(x.next ());
-console.log(x.next ());
-console.log(x.next ());
-console.log(x.next ());
-console.log(x.next ());
-console.log(x.next ());
-console.log(x.next ());
-console.log(x.next ());
-console.log(x.next ());
-console.log(x.next ());
-console.log(x.next ());
-console.log(x.next ());

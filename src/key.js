@@ -1,5 +1,4 @@
 // Key maneger
-// TODO: expansion of commands :: String
 
 function Key (app, config) {
   var key;
@@ -153,7 +152,7 @@ Key.prototype = {
             setTimeout ( (function (i) { return function () {
               self.keydownstr (keyseq [i]);
             };}) (i)
-            , 10);
+            , 10 * i);
           }
         };
       }) (self.callback);
@@ -271,5 +270,14 @@ Key.prototype = {
   }
 
 };
+
+
+
+
+if (typeof exports !== 'undefined') {
+  exports.Key = Key;
+}
+
+
 
 

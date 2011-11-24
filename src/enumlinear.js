@@ -140,8 +140,9 @@ console.log (array);
 
 
 
-// export Enumlinear
-this.Enumlinear = Enumlinear;
+if (typeof exports !== 'undefined') {
+  exports.Enumlinear = Enumlinear;
+}
 
 
 

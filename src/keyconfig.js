@@ -20,7 +20,7 @@ var keyconfig = {
   'b':           '<s-left>', // vim
   '<s-4>':       command.SeekPercent ([100]), // vim
 
-  /* change sett ing */
+  /* change setting */
   '<c-r>':       command.ToggleRepeat (),
   '<c-u>':       command.ToggleShuffle (),
 
@@ -31,7 +31,7 @@ var keyconfig = {
   '9':           command.VolumeDown (), // mplayer
   // '0':        command.VolumeUp (), // mplayer
 
-  /* select, exp and */
+  /* select, expand */
   '<down>':      command.SelectDown (),
   'j':           '<down>', // vim
   '<s-down>':    command.ExtendDown (),
@@ -52,12 +52,12 @@ var keyconfig = {
   '<pgdn>':      command.PageDown (),
   // '<c-f>':       '<pgdn>', // vim
   '<s-pgdn>':    command.ExtendPageDown (),
-  '<pdup>':      command.PageUp (),
+  '<pgup>':      command.PageUp (),
   '<c-b>':       '<pgup>', // vim
   '<s-pdup>':    command.ExtendPageUp (),
   // 'v':           command.ShiftLock (), // vim // TODO
 
-  /* toggle popu p menu, ui */
+  /* toggle popup menu, ui */
   '<s-/>':       command.ToggleHelp (),
   '<f1>':        command.ToggleAbout (),
   '[':           '<f1>',
@@ -84,5 +84,17 @@ var keyconfig = {
   '<nop>':       command.Nop ()
 
 };
+
+
+
+
+if (typeof exports !== 'undefined') {
+  exports.keyconfig = keyconfig;
+}
+
+
+
+
+
 
 

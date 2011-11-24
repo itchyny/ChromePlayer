@@ -1,12 +1,12 @@
 // Music file
 
-function Music (file, videoElement) {
+function Music (file, htmlElement) {
   this.file = file;
   this.type = file.type;
   this.name = file.name;
   this.filetype = file.filetype;
-  if (file.filetype === 'video' && videoElement) {
-    this.videoElement = videoElement;
+  if (file.filetype === 'video' && htmlElement) {
+    this.htmlElement = htmlElement;
   }
 }
 
@@ -23,14 +23,17 @@ Music.prototype = {
   musicread: function (vol, next, startplay) {
     var self = this;
     var createObjectURL
-      = window.URL && window.URL.createObjectURL ?
-         function (file) { return window.URL.createObjectURL (file); } :
-         window.webkitURL && window.webkitURL.createObjectURL ?
-           function (file) { return window.webkitURL.createObjectURL (file); } :
-           undefined;
+      = window.URL && window.URL.createObjectURL
+        ? function (file) { return window.URL.createObjectURL (file); }
+        : window.webkitURL && window.webkitURL.createObjectURL
+          ? function (file) { return window.webkitURL.createObjectURL (file); }
+          : undefined;
     if (createObjectURL) {
       if (self.file.filetype === 'audio') {
-        self.audio = new Audio (createObjectURL (self.file));
+        self.audio = new Audio ( createObjectURL (self.file));
+        if (self.htmlElement) {
+          self.htmlElement.src = self.audio.src;
+        }
         self.audio.volume = vol;
         self.audio.addEventListener ('ended', function () {
             self.release ();
@@ -40,8 +43,11 @@ Music.prototype = {
           self.audio.play ();
         }
       } else if (self.file.filetype === 'video') {
-        var url = self.videoElement.src = createObjectURL (self.file);
-        self.audio = self.videoElement;
+        var url = createObjectURL (self.file);
+        if (self.htmlElement) {
+          self.htmlElement.src = url;
+        }
+        self.audio = self.htmlElement;
         self.audio.volume = vol;
         self.audio.addEventListener ('ended', function () {
           self.release ();
@@ -59,6 +65,9 @@ Music.prototype = {
         };
         reader.onload = function (e) {
           self.audio = new Audio (e.target.result);
+        if (self.htmlElement) {
+          self.htmlElement.src = self.audio.src;
+        }
           self.audio.volume = vol;
           self.audio.addEventListener ('ended', function () {
             self.release ();
@@ -95,16 +104,16 @@ Music.prototype = {
     var self = this;
     var url = webkitURL.createObjectURL (this.file);
     self.mytagreader (f);
-    ID3.loadTags (url, function () {
-                   var tags = ID3.getAllTags(url);
-                   log (tags);
-                   if (tags && tags.picture) {
-                     self.picture = tags.picture;
-                   }
-                 }, { tags: [ //"artist", "title", "album", "year", "comment", "track", "genre", "lyrics",
-                   "picture"]
-                    , dataReader: FileAPIReader (this.file)
-                 });
+    // ID3.loadTags (url, function () {
+    //                var tags = ID3.getAllTags(url);
+    //                log (tags);
+    //                if (tags && tags.picture) {
+    //                  self.picture = tags.picture;
+    //                }
+    //              }, { tags: [ //"artist", "title", "album", "year", "comment", "track", "genre", "lyrics",
+    //                "picture"]
+    //                 , dataReader: FileAPIReader (this.file)
+    //              });
   },
 
   play: function (vol, next) {

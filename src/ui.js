@@ -69,6 +69,17 @@ var UI = {
     $('img.lbutton, img.rbutton')
       .mouseup(function (e) { $(this).css({ 'top': '50%' }); })
       .mousedown(function (e) { $(this).css({ 'top': parseInt($(this).css('top'), 10) * 1.03 + '%' }); });
+    self.div.filename
+      .click(function () {
+        $('tr.ui-selected').UNSELECT();
+        $('tr.nP').SELECT().LASTSELECT();
+        self.focusIndex = 0;
+        self.focusUpdate ();
+      });
+    self.div.tablebody.click (function () {
+      self.focusIndex = 0;
+      self.focusUpdate (true);
+    });
   },
 
   initsize: function () {
@@ -219,7 +230,7 @@ var UI = {
     });
   },
 
-  get volume () {
+  getvolume: function () {
     return parseInt(this.div.volumeSlider.slider('value'), 10);
   },
 
@@ -395,6 +406,8 @@ var UI = {
       .append($self.children())
       .click(function (e) {
         var $last = $('tr.last-select');
+        self.focusIndex = 0;
+        self.focusUpdate (true);
         if(e.shiftKey && !e.altKey && $last.size()) {
           if(e.ctrlKey) {
             var selected = $('tr.ui-selected');
@@ -824,8 +837,9 @@ var UI = {
            ];
   },
 
-  focusUpdate: function () {
+  focusUpdate: function (focusonly) {
     this.focusElements ()[this.focusIndex].focus();
+    if (focusonly) return;
     if (this.focusIndex === 0) {
       $('tr.ui-selected')
         .first()
@@ -858,15 +872,31 @@ var UI = {
 
   fullScreenOn: function () {
     this.fullScreen = true;
-    if (this.div.video.webkitRequestFullScreen) {
-      this.div.video.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+    var video = this.div.video;
+    video.controls = false;
+    video.style.cursor = 'none';
+    log ('fullScreenOn');
+    document.onmousemove = function () { // TODO
+      log (video);
+      video.controls = true;
+      video.style.cursor = 'true';
+      setTimeout (function () {
+        video.controls = false;
+        video.style.cursor = 'none';
+      }, 1000);
+    };
+    if (video.webkitRequestFullScreen) {
+      video.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
     } else {
       this.setVideoSize (window.outerWidth, window.outerHeight);
     }
   },
 
   fullScreenOff: function () {
+    log ('fullScreenOff');
     this.fullScreen = false;
+    this.div.video.controls = true;
+    this.div.video.style.cursor = 'auto';
     var width;
     if (document.webkitCancelFullScreen) {
       document.webkitCancelFullScreen();
@@ -1064,12 +1094,6 @@ $.fn.drag_drop_multi_select.defaults.after_drop_action = function ($item, $old, 
 ////                   order *= -1;
 ////                 };
 ////               })())
-////             });
-////             this.div.filename
-////             .click(function () {
-////               $('tr.ui-selected').UNSELECT();
-////               $('tr.nP').SELECT().LASTSELECT();
-////               key.tab(0);
 ////             });
 ////             this.div.globalcontrol
 ////             .attr({'checked':data.globalcontrol==='true'})
