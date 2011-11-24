@@ -3,9 +3,9 @@
 //    使いやすく  読みやすく
 //
 // 優先
-// TODO: 曲を<delete>で消した時にorderから消えてない
+// TODO: 曲を<delete>で消した時にorderから消えてない Enumlinear@@removeのバグか
 // TODO: keyconfigを各自で設定できるように
-// TODO: シャッフル, リピート バグがちょっとだけある shuffleon, repeaton で起動 -> next
+// DONE? シャッフル, リピート バグがちょっとだけある shuffleon, repeaton で起動 -> next
 // TODO: ソート
 // TODO: album art from id3 tag https://github.com/aadsm/JavaScript-ID3-Reader
 // TODO: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/ http://phpjavascriptroom.com/?t=ajax&p=jquery_plugin_contextmenu

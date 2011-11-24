@@ -17,6 +17,7 @@ Array.prototype.drop = function (x) {
       arr = arr.concat ([this[i]]);
     }
   }
+  log (arr);
   return arr;
 };
 

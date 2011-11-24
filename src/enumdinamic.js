@@ -15,8 +15,6 @@ if (typeof window === 'undefined') {
 
 
 function Enumdinamic (array, initializer, callback) {
-  this.enumclass = new Enum (array);
-  this.array = this.enumclass.array;
   this.initializer = initializer;
   this.callback = callback || function (x) { };
   callback = callback || function (x) { };
@@ -25,7 +23,7 @@ function Enumdinamic (array, initializer, callback) {
                   ( array
                   , initializer
                   , (function (f) {
-                      return function (value, self) {
+                      return function (value) {
                         logfn ('this.enumlinear callback');
                         log ('value: ' + value);
                         self.index = self.enumlinear.index;
@@ -33,9 +31,11 @@ function Enumdinamic (array, initializer, callback) {
                         self.history = self.history.concat (self.value);
                         self.array = self.enumlinear.array;
                         self.enumclass = self.enumlinear.enumclass;
+                        log ("self:::");
+                        log (self);
                         f (self.value);
                       };
-                  } (callback)), this);
+                  } (callback)));
   this.repeat = new Enumcycle ( ['false', 'true', 'one'], 'false'
               , function (repeat) {
                 console.log ('repeat:' + repeat);
@@ -43,13 +43,17 @@ function Enumdinamic (array, initializer, callback) {
   this.shuffle = new Enumcycle ( ['false', 'true']
                , 'false'
                , function (shuffle) {
-                console.log ('shuffle:' + shuffle);
+                console.log ('shuffle:::' + shuffle);
+                log (self.repeat.value)
                 if (!self.orderedarray) {
-                  self.orderedarray = self.array || self.enumlinear.array || self.enumlinear.enumclass.array || [];
+                  self.orderedarray = self.enumlinear.enumclass.array || self.array || self.enumlinear.array || [];
                 }
+                  log ('arr:::')
+                    log (self)
+                    log (self.orderedarray)
                 switch (shuffle) {
                   case 'true':
-                    var arr = [self.value].concat (self.orderedarray.shuffle ().drop (self.value));
+                    var arr = (self.value === undefined ? [] : [self.value]).concat (self.orderedarray.shuffle ().drop (self.value));
                     self.changeArray (arr);
                     break;
                   default:
@@ -57,7 +61,7 @@ function Enumdinamic (array, initializer, callback) {
                     delete self.orderedarray;
                     break;
                 }
-               }, this);
+               });
   this.repeat.init ();
   this.shuffle.init ();
   this.enumlinear.init ();
@@ -74,6 +78,8 @@ logfn ('Enumdinamic.prototype.at');
   if (this.nonvalidIndex (index)) {
     index = this.index;
   }
+  log ("this:::")
+  log (this)
   return this.enumlinear.at (index);
 };
 Enumdinamic.prototype.next = function (j) {
@@ -128,7 +134,11 @@ logfn ('Enumdinamic.prototype.next');
 Enumdinamic.prototype.concat = function (arr) {
 logfn ('Enumdinamic.prototype.concat');
   var basearray = this.array || [];
-  return this.changeArray (basearray.concat (arr));
+  this.orderedarray = (this.orderedarray || this.array || []).concat (arr); 
+  this.changeArray (basearray.concat (arr));
+  if (this.shuffle.value === "true") {
+    this.shuffleOn ();
+  }
 };
 Enumdinamic.prototype.changeArray = function (array) {
 logfn ('Enumdinamic.prototype.changeArray');
@@ -146,6 +156,8 @@ log ("this.value: " + this.value);
   }
   return this;
 };
+
+
 
 Enumdinamic.prototype.setRepeat = function (repeat) { this.repeat.atfromEnum (repeat); };
 Enumdinamic.prototype.repeatOff = function (repeat) { this.repeat.atfromEnum ('false'); };
@@ -172,11 +184,15 @@ this.Enumdinamic = Enumdinamic;
 
 
 var x = new Enumdinamic ([]);
+console.dir ("-----------")
+console.dir (x)
+x.concat ([1,2,3,4,5]);
 x.repeatOn ();
 x.shuffleOn ();
-x.concat ([1]);
 console.log(x.next ());
 console.log(x.next ());
+x.concat ([11,12,13,14,15]);
+x.concat ([21,22,23,24,25]);
 console.log(x.next ());
 console.log(x.next ());
 console.log(x.next ());

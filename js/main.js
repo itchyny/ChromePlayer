@@ -3,7 +3,7 @@
  *    Chrome Player 2.0
  *
  *    author      : itchyny
- *    last update : 2011/11/23 11:15:59 (GMT)
+ *    last update : 2011/11/24 02:43:04 (GMT)
  *    source code : https://github.com/itchyny/ChromePlayer
  *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -14,9 +14,26 @@ function log (x) {
   console.dir (x);
 }
 
+function logfn (x) {
+  console.log ('--------------- ' + x + ' ---------------');
+}
+
 Array.prototype.clone = function () {
     return Array.apply (null,this);
 };
+
+Array.prototype.drop = function (x) {
+  var arr = [];
+  for (var i = 0; i < this.length; i++) {
+    if (this[i] !== x) {
+      arr = arr.concat ([this[i]]);
+    }
+  }
+  log (arr);
+  return arr;
+};
+
+console.log ([1,2,3,4,5].drop (4));
 
 Array.prototype.shuffle = function () {
   var xs = this.clone ();
@@ -70,6 +87,7 @@ function viewname (x) {
 
 // export Enumstate class
 this.log = log;
+this.logfn = logfn;
 
 
 
@@ -175,6 +193,7 @@ Enum.prototype = {
 
   toEnum: function (i) {
     /*! return undefined if index is out of array */
+    if (!this.array) return;
     if (0 <= i && i < this.array.length) {
       return this.array[i];
     } else {
@@ -184,6 +203,7 @@ Enum.prototype = {
 
   fromEnum: function (x) {
     /*! return undefined if value is not found in array */
+    if (!this.array) return;
     for (var i = 0, l = this.array.length; i < l; i++) {
       if (this.array[i] === x) return i;
     }
@@ -191,10 +211,12 @@ Enum.prototype = {
   },
 
   enumFrom: function (x) {
+    if (!this.array) return;
     return this.enumFromTo (x, this.array[this.array.length - 1]);
   },
 
   enumFromThen: function (x, y) {
+    if (!this.array) return;
     var i = this.fromEnum (x);
     var j = this.fromEnum (y);
     var ans = [];
@@ -209,6 +231,7 @@ Enum.prototype = {
   },
 
   enumFromThenTo: function (x, y, z) {
+    if (!this.array) return;
     var i = this.fromEnum (x);
     var j = this.fromEnum (y);
     var k = this.fromEnum (z);
@@ -265,10 +288,12 @@ Enumlinear.prototype = {
   history: [], //:: [Value]
 
   head: function () {
+logfn ('Enumlinear.prototype.head');
     return this.at (0);
   },
 
   last: function () {
+logfn ('Enumlinear.prototype.last');
     return this.at (this.enumclass.array.length - 1);
   },
 
@@ -277,6 +302,7 @@ Enumlinear.prototype = {
   },
 
   at: function (index) {
+logfn ('Enumlinear.prototype.at');
     /*! return value; return undefined if index if out of array */
     if (this.nonvalidIndex (index)) {
       index = this.index;
@@ -287,13 +313,16 @@ Enumlinear.prototype = {
     }
     this.value = value;
     this.index = index;
+    this.array = this.enumclass.array;
     this.history = this.history.concat (this.value);
     this.callback (this.value);
     return this.value;
   },
 
   atfromEnum: function (value) {
+logfn ('Enumlinear.prototype.atfromEnum');
     /*! return value; return undefined if value is not found in array */
+console.log ('atfromEnum value: ' + value);
     var index = this.enumclass.fromEnum (value);
     if (index === undefined) {
       return undefined;
@@ -302,6 +331,7 @@ Enumlinear.prototype = {
   },
 
   next: function (j) {
+logfn ('Enumlinear.prototype.next');
     /*! return undefined if out of array after moving */
     if (this.nonvalidIndex (j)) {
       j = 1;
@@ -310,6 +340,7 @@ Enumlinear.prototype = {
   },
 
   prev: function (j) {
+logfn ('Enumlinear.prototype.prev');
     /*! return undefined if out of array after backward */
     if (this.nonvalidIndex (j)) {
       j = -1;
@@ -318,6 +349,7 @@ Enumlinear.prototype = {
   },
 
   init: function (value) {
+logfn ('Enumlinear.prototype.init');
     /*! return value; return undefined if value is not found in array */
     if (value === undefined) {
       if (typeof this.initializer === 'function') {
@@ -338,20 +370,28 @@ Enumlinear.prototype = {
   },
 
   concat: function (arr) {
+logfn ('Enumlinear.prototype.concat');
     return this.changeArray (this.enumclass.array.concat (arr));
   },
 
   splice: function (start, count) {
-    return this.changeArray (this.enumclass.array.splice (start, count));
+logfn ('Enumlinear.prototype.splice');
+    var array = this.enumclass.array;
+    array.splice (start, count);
+    return this.changeArray (array);
   },
 
   remove: function (value) {
+logfn ('Enumlinear.prototype.remove');
     return this.splice (this.enumclass.fromEnum (value), 1);
   },
 
   changeArray: function (array) {
+logfn ('Enumlinear.prototype.changeArray');
     this.enumclass = new Enum (array);
     this.array = this.enumclass.array;
+    var index = this.enumclass.fromEnum (this.value) || 0;
+    this.at (index);
     return this;
   }
 
@@ -372,6 +412,7 @@ this.Enumlinear = Enumlinear;
 
 // requirements
 if (typeof window === 'undefined') {
+  var Enum = require('./enum').Enum;
   var Enumlinear = require('./enumlinear').Enumlinear;
 }
 
@@ -381,12 +422,12 @@ if (typeof window === 'undefined') {
 // Only function which can fail is prototype.init (when
 // initializer was not found in the array.)
 function Enumcycle (array, initializer, callback) {
-  var self = this;
   this.enumclass = new Enum (array);
   this.array = this.enumclass.array;
   this.initializer = initializer;
   this.callback = callback || function (x) { };
   callback = callback || function (x) { };
+  var self = this;
   this.enumlinear = new Enumlinear
                   ( array
                   , initializer
@@ -395,6 +436,7 @@ function Enumcycle (array, initializer, callback) {
                         self.index = self.enumlinear.index;
                         self.value = value;
                         self.history = self.history.concat (self.value);
+                        self.array = self.enumlinear.array;
                         f (value);
                       };
                   } (callback)));
@@ -438,7 +480,9 @@ this.Enumcycle = Enumcycle;
 
 // requirements
 if (typeof window === 'undefined') {
-  require ('./prelude');
+  p = require ('./prelude');
+  logfn = p.logfn;
+  log = p.log;
   var Enum = require('./enum').Enum;
   var Enumlinear = require('./enumlinear').Enumlinear;
   var Enumcycle = require('./enumcycle').Enumcycle;
@@ -447,60 +491,77 @@ if (typeof window === 'undefined') {
 
 
 function Enumdinamic (array, initializer, callback) {
-  var self = this;
-  this.enumclass = new Enum (array);
-  this.array = this.enumclass.array;
   this.initializer = initializer;
   this.callback = callback || function (x) { };
   callback = callback || function (x) { };
+  var self = this;
   this.enumlinear = new Enumlinear
                   ( array
                   , initializer
                   , (function (f) {
                       return function (value) {
+                        logfn ('this.enumlinear callback');
+                        log ('value: ' + value);
                         self.index = self.enumlinear.index;
                         self.value = value;
                         self.history = self.history.concat (self.value);
                         self.array = self.enumlinear.array;
                         self.enumclass = self.enumlinear.enumclass;
+                        log ("self:::");
+                        log (self);
                         f (self.value);
                       };
                   } (callback)));
+  this.repeat = new Enumcycle ( ['false', 'true', 'one'], 'false'
+              , function (repeat) {
+                console.log ('repeat:' + repeat);
+              });
+  this.shuffle = new Enumcycle ( ['false', 'true']
+               , 'false'
+               , function (shuffle) {
+                console.log ('shuffle:::' + shuffle);
+                log (self.repeat.value)
+                if (!self.orderedarray) {
+                  self.orderedarray = self.enumlinear.enumclass.array || self.array || self.enumlinear.array || [];
+                }
+                  log ('arr:::')
+                    log (self)
+                    log (self.orderedarray)
+                switch (shuffle) {
+                  case 'true':
+                    var arr = (self.value === undefined ? [] : [self.value]).concat (self.orderedarray.shuffle ().drop (self.value));
+                    self.changeArray (arr);
+                    break;
+                  default:
+                    self.changeArray (self.orderedarray);
+                    delete self.orderedarray;
+                    break;
+                }
+               });
+  this.repeat.init ();
+  this.shuffle.init ();
+  this.enumlinear.init ();
   for (var x in this.enumlinear) {
     if (this.enumlinear.hasOwnProperty (x)) {
       this[x] = this.enumlinear[x]; 
     }
   }
-  this.repeat = new Enumcycle ( ['false', 'true', 'one'], 'false'
-              , function (repeat) {
-              });
-  this.shuffle = new Enumcycle ( ['false', 'true']
-               , 'false'
-               , function (shuffle) {
-                switch (shuffle) {
-                  case 'true':
-                    if (!self.orderedarray) {
-                      self.orderedarray = self.enumclass.array;
-                    }
-                    self.changeArray (self.orderedarray.shuffle ());
-                    self.at (self.enumclass.fromEnum (self.value));
-                    break;
-                  default:
-                    self.changeArray (self.orderedarray);
-                    delete self.orderedarray;
-                    self.at (self.enumclass.fromEnum (self.value));
-                }
-               })
 }
 
 Enumdinamic.prototype = new Enumlinear ();
 Enumdinamic.prototype.at = function (index) {
+logfn ('Enumdinamic.prototype.at');
   if (this.nonvalidIndex (index)) {
     index = this.index;
   }
+  log ("this:::")
+  log (this)
   return this.enumlinear.at (index);
 };
 Enumdinamic.prototype.next = function (j) {
+logfn ('Enumdinamic.prototype.next');
+  // console.log ('Enumdinamic next:' + this.index);
+  // console.log ('Enumdinamic next:' + this.array);
   /*! when goes out of the array:
    *                |                               repeat                            |
    *                |   false                        |   true     |    one            |
@@ -513,7 +574,7 @@ Enumdinamic.prototype.next = function (j) {
   if (j === undefined || isNaN (j)) {
     j = 1;
   }
-  var index = this.index + j;
+  var index = this.index === undefined ? 0 : (this.index + j);
   switch (this.repeat.value) {
     case 'one': index = this.index; break;
     case 'true':
@@ -521,7 +582,8 @@ Enumdinamic.prototype.next = function (j) {
       if (value === undefined) {
         switch (this.shuffle.value) {
           case 'true':
-            this.enumclass = new Enum (this.enumclass.array.shuffle ());
+            this.shuffleOn ();
+            index++;
           default:
             var length = this.array.length;
             index = ((index % length) + length) % length;
@@ -533,7 +595,8 @@ Enumdinamic.prototype.next = function (j) {
       if (value === undefined) {
         switch (this.shuffle.value) {
           case 'true':
-            this.enumclass = new Enum (this.enumclass.array.shuffle ());
+            this.shuffleOn ();
+            index++;
             var length = this.array.length;
             index = ((index % length) + length) % length;
           default:
@@ -545,14 +608,32 @@ Enumdinamic.prototype.next = function (j) {
   return this.value;
 };
 Enumdinamic.prototype.concat = function (arr) {
+logfn ('Enumdinamic.prototype.concat');
   var basearray = this.array || [];
-  return this.changeArray (basearray.concat (arr));
+  this.orderedarray = (this.orderedarray || this.array || []).concat (arr); 
+  this.changeArray (basearray.concat (arr));
+  if (this.shuffle.value === "true") {
+    this.shuffleOn ();
+  }
 };
 Enumdinamic.prototype.changeArray = function (array) {
+logfn ('Enumdinamic.prototype.changeArray');
+log (this.value);
   this.enumlinear.changeArray (array);
-  this.array = this.enumlinear.array || [];
+  this.array = this.enumlinear.array;
+log ("this.array: " + this.array.join (','));
+log ("this.value: " + this.value);
   this.enumclass = this.enumlinear.enumclass;
+  this.atfromEnum (this.value);
+  for (var x in this.enumlinear) {
+    if (this.enumlinear.hasOwnProperty (x)) {
+      this[x] = this.enumlinear[x]; 
+    }
+  }
+  return this;
 };
+
+
 
 Enumdinamic.prototype.setRepeat = function (repeat) { this.repeat.atfromEnum (repeat); };
 Enumdinamic.prototype.repeatOff = function (repeat) { this.repeat.atfromEnum ('false'); };
@@ -578,217 +659,29 @@ this.Enumdinamic = Enumdinamic;
 
 
 
-
-
-
-
-
-
-
-
-
-// Enumerable (ordered) state
-
-
-// requirements
-if (typeof window === 'undefined') {
-  var Enum = require('./enum').Enum;
-}
-
-
-// An instance of Enumstate has current position.
-function Enumstate (array, initializer, callback) {
-  this.array = array;
-  this.enumclass = new Enum (array);
-  this.enumarray = array;
-  this.initializer = initializer;
-  this.callback = callback || function (x) { };
-  this.shuffle = false;
-  this.repeat = false;
-  this.repeatone = false;
-}
-
-Enumstate.prototype = {
-
-  index: 0,
-
-  value: undefined,
-
-  history: [],
-
-  enumarray: [],
-
-  shuffle: false,
-
-  repeat: false,
-
-  repeatone: false,
-
-  head: function () {
-    return this.at (0);
-  },
-
-  last: function () {
-    return this.at (this.enumclass.array.length - 1);
-  },
-
-  fromEnum: function (x) {
-    var index = this.enumclass.fromEnum (x);
-    if (index === undefined) {
-      return undefined;
-    }
-    this.at (index);
-  },
-
-  at: function (index) {
-    console.log('at:');
-    if (index === undefined || isNaN (index)) {
-      index = this.index;
-    }
-    this.index = index;
-    this.value = this.enumclass.toEnum (index);
-    this.history = this.history.concat (index);
-    this.callback (this.value);
-    log ('enumstate.js: value:' + this.value);
-    log ('enumstate.js: array:' + this.enumclass.array);
-    return this.value;
-  },
-
-  next: function (j) {
-    console.log('next:');
-    if (this.repeatone) {
-      this.index = this.index;
-    } else {
-      if (j === undefined || isNaN (j)) {
-        j = 1;
-      }
-      if (isNaN (this.index)) {
-        this.index = 0;
-      }
-      this.index += j;
-      this.value = this.enumclass.toEnum (this.index);
-      if (this.value === undefined) {
-        if (this.shuffle) {
-          this.enumclass = new Enum (this.enumclass.array.shuffle ());
-        }
-        if (this.repeat) {
-          var array = this.enumclass.array;
-          this.index = (this.index + array.length * 100) % array.length;
-        } else {
-          return undefined;
-        }
-      }
-    }
-    this.at (this.index);
-    return this.value;
-  },
-
-  prev: function (j) {
-    console.log('prev:');
-    return this.next (-1);
-  },
-
-  shuffleOn: function () {
-    console.log('shuffleOn:');
-    this.shuffle = true;
-    this.enumarray = this.enumclass.array;
-    log ('enumstate.js: prevarray:' + this.enumarray);
-    this.enumclass = new Enum (this.enumarray.shuffle ());
-    this.index = this.enumclass.fromEnum (this.value);
-    log ('enumstate.js: value:' + this.value);
-    log ('enumstate.js: array:' + this.enumclass.array);
-    log ('enumstate.js: prevarray:' + this.enumarray);
-    return this;
-  },
-
-  shuffleOff: function () {
-    console.log('shuffleOff:');
-    this.shuffle = false;
-    this.enumclass = new Enum (this.enumarray.clone ());
-    this.index = this.enumclass.fromEnum (this.value);
-    log ('enumstate.js: value:' + this.value);
-    log ('enumstate.js: array:' + this.enumclass.array);
-    log ('enumstate.js: prevarray:' + this.enumarray);
-    return this;
-  },
-
-  shuffleToggle: function () {
-    console.log('shuffleToggle:');
-    if (this.shuffle) {
-      return this.shuffleOff ();
-    } else {
-      return this.shuffleOn ();
-    }
-  },
-
-  repeatOn: function () {
-    console.log('repeatOn:');
-    this.repeat = true;
-    this.repeatone = false;
-  },
-
-  repeatOff: function () {
-    console.log('repeatOff:');
-    this.repeat = false;
-    this.repeatone = false;
-  },
-
-  repeatToggle: function () {
-    console.log('repeatToggle:');
-    if (this.repeat) {
-      return this.repeatOff ();
-    } else {
-      return this.repeatOn ();
-    }
-  },
-
-  repeatOne: function () {
-    console.log('repeatOne:');
-    this.repeatone = true;
-  },
-
-  init: function (x) {
-    if (x !== undefined) {
-      this.at (this.enumclass.fromEnum (x));
-    } else if (typeof this.initializer === 'function') {
-      this.at (this.enumclass.fromEnum (this.initializer ()));
-    } else {
-      this.at (this.enumclass.fromEnum (this.initializer));
-    }
-    return this;
-  },
-
-  concat: function (arr) {
-    return this.changeEnumArray (this.enumclass.array.concat (arr));
-  },
-
-  splice: function (start, count) {
-    return this.changeEnumArray (this.enumclass.array.splice (start, count));
-  },
-
-  remove: function (value) {
-    return this.splice (this.enumclass.fromEnum (value), 1);
-  },
-
-  changeEnumArray: function (array) {
-    this.array = array;
-    this.enumclass = new Enum (array);
-    this.enumarray = array.clone ();
-    if (this.shuffle) {
-      this.shuffleOn ();
-    }
-    return this;
-  },
-
-};
-
-// export Enumstate
-this.Enumstate = Enumstate;
-
-
-
-
-
+var x = new Enumdinamic ([]);
+console.dir ("-----------")
+console.dir (x)
+x.concat ([1,2,3,4,5]);
+x.repeatOn ();
+x.shuffleOn ();
+console.log(x.next ());
+console.log(x.next ());
+x.concat ([11,12,13,14,15]);
+x.concat ([21,22,23,24,25]);
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+x.concat ([2]);
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
 // id3 tag reader
 
 String.prototype.toBin = function () {
@@ -2463,7 +2356,6 @@ Key.prototype = {
       }
     });
     $(window).keydown (function (e) {
-      log (e.target.localName);
       switch (e.target.localName) {
         case 'input': case 'textarea': return;
         default:
@@ -2873,9 +2765,9 @@ var keyconfig = {
 //    使いやすく  読みやすく
 //
 // 優先
-// TODO: 曲を<delete>で消した時にorderから消えてない
+// TODO: 曲を<delete>で消した時にorderから消えてない Enumlinear@@removeのバグか
 // TODO: keyconfigを各自で設定できるように
-// TODO: シャッフル, リピート がいまいち
+// DONE? シャッフル, リピート バグがちょっとだけある shuffleon, repeaton で起動 -> next
 // TODO: ソート
 // TODO: album art from id3 tag https://github.com/aadsm/JavaScript-ID3-Reader
 // TODO: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/ http://phpjavascriptroom.com/?t=ajax&p=jquery_plugin_contextmenu
@@ -2890,10 +2782,9 @@ var keyconfig = {
 // TODO: Enterでplayした時に, orderをどうするか
 // TODO: フルスクリーン時のUIについて. volumeとかどうする...
 // TODO: 音楽のフルスクリーン時のインターフェース, アルバムアートなど
-// TODO: F1, delがmacで効かない
 // TODO: ui.jsのaddfile高速化
 // TODO: id3タグの読み込みをUArrayってやつで高速化
-// TODO: title="..."にゴミが入る ? 
+// TODO: title="..."にゴミが入る ?
 
 function Player () {
   var self = this;
@@ -2942,6 +2833,7 @@ Player.prototype = {
   version: '2.0',
 
   start: function () {
+logfn ('Player.prototype.start');
     this.key.start ();
     this.ui.start (this);
     this.repeat.init ();
@@ -2971,6 +2863,7 @@ Player.prototype = {
 
   /* file reading */
   readFiles: function (files) {
+logfn ('Player.prototype.readFiles');
     var self = this;
     var first = true;
     [].forEach.call (files, function (file, index) {
@@ -2992,6 +2885,7 @@ Player.prototype = {
   },
 
   readOneFile: function (file, first, last) {
+logfn ('Player.prototype.readOneFile');
     var self = this;
     var n = self.musics.length;
     self.files[n] = file;
@@ -3011,7 +2905,7 @@ Player.prototype = {
     if (last) {
       self.ui.selectableSet ();
       self.ui.setdblclick ();
-      if (self.order.shuffle) {
+      if (self.order.shuffle.value === 'true') {
         self.order.shuffleOn ();
       }
     }
@@ -3019,11 +2913,15 @@ Player.prototype = {
 
   /* basic player operations */
   play: function (index) {
+logfn ('Player.prototype.play');
+console.log ('- player.prototype.play---');
+console.log ('index: ' + index);
     var self = this;
     if (index === undefined) {
       index = 0;
     }
-    self.order.at (index);
+    console.dir (self.order);
+    self.order.atfromEnum (index);
     self.pause ();
     if (self.playing) {
       self.playing.release ();
@@ -3042,6 +2940,7 @@ Player.prototype = {
   },
 
   pause: function () {
+logfn ('Player.prototype.pause');
     this.ui.pause ();
     if (this.playing) {
       this.playing.pause ();
@@ -3049,6 +2948,7 @@ Player.prototype = {
   },
 
   toggle: function () {
+logfn ('Player.prototype.toggle');
     var self = this;
     if (!self.playing) {
       return;
@@ -3063,6 +2963,8 @@ Player.prototype = {
 
   nextundefinedcount: 0,
   next: function () {
+logfn ('Player.prototype.next');
+    console.dir (this.order);
     this.pause ();
     var index = this.order.next ();
     if (index === undefined) {
@@ -3079,6 +2981,7 @@ Player.prototype = {
 
   prevundefinedcount: 0,
   prev: function () {
+logfn ('Player.prototype.prev');
     this.pause ();
     var index = this.order.prev ();
     if (index === undefined) {
@@ -3094,6 +2997,7 @@ Player.prototype = {
   },
 
   seekAt: function (position /* 0 - 1 */ ) {
+logfn ('Player.prototype.seekAt');
     if (this.playing !== undefined && this.playing.audio) {
       position = Math.max (0, Math.min (1, position));
       this.playing.audio.currentTime = this.playing.audio.duration * position;
@@ -3103,6 +3007,7 @@ Player.prototype = {
   },
 
   seekBy: function (sec) {
+logfn ('Player.prototype.seekBy');
     if (this.nowplaying !== undefined && this.playing && this.playing.audio) {
       var prev = this.playing.seekBy (sec);
       if (prev) {
@@ -3115,20 +3020,24 @@ Player.prototype = {
   volume: new Limited (0, 256, 16, 127),
 
   updatevolume: function () {
+logfn ('Player.prototype.updatevolume');
     this.volume.at (this.ui.volume);
   },
 
   mute: function () {
+logfn ('Player.prototype.mute');
     this.prevol = this.volume.value;
     this.volume.setToMin ();
   },
 
   resume: function () {
+logfn ('Player.prototype.resume');
     this.volume.at (this.prevol);
     delete this.prevol;
   },
 
   togglemute: function () {
+logfn ('Player.prototype.togglemute');
     if (this.ismute ()) {
       this.resume ();
     } else {
@@ -3137,20 +3046,26 @@ Player.prototype = {
   },
 
   ismute: function () {
+logfn ('Player.prototype.ismute');
     return this.volume.value === 0 && this.prevol !== undefined;
   },
 
   volumeup: function () {
+logfn ('Player.prototype.volumeup');
     this.volume.increase ();
   },
 
   volumedown: function () {
+logfn ('Player.prototype.volumedown');
     this.volume.decrease ();
   },
 
   remove: function (index) {
+logfn ('Player.prototype.remove');
     this[index] = null;
     this.order.remove (index);
+    log (this.order);
+    log (this.order.array);
   },
 
   order: new Enumdinamic ([], null, function (order) {}),

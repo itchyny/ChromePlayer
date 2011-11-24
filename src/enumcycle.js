@@ -12,12 +12,11 @@ if (typeof window === 'undefined') {
 // prototype.(at|next|prev) never returns undefined.
 // Only function which can fail is prototype.init (when
 // initializer was not found in the array.)
-function Enumcycle (array, initializer, callback, parent) {
+function Enumcycle (array, initializer, callback) {
   this.enumclass = new Enum (array);
   this.array = this.enumclass.array;
   this.initializer = initializer;
   this.callback = callback || function (x) { };
-  this.parent = parent;
   callback = callback || function (x) { };
   var self = this;
   this.enumlinear = new Enumlinear
@@ -28,7 +27,8 @@ function Enumcycle (array, initializer, callback, parent) {
                         self.index = self.enumlinear.index;
                         self.value = value;
                         self.history = self.history.concat (self.value);
-                        f (value, self.parent);
+                        self.array = self.enumlinear.array;
+                        f (value);
                       };
                   } (callback)));
   for (var x in this.enumlinear) {

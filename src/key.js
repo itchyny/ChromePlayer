@@ -34,7 +34,6 @@ Key.prototype = {
       }
     });
     $(window).keydown (function (e) {
-      log (e.target.localName);
       switch (e.target.localName) {
         case 'input': case 'textarea': return;
         default:

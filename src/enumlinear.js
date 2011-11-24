@@ -10,12 +10,11 @@ if (typeof window === 'undefined') {
 
 // An instance of Enumlinear has current position.
 // initializer can be a function
-function Enumlinear (array, initializer, callback, parent) {
+function Enumlinear (array, initializer, callback) {
   this.enumclass = new Enum (array);
   this.array = this.enumclass.array;
   this.initializer = initializer;
   this.callback = callback || function (x) { };
-  this.parent = parent;
 }
 
 Enumlinear.prototype = {
@@ -54,7 +53,7 @@ logfn ('Enumlinear.prototype.at');
     this.index = index;
     this.array = this.enumclass.array;
     this.history = this.history.concat (this.value);
-    this.callback (this.value, this.parent);
+    this.callback (this.value);
     return this.value;
   },
 
@@ -115,7 +114,9 @@ logfn ('Enumlinear.prototype.concat');
 
   splice: function (start, count) {
 logfn ('Enumlinear.prototype.splice');
-    return this.changeArray (this.enumclass.array.splice (start, count));
+    var array = this.enumclass.array;
+    array.splice (start, count);
+    return this.changeArray (array);
   },
 
   remove: function (value) {

@@ -48,6 +48,7 @@ Watch video in full screen (f key)
 
 v2.0 (20?? - )
 Source code refined
+Vim like keybind
 
 
 
