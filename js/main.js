@@ -3,7 +3,7 @@
  *    Chrome Player 2.0
  *
  *    author      : itchyny
- *    last update : 2011/11/24 02:43:04 (GMT)
+ *    last update : 2011/11/24 07:11:53 (GMT)
  *    source code : https://github.com/itchyny/ChromePlayer
  *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -383,11 +383,13 @@ logfn ('Enumlinear.prototype.splice');
 
   remove: function (value) {
 logfn ('Enumlinear.prototype.remove');
+console.log ("removing : " +value);
     return this.splice (this.enumclass.fromEnum (value), 1);
   },
 
   changeArray: function (array) {
 logfn ('Enumlinear.prototype.changeArray');
+console.log (array);
     this.enumclass = new Enum (array);
     this.array = this.enumclass.array;
     var index = this.enumclass.fromEnum (this.value) || 0;
@@ -507,7 +509,7 @@ function Enumdinamic (array, initializer, callback) {
                         self.history = self.history.concat (self.value);
                         self.array = self.enumlinear.array;
                         self.enumclass = self.enumlinear.enumclass;
-                        log ("self:::");
+                        // log ("self:::");
                         log (self);
                         f (self.value);
                       };
@@ -525,7 +527,7 @@ function Enumdinamic (array, initializer, callback) {
                   self.orderedarray = self.enumlinear.enumclass.array || self.array || self.enumlinear.array || [];
                 }
                   log ('arr:::')
-                    log (self)
+                    // log (self)
                     log (self.orderedarray)
                 switch (shuffle) {
                   case 'true':
@@ -555,7 +557,7 @@ logfn ('Enumdinamic.prototype.at');
     index = this.index;
   }
   log ("this:::")
-  log (this)
+  // log (this)
   return this.enumlinear.at (index);
 };
 Enumdinamic.prototype.next = function (j) {
@@ -616,6 +618,13 @@ logfn ('Enumdinamic.prototype.concat');
     this.shuffleOn ();
   }
 };
+Enumdinamic.prototype.remove = function (value) {
+logfn ('Enumdinamic.prototype.remove');
+  if (this.orderedarray) {
+    this.orderedarray = this.orderedarray.drop (value);
+  }
+  this.enumlinear.remove (value);
+};
 Enumdinamic.prototype.changeArray = function (array) {
 logfn ('Enumdinamic.prototype.changeArray');
 log (this.value);
@@ -636,15 +645,15 @@ log ("this.value: " + this.value);
 
 
 Enumdinamic.prototype.setRepeat = function (repeat) { this.repeat.atfromEnum (repeat); };
-Enumdinamic.prototype.repeatOff = function (repeat) { this.repeat.atfromEnum ('false'); };
-Enumdinamic.prototype.repeatOn = function (repeat) { this.repeat.atfromEnum ('true'); };
-Enumdinamic.prototype.repeatOne = function (repeat) { this.repeat.atfromEnum ('one'); };
+Enumdinamic.prototype.repeatOff = function (repeat) { this.setRepeat ('false'); };
+Enumdinamic.prototype.repeatOn = function (repeat) { this.setRepeat ('true'); };
+Enumdinamic.prototype.repeatOne = function (repeat) { this.setRepeat ('one'); };
 Enumdinamic.prototype.repeatToggle = function (repeat) { this.repeat.next (); };
 Enumdinamic.prototype.repeatToggleOnOff = function (repeat) { this.repeat.atfromEnum (this.repeat.value === 'false' ? 'true' : 'false'); };
 
 Enumdinamic.prototype.setShuffle = function (shuffle) { this.shuffle.atfromEnum (shuffle); };
-Enumdinamic.prototype.shuffleOff = function (shuffle) { this.shuffle.atfromEnum ('false'); };
-Enumdinamic.prototype.shuffleOn = function (shuffle) { this.shuffle.atfromEnum ('true'); };
+Enumdinamic.prototype.shuffleOff = function (shuffle) { this.setShuffle ('false'); };
+Enumdinamic.prototype.shuffleOn = function (shuffle) { this.setShuffle ('true'); };
 Enumdinamic.prototype.shuffleToggle = function (shuffle) { this.shuffle.next (); };
 Enumdinamic.prototype.shuffleToggleOnOff = function (shuffle) { this.shuffle.atfromEnum (this.shuffle.value === 'false' ? 'true' : 'false'); };
 
@@ -675,7 +684,28 @@ console.log(x.next ());
 console.log(x.next ());
 console.log(x.next ());
 console.log(x.next ());
-x.concat ([2]);
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+x.remove (1);
+x.remove (2);
+x.remove (3);
+x.remove (4);
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
 console.log(x.next ());
 console.log(x.next ());
 console.log(x.next ());
@@ -2692,7 +2722,6 @@ var keyconfig = {
   '<s-left>':    command.SeekBackward ([30]),
   'h':           '<left>', // vim
   'b':           '<s-left>', // vim
-  '0':           command.SeekPercent ([0]), // vim
   '<s-4>':       command.SeekPercent ([100]), // vim
 
   /* change sett ing */
@@ -2717,6 +2746,7 @@ var keyconfig = {
   '<s-k>':       '<s-up>', // vim
   '<home>':      command.SelectHome (),
   'gg':          '<home>', // vim
+  '0':           '<home>', // vim
   '<s-home>':    command.ExtendToHome (),
   '<end>':       command.SelectEnd (),
   '<s-g>':       '<end>', // vim
@@ -2765,9 +2795,9 @@ var keyconfig = {
 //    使いやすく  読みやすく
 //
 // 優先
-// TODO: 曲を<delete>で消した時にorderから消えてない Enumlinear@@removeのバグか
-// TODO: keyconfigを各自で設定できるように
+// DONE? 曲を<delete>で消した時にorderから消えてない Enumlinear@@removeのバグか
 // DONE? シャッフル, リピート バグがちょっとだけある shuffleon, repeaton で起動 -> next
+// TODO: keyconfigを各自で設定できるように
 // TODO: ソート
 // TODO: album art from id3 tag https://github.com/aadsm/JavaScript-ID3-Reader
 // TODO: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/ http://phpjavascriptroom.com/?t=ajax&p=jquery_plugin_contextmenu
@@ -3063,6 +3093,7 @@ logfn ('Player.prototype.volumedown');
   remove: function (index) {
 logfn ('Player.prototype.remove');
     this[index] = null;
+    log ("removing:::" + index);
     this.order.remove (index);
     log (this.order);
     log (this.order.array);

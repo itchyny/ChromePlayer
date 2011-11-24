@@ -3,9 +3,9 @@
 //    使いやすく  読みやすく
 //
 // 優先
-// TODO: 曲を<delete>で消した時にorderから消えてない Enumlinear@@removeのバグか
-// TODO: keyconfigを各自で設定できるように
+// DONE? 曲を<delete>で消した時にorderから消えてない Enumlinear@@removeのバグか
 // DONE? シャッフル, リピート バグがちょっとだけある shuffleon, repeaton で起動 -> next
+// TODO: keyconfigを各自で設定できるように
 // TODO: ソート
 // TODO: album art from id3 tag https://github.com/aadsm/JavaScript-ID3-Reader
 // TODO: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/ http://phpjavascriptroom.com/?t=ajax&p=jquery_plugin_contextmenu
@@ -301,6 +301,7 @@ logfn ('Player.prototype.volumedown');
   remove: function (index) {
 logfn ('Player.prototype.remove');
     this[index] = null;
+    log ("removing:::" + index);
     this.order.remove (index);
     log (this.order);
     log (this.order.array);

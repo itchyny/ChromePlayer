@@ -121,11 +121,13 @@ logfn ('Enumlinear.prototype.splice');
 
   remove: function (value) {
 logfn ('Enumlinear.prototype.remove');
+console.log ("removing : " +value);
     return this.splice (this.enumclass.fromEnum (value), 1);
   },
 
   changeArray: function (array) {
 logfn ('Enumlinear.prototype.changeArray');
+console.log (array);
     this.enumclass = new Enum (array);
     this.array = this.enumclass.array;
     var index = this.enumclass.fromEnum (this.value) || 0;

@@ -31,7 +31,7 @@ function Enumdinamic (array, initializer, callback) {
                         self.history = self.history.concat (self.value);
                         self.array = self.enumlinear.array;
                         self.enumclass = self.enumlinear.enumclass;
-                        log ("self:::");
+                        // log ("self:::");
                         log (self);
                         f (self.value);
                       };
@@ -49,7 +49,7 @@ function Enumdinamic (array, initializer, callback) {
                   self.orderedarray = self.enumlinear.enumclass.array || self.array || self.enumlinear.array || [];
                 }
                   log ('arr:::')
-                    log (self)
+                    // log (self)
                     log (self.orderedarray)
                 switch (shuffle) {
                   case 'true':
@@ -79,7 +79,7 @@ logfn ('Enumdinamic.prototype.at');
     index = this.index;
   }
   log ("this:::")
-  log (this)
+  // log (this)
   return this.enumlinear.at (index);
 };
 Enumdinamic.prototype.next = function (j) {
@@ -140,6 +140,13 @@ logfn ('Enumdinamic.prototype.concat');
     this.shuffleOn ();
   }
 };
+Enumdinamic.prototype.remove = function (value) {
+logfn ('Enumdinamic.prototype.remove');
+  if (this.orderedarray) {
+    this.orderedarray = this.orderedarray.drop (value);
+  }
+  this.enumlinear.remove (value);
+};
 Enumdinamic.prototype.changeArray = function (array) {
 logfn ('Enumdinamic.prototype.changeArray');
 log (this.value);
@@ -160,15 +167,15 @@ log ("this.value: " + this.value);
 
 
 Enumdinamic.prototype.setRepeat = function (repeat) { this.repeat.atfromEnum (repeat); };
-Enumdinamic.prototype.repeatOff = function (repeat) { this.repeat.atfromEnum ('false'); };
-Enumdinamic.prototype.repeatOn = function (repeat) { this.repeat.atfromEnum ('true'); };
-Enumdinamic.prototype.repeatOne = function (repeat) { this.repeat.atfromEnum ('one'); };
+Enumdinamic.prototype.repeatOff = function (repeat) { this.setRepeat ('false'); };
+Enumdinamic.prototype.repeatOn = function (repeat) { this.setRepeat ('true'); };
+Enumdinamic.prototype.repeatOne = function (repeat) { this.setRepeat ('one'); };
 Enumdinamic.prototype.repeatToggle = function (repeat) { this.repeat.next (); };
 Enumdinamic.prototype.repeatToggleOnOff = function (repeat) { this.repeat.atfromEnum (this.repeat.value === 'false' ? 'true' : 'false'); };
 
 Enumdinamic.prototype.setShuffle = function (shuffle) { this.shuffle.atfromEnum (shuffle); };
-Enumdinamic.prototype.shuffleOff = function (shuffle) { this.shuffle.atfromEnum ('false'); };
-Enumdinamic.prototype.shuffleOn = function (shuffle) { this.shuffle.atfromEnum ('true'); };
+Enumdinamic.prototype.shuffleOff = function (shuffle) { this.setShuffle ('false'); };
+Enumdinamic.prototype.shuffleOn = function (shuffle) { this.setShuffle ('true'); };
 Enumdinamic.prototype.shuffleToggle = function (shuffle) { this.shuffle.next (); };
 Enumdinamic.prototype.shuffleToggleOnOff = function (shuffle) { this.shuffle.atfromEnum (this.shuffle.value === 'false' ? 'true' : 'false'); };
 
@@ -199,7 +206,28 @@ console.log(x.next ());
 console.log(x.next ());
 console.log(x.next ());
 console.log(x.next ());
-x.concat ([2]);
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+x.remove (1);
+x.remove (2);
+x.remove (3);
+x.remove (4);
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
+console.log(x.next ());
 console.log(x.next ());
 console.log(x.next ());
 console.log(x.next ());

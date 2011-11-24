@@ -18,7 +18,6 @@ var keyconfig = {
   '<s-left>':    command.SeekBackward ([30]),
   'h':           '<left>', // vim
   'b':           '<s-left>', // vim
-  '0':           command.SeekPercent ([0]), // vim
   '<s-4>':       command.SeekPercent ([100]), // vim
 
   /* change sett ing */
@@ -43,6 +42,7 @@ var keyconfig = {
   '<s-k>':       '<s-up>', // vim
   '<home>':      command.SelectHome (),
   'gg':          '<home>', // vim
+  '0':           '<home>', // vim
   '<s-home>':    command.ExtendToHome (),
   '<end>':       command.SelectEnd (),
   '<s-g>':       '<end>', // vim
