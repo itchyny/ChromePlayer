@@ -23,10 +23,6 @@ var local = {
 
 
 
-if (typeof exports !== 'undefined') {
-  exports.local = local;
-}
-
 
 
 

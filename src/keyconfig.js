@@ -88,10 +88,6 @@ var keyconfig = {
 
 
 
-if (typeof exports !== 'undefined') {
-  exports.keyconfig = keyconfig;
-}
-
 
 
 

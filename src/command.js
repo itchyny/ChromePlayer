@@ -75,10 +75,6 @@ var command = {
 
 };
 
-if (typeof exports !== 'undefined') {
-  exports.command = command;
-}
-
 
 
 

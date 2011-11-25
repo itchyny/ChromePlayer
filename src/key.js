@@ -274,10 +274,6 @@ Key.prototype = {
 
 
 
-if (typeof exports !== 'undefined') {
-  exports.Key = Key;
-}
-
 
 
 

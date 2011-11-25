@@ -7,6 +7,7 @@ SOURCE_FILES =\
 	enumcycle.js \
 	enumdinamic.js \
 	id3.js \
+	id3-minimized.js \
 	music.js \
 	local.js \
 	schemeconfig.js \
