@@ -23,7 +23,7 @@ Key.prototype = {
 
   callback: {},
 
-  start: function () {
+  init: function () {
     var self = this;
     $(window).keypress (function (e) {
       switch (e.target.localName) {

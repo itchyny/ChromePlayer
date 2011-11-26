@@ -46,7 +46,7 @@ logfn ('Enumlinear.prototype.at');
       index = this.index;
     }
     var value = this.enumclass.toEnum (index);
-    if (value === undefined) {
+    if (value === undefined || this.array.length === 0) {
       return undefined;
     }
     this.value = value;
@@ -86,19 +86,18 @@ logfn ('Enumlinear.prototype.prev');
     return this.next (j);
   },
 
-  init: function (value) {
+  init: function () {
 logfn ('Enumlinear.prototype.init');
     /*! return value; return undefined if value is not found in array */
-    if (value === undefined) {
-      if (typeof this.initializer === 'function') {
-        try {
-          value = this.initializer ();
-        } catch (e) {
-          value = this.array[0];
-        }
-      } else {
-        value = this.initializer;
+    var value;
+    if (typeof this.initializer === 'function') {
+      try {
+        value = this.initializer ();
+      } catch (e) {
+        value = this.array[0];
       }
+    } else {
+      value = this.initializer;
     }
     value = this.atfromEnum (value);
     // If initialization fails, begin at head of the array, with no error.

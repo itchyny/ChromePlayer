@@ -5,8 +5,12 @@ var keyconfig = {
   /* operate player */
   '<space>':     command.PlayPause (),
   '<c-space>':   '<space>',
+  '<g-space>':   '<space>',
+  '<g-c-space>': '<space>',
   '<c-right>':   command.NextMusic (),
+  '<g-c-right>': '<c-right>',
   '<c-left>':    command.PreviousMusic (),
+  '<g-c-left>':  '<c-left>',
   '<c-o>':       command.OpenFile (),
   ':o':          '<c-o>', // vim
   ':e':          '<c-o>', // vim
@@ -26,8 +30,11 @@ var keyconfig = {
 
   /* volume */
   '<c-up>':      command.VolumeUp (),
+  '<g-c-up>':    '<c-up>',
   '<c-down>':    command.VolumeDown (),
+  '<g-c-down>':  '<c-down>',
   '<c-a-down>':  command.VolumeToggleMute (),
+  '<g-c-a-down>':'<c-a-down>',
   '9':           command.VolumeDown (), // mplayer
   // '0':        command.VolumeUp (), // mplayer
 

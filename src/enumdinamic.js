@@ -51,7 +51,8 @@ function Enumdinamic (array, initializer, callback) {
                     log (self.orderedarray)
                 switch (shuffle) {
                   case 'true':
-                    var arr = (self.value === undefined ? [] : [self.value]).concat (self.orderedarray.shuffle ().drop (self.value));
+                    var arr = (self.value === undefined || self.array.indexOf (self.value) < 0
+                               ? [] : [self.value]).concat (self.orderedarray.shuffle ().drop (self.value));
                     self.changeArray (arr);
                     break;
                   default:
@@ -126,8 +127,7 @@ logfn ('Enumdinamic.prototype.next');
         }
       }
   }
-  this.at (index);
-  return this.value;
+  return this.at (index);
 };
 Enumdinamic.prototype.concat = function (arr) {
 logfn ('Enumdinamic.prototype.concat');

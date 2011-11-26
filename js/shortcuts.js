@@ -26,12 +26,11 @@ window.addEventListener(
       if(keys.indexOf(e.keyCode) >= 0){
         try{
           chrome.extension.sendRequest(
-            {
-              keyCode: e.keyCode,
-              shiftKey: e.shiftKey,
-              ctrlKey: e.ctrlKey,
-              altKey: e.altKey,
-              global: true
+            { keyCode: e.keyCode
+            , shiftKey: e.shiftKey
+            , ctrlKey: e.ctrlKey
+            , altKey: e.altKey
+            , global: true
             }
           );
         } catch(e){};

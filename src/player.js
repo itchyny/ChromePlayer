@@ -71,11 +71,12 @@ Player.prototype = {
 
   start: function () {
 logfn ('Player.prototype.start');
-    this.key.start ();
-    this.ui.start (this);
-    this.repeat.init ();
-    this.shuffle.init ();
-    this.volume.init ();
+    for (var x in this) {
+      if (this[x] && this[x].init) {
+        this[x].init (this);
+        log ("init: " + x);
+      }
+    }
   },
 
   files: [],
@@ -89,10 +90,9 @@ logfn ('Player.prototype.start');
   nowplaying: 0,
 
   filetypes: {
-    audio: { regexp: /audio\/(mp3|wav|ogg|m4a|x-matroska)/
+    audio: { regexp: /audio\/(mp3|wav|ogg|m4a)/
            , string: 'audio'
     },
-    // video: { regexp: /video\/(mp4|mkv|x-matroska)/
     video: { regexp: /video\/(mp4)/
            , string: 'video'
     }

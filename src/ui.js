@@ -3,7 +3,7 @@
 
 var UI = {
 
-  start: function (player) {
+  init: function (player) {
     var self = this;
     self.player = player;
     self.div = (function (a, x) {
@@ -80,6 +80,11 @@ var UI = {
       self.focusIndex = 0;
       self.focusUpdate (true);
     });
+    self.div.globalcontrol
+      .attr({'checked':local.get('globalcontrol')==='true'})
+      .change(function (e) {
+        local.set ('globalcontrol', e.target.checked.toString());
+      });
   },
 
   initsize: function () {
@@ -1094,11 +1099,6 @@ $.fn.drag_drop_multi_select.defaults.after_drop_action = function ($item, $old, 
 ////                   order *= -1;
 ////                 };
 ////               })())
-////             });
-////             this.div.globalcontrol
-////             .attr({'checked':data.globalcontrol==='true'})
-////             .change(function (e) {
-////               L.globalcontrol = data.globalcontrol = e.target.checked.toString();
 ////             });
 ////             this.div.tagread
 ////             .attr({'checked':data.tagread==='true'})

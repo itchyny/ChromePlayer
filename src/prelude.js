@@ -17,11 +17,8 @@ Array.prototype.drop = function (x) {
       arr = arr.concat ([this[i]]);
     }
   }
-  log (arr);
   return arr;
 };
-
-console.log ([1,2,3,4,5].drop (4));
 
 Array.prototype.shuffle = function () {
   var xs = this.clone ();

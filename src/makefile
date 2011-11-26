@@ -16,6 +16,7 @@ SOURCE_FILES =\
 	command.js \
 	keyconfig.js \
 	player.js \
+	globalcontrol.js \
 	_footer.js
 
 DATE=$(shell TZ=GMT date '+%Y\/%m\/%d %T (GMT)')

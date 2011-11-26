@@ -51,10 +51,8 @@ Limited.prototype = {
     return this.increase (-x);
   },
 
-  init: function (x) {
-    if (x !== undefined) {
-      this.at (x);
-    } else if (typeof this.initializer === 'function') {
+  init: function () {
+    if (typeof this.initializer === 'function') {
       this.at (this.initializer ());
     } else {
       this.at (this.initializer);
