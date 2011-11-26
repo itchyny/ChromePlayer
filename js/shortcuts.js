@@ -25,6 +25,7 @@ window.addEventListener(
     return function(e){
       if(keys.indexOf(e.keyCode) >= 0){
         try{
+          e.preventDefault ();
           chrome.extension.sendRequest(
             { keyCode: e.keyCode
             , shiftKey: e.shiftKey

@@ -29,7 +29,7 @@ Limited.prototype = {
     } else {
       this.value = this.assert (x);
     }
-    this.callback (this.value);
+    this.callback (this.value, this.app);
     return this.value;
   },
 
@@ -51,7 +51,8 @@ Limited.prototype = {
     return this.increase (-x);
   },
 
-  init: function () {
+  init: function (app) {
+    this.app = app;
     if (typeof this.initializer === 'function') {
       this.at (this.initializer ());
     } else {

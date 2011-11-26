@@ -53,7 +53,7 @@ logfn ('Enumlinear.prototype.at');
     this.index = index;
     this.array = this.enumclass.array;
     this.history = this.history.concat (this.value);
-    this.callback (this.value);
+    this.callback (this.value, this.app);
     return this.value;
   },
 
@@ -86,8 +86,9 @@ logfn ('Enumlinear.prototype.prev');
     return this.next (j);
   },
 
-  init: function () {
+  init: function (app) {
 logfn ('Enumlinear.prototype.init');
+    this.app = app;
     /*! return value; return undefined if value is not found in array */
     var value;
     if (typeof this.initializer === 'function') {

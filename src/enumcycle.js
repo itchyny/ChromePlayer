@@ -22,15 +22,13 @@ function Enumcycle (array, initializer, callback) {
   this.enumlinear = new Enumlinear
                   ( array
                   , initializer
-                  , (function (f) {
-                      return function (value) {
-                        self.index = self.enumlinear.index;
-                        self.value = value;
-                        self.history = self.history.concat (self.value);
-                        self.array = self.enumlinear.array;
-                        f (value);
-                      };
-                  } (callback)));
+                  , function (value, app) {
+                      self.index = self.enumlinear.index;
+                      self.value = value;
+                      self.history = self.history.concat (self.value);
+                      self.array = self.enumlinear.array;
+                      callback (value, self.app);
+                  });
   for (var x in this.enumlinear) {
     if (this.enumlinear.hasOwnProperty (x)) {
       this[x] = this.enumlinear[x]; 

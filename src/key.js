@@ -1,10 +1,8 @@
 // Key maneger
 
-function Key (app, config) {
-  var key;
-  this.app = app;
+function Key (config) {
   if (config) {
-    for (key in config) {
+    for (var key in config) {
       if (config.hasOwnProperty (key)) {
         if (config[key]) {
           var keyformatted = this.parse (key);
@@ -23,7 +21,8 @@ Key.prototype = {
 
   callback: {},
 
-  init: function () {
+  init: function (app) {
+    this.app = app;
     var self = this;
     $(window).keypress (function (e) {
       switch (e.target.localName) {

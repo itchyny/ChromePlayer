@@ -14,8 +14,8 @@ SOURCE_FILES =\
 	ui.js \
 	key.js \
 	command.js \
-	keyconfig.js \
 	player.js \
+	keyconfig.js \
 	globalcontrol.js \
 	_footer.js
 
@@ -33,7 +33,7 @@ SED_CHANGELOG = sed "s/@CHANGELOG/${CHANGELOG}/"
 
 
 main.js : ${SOURCE_FILES}
-	@cat ${SOURCE_FILES} | node closure-command.js | ${SED_DATE} | ${SED_VER} > $@
+	@cat ${SOURCE_FILES} | ${SED_DATE} | ${SED_VER} | node closure-command.js  > $@
 	@cp $@ ../js/
 
 manifest.json : manifest_base.json version.txt

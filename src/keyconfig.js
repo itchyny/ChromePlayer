@@ -1,6 +1,6 @@
 // key configuration for player
 
-var keyconfig = {
+Player.prototype.key = new Key ({
 
   /* operate player */
   '<space>':     command.PlayPause (),
@@ -56,6 +56,7 @@ var keyconfig = {
   '<s-end>':     command.ExtendToEnd (),
   '<c-a>':       command.SelectAll (),
   '<c-s-a>':     command.UnselectAll (),
+  '<c-i>':       command.SelectInvert (),
   '<pgdn>':      command.PageDown (),
   // '<c-f>':       '<pgdn>', // vim
   '<s-pgdn>':    command.ExtendPageDown (),
@@ -90,7 +91,7 @@ var keyconfig = {
   /* special command */
   '<nop>':       command.Nop ()
 
-};
+});
 
 
 

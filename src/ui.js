@@ -658,6 +658,17 @@ var UI = {
       .UNSELECT(true);
   },
 
+  selectInvert: function () {
+    var self = this;
+    var $selected = $('tr.ui-selected');
+    self.div.tbody
+      .children()
+      .SELECT(true)
+      .last()
+      .LASTSELECT();
+    $selected.UNSELECT (true);
+  },
+
   toggleHelp: function () {
     var self = this;
     self.div.help.fadeToggle(200);
@@ -814,14 +825,6 @@ var UI = {
         return;
       };
   },
-
-  // toggleMute: function () { // player.toggleMute
-  //   if (player.volume.value === 0 && player.predvol !== undefined) {
-  //     this.click ('volumeon');
-  //   } else {
-  //     this.click ('mute');
-  //   }
-  // },
 
   click: function (t) {
     var self = this;

@@ -1,5 +1,5 @@
 // commands
-// TODO: arguments
+// TODO: arguments to String
 var command = {
 
   /* operate player */
@@ -34,6 +34,7 @@ var command = {
   ExtendToEnd:        function (opt) { return function (app) { app.ui.extendToEnd (); }; },
   SelectAll:          function (opt) { return function (app) { app.ui.selectAll (); }; },
   UnselectAll:        function (opt) { return function (app) { app.ui.unselectAll (); }; },
+  SelectInvert:      function (opt) { return function (app) { app.ui.selectInvert (); }; },
   PageDown:           function (opt) { return function (app) { app.ui.pageDown (); }; },
   ExtendPageDown:     function (opt) { return function (app) { app.ui.extendPageDown (); }; },
   PageUp:             function (opt) { return function (app) { app.ui.pageUp (); }; },
@@ -50,8 +51,8 @@ var command = {
   AltToggleLock:      function (opt) { return function (app) { app.key.togglelock ('altKey'); }; },
 
   /* vim setting */
-  VisualModeOn:       function (opt) { return function (app) { app.vim.visual.at (1); }; },
-  VisualModeoff:      function (opt) { return function (app) { app.vim.visual.at (0); }; },
+  VisualModeOn:       function (opt) { return function (app) { app.vim.visual.at (1); }; }, // TODO
+  VisualModeoff:      function (opt) { return function (app) { app.vim.visual.at (0); }; }, // TODO
 
   /* toggle popup menu */
   ToggleHelp:         function (opt) { return function (app) { app.ui.toggleHelp (); }; },

@@ -20,20 +20,16 @@ function Enumdinamic (array, initializer, callback) {
   this.enumlinear = new Enumlinear
                   ( array
                   , initializer
-                  , (function (f) {
-                      return function (value) {
-                        logfn ('this.enumlinear callback');
-                        log ('value: ' + value);
-                        self.index = self.enumlinear.index;
-                        self.value = value;
-                        self.history = self.history.concat (self.value);
-                        self.array = self.enumlinear.array;
-                        self.enumclass = self.enumlinear.enumclass;
-                        // log ("self:::");
-                        log (self);
-                        f (self.value);
-                      };
-                  } (callback)));
+                  , function (value, app) {
+                    logfn ('this.enumlinear callback');
+                    log ('value: ' + value);
+                    self.index = self.enumlinear.index;
+                    self.value = value;
+                    self.history = self.history.concat (self.value);
+                    self.array = self.enumlinear.array;
+                    self.enumclass = self.enumlinear.enumclass;
+                    callback (self.value, app);
+                  });
   this.repeat = new Enumcycle ( ['false', 'true', 'one'], 'false'
               , function (repeat) {
                 console.log ('repeat:' + repeat);

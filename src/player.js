@@ -3,8 +3,6 @@
 //    使いやすく  読みやすく
 //
 // 優先
-// DONE? 曲を<delete>で消した時にorderから消えてない Enumlinear@@removeのバグか
-// DONE? シャッフル, リピート バグがちょっとだけある shuffleon, repeaton で起動 -> next
 // TODO: keyconfigを各自で設定できるように
 // TODO: ソート
 // TODO: album art from id3 tag https://github.com/aadsm/JavaScript-ID3-Reader
@@ -12,7 +10,7 @@
 //
 // TODO: 読めないタグ
 // TODO: vim, visual mode
-// TODO: キーだけでファイルの入れ替え
+// TODO: キーだけでファイルの入れ替え ファイル入れ替えた時のplayer.orderを更新
 // TODO: ファイル順入れ替えた時にorder更新
 // TODO: C-zで削除キャンセルなど
 // TODO: fixed first row of table
@@ -24,45 +22,7 @@
 // 3) save playlists implement some sort of media library, so we don't have to add files every time
 // 6) allow us to "pop-out" the media player to a new, smaller window, always-on-top if possible.
 function Player () {
-  var self = this;
-  self.ui = UI;
-  self.key = new Key (self, keyconfig);
-  self.repeat = new Enumcycle ( ['false', 'true', 'one']
-              , function () { return local.get('repeat') || 'false'; }
-              , function (repeat) {
-                local.set ('repeat', repeat);
-                self.ui.setrepeat (repeat);
-                if (repeat === 'one') {
-                  self.order.repeatOne ();
-                } else if (repeat === 'true') {
-                  self.order.repeatOn ();
-                } else {
-                  self.order.repeatOff ();
-                }
-              });
-  self.shuffle = new Enumcycle ( ['false', 'true']
-               , function () { return local.get('shuffle') || 'false'; }
-               , function (shuffle) {
-                 local.set ('shuffle', shuffle);
-                 self.ui.setshuffle (shuffle);
-                 if (shuffle === 'true') {
-                   self.order.shuffleOn ();
-                 } else {
-                   self.order.shuffleOff ();
-                 }
-               });
-  self.volume = new Limited (0, 256, 16
-              , function () {
-                var vol = parseInt (local.get ('volume'), 10);
-                return vol !== undefined ? vol : 128;  // vol can be 0
-              }
-              , function (volume) {
-                local.set ('volume', volume);
-                self.ui.setvolume (volume);
-                if (self.playing) {
-                  self.playing.setvolume (volume / 256);
-                }
-              });
+  this.ui = UI;
 }
 
 Player.prototype = {
@@ -213,6 +173,7 @@ logfn ('Player.prototype.next');
       if (this.nextundefinedcount < 3) return;
       this.nextundefinedcount = 0;
       index = this.order.head ();
+      if (index === undefined) return;
     }
     this.play (index);
   },
@@ -230,6 +191,7 @@ logfn ('Player.prototype.prev');
       if (this.prevundefinedcount < 3) return;
       this.prevundefinedcount = 0;
       index = this.order.last ();
+      if (index === undefined) return;
     }
     this.play (index);
   },
@@ -257,10 +219,10 @@ logfn ('Player.prototype.seekBy');
   /* volume operations */
   volume: new Limited (0, 256, 16, 127),
 
-  updatevolume: function () {
-logfn ('Player.prototype.updatevolume');
-    this.volume.at (this.ui.getvolume ());
-  },
+//   updatevolume: function () {
+// logfn ('Player.prototype.updatevolume');
+//     this.volume.at (this.ui.getvolume ());
+//   },
 
   mute: function () {
 logfn ('Player.prototype.mute');
@@ -307,14 +269,48 @@ logfn ('Player.prototype.remove');
     log (this.order.array);
   },
 
-  order: new Enumdinamic ([], null, function (order) {}),
-
-  repeat: new Enumcycle (['false', 'true', 'one']),
-
-  shuffle: new Enumcycle (['false', 'true'])
+  order: new Enumdinamic ([], null, function (order) {})
 
 };
 
+Player.prototype.repeat = new Enumcycle ( ['false', 'true', 'one']
+  , function () { return local.get('repeat') || 'false'; }
+  , function (repeat, app) {
+   local.set ('repeat', repeat);
+   app.ui.setrepeat (repeat);
+   if (repeat === 'one') {
+     app.order.repeatOne ();
+   } else if (repeat === 'true') {
+     app.order.repeatOn ();
+   } else {
+     app.order.repeatOff ();
+   }
+});
+
+Player.prototype.shuffle = new Enumcycle ( ['false', 'true']
+  , function () { return local.get('shuffle') || 'false'; }
+  , function (shuffle, app) {
+    local.set ('shuffle', shuffle);
+    app.ui.setshuffle (shuffle);
+    if (shuffle === 'true') {
+      app.order.shuffleOn ();
+    } else {
+      app.order.shuffleOff ();
+    }
+});
+
+Player.prototype.volume = new Limited (0, 256, 16
+  , function () {
+   var vol = parseInt (local.get ('volume'), 10);
+   return vol !== undefined ? vol : 128;  // vol can be 0
+  }
+  , function (volume, app) {
+   local.set ('volume', volume);
+   app.ui.setvolume (volume);
+   if (app.playing) {
+     app.playing.setvolume (volume / 256);
+   }
+});
 
 Player.prototype.vim = {
   visual: new Enumcycle ([false, true], false, function (visual) {
