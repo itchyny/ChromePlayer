@@ -4,7 +4,7 @@
 
 // requirements
 if (typeof window === 'undefined') {
-  p = require ('./prelude');
+  var p = require ('./prelude');
   var Enum = require('./enum').Enum;
   var Enumlinear = require('./enumlinear').Enumlinear;
   var Enumcycle = require('./enumcycle').Enumcycle;
@@ -19,7 +19,12 @@ function Enumdinamic (array, initializer, callback) {
   var self = this;
   this.enumlinear = new Enumlinear
                   ( array
-                  , initializer
+                  , function () {
+                    initializer ();
+                    self.repeat.init ();
+                    self.shuffle.init ();
+                    self.enumlinear.init ();
+                  }
                   , function (value, app) {
                     logfn ('this.enumlinear callback');
                     log ('value: ' + value);
@@ -42,9 +47,6 @@ function Enumdinamic (array, initializer, callback) {
                 if (!self.orderedarray) {
                   self.orderedarray = self.enumlinear.enumclass.array || self.array || self.enumlinear.array || [];
                 }
-                  log ('arr:::')
-                    // log (self)
-                    log (self.orderedarray)
                 switch (shuffle) {
                   case 'true':
                     var arr = (self.value === undefined || self.array.indexOf (self.value) < 0
@@ -57,9 +59,6 @@ function Enumdinamic (array, initializer, callback) {
                     break;
                 }
                });
-  this.repeat.init ();
-  this.shuffle.init ();
-  this.enumlinear.init ();
   for (var x in this.enumlinear) {
     if (this.enumlinear.hasOwnProperty (x)) {
       this[x] = this.enumlinear[x]; 

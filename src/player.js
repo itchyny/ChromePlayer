@@ -7,10 +7,12 @@
 // TODO: ソート
 // TODO: album art from id3 tag https://github.com/aadsm/JavaScript-ID3-Reader
 // TODO: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/ http://phpjavascriptroom.com/?t=ajax&p=jquery_plugin_contextmenu
+// TODO: 別タブのキーボードがなんか効かなくなる?
 //
+// TODO: キーだけでファイルの入れ替え ファイル入れ替えた時のplayer.orderを更新
+// TODO: s-pgupがバグ
 // TODO: 読めないタグ
 // TODO: vim, visual mode
-// TODO: キーだけでファイルの入れ替え ファイル入れ替えた時のplayer.orderを更新
 // TODO: ファイル順入れ替えた時にorder更新
 // TODO: C-zで削除キャンセルなど
 // TODO: fixed first row of table
@@ -71,15 +73,20 @@ logfn ('Player.prototype.readFiles');
     var mediafiles = [].filter.call (files, function (file) {
       return file.filetype !== '';
     });
+    var playindex = self.shuffle.value === 'false'
+                  ? self.musics.length
+                  : self.musics.length + Math.floor (Math.random () * mediafiles.length);
     [].forEach.call (mediafiles, function (file, index, files) {
         setTimeout ( (function (file, first, last) {
           return self.readOneFile (file, first, last);
         }) (file
-           , (self.shuffle.value === undefined || self.shuffle.value === 'false'
-                 ? index === 0 : index === parseInt (files.length / 2))
+           , false
            , index === files.length - 1)
         , 10 * index);
     });
+    if (!self.playing) {
+      self.play (playindex);
+    }
   },
 
   readOneFile: function (file, first, last) {
@@ -219,10 +226,10 @@ logfn ('Player.prototype.seekBy');
   /* volume operations */
   volume: new Limited (0, 256, 16, 127),
 
-//   updatevolume: function () {
-// logfn ('Player.prototype.updatevolume');
-//     this.volume.at (this.ui.getvolume ());
-//   },
+  updatevolume: function () {
+logfn ('Player.prototype.updatevolume');
+    this.volume.at (this.ui.getvolume ());
+  },
 
   mute: function () {
 logfn ('Player.prototype.mute');

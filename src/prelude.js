@@ -56,6 +56,10 @@ if (typeof $ !== 'undefined') {
     return this.text(t).attr('title', t);
   };
 
+  $.fn.unique = Array.prototype.unique;
+
+  $.fn.join = Array.prototype.join;
+
 }
 
 function aboutEqual (x, y) {

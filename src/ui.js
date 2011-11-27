@@ -30,7 +30,9 @@ var UI = {
     self.selectableSet ();
     self.initFilter ();
     $(window).resize(function () { self.initsize (); });
-    $('div#appname a').text('Local Player v' + player.version);
+    $('div#appname a').text('Local Player v' + player.version).click(function (e) {
+      self.toggleAbout ();
+    });
   },
 
   initdrop: function () {
@@ -678,13 +680,11 @@ var UI = {
   },
 
   toggleAbout: function () {
-    var self = this;
-      self.div.about.fadeToggle(200);
+    this.div.about.fadeToggle(200);
   },
 
   toggleConfig: function () {
-    var self = this;
-      self.div.config.fadeToggle(200);
+    this.div.config.fadeToggle(200);
   },
 
   deleteSelected: function () {
@@ -784,8 +784,9 @@ var UI = {
       }
   },
 
-  viewInformation: function (player) {
+  viewInformation: function () {
     var self = this;
+    var player = self.player;
     self.div.property.fadeIn(200);
     if (/* player.data.tagread === 'true' &&*/ player.tags) {
       var m = {
