@@ -26,10 +26,11 @@ var UI = {
     self.initsize ();
     self.initslider ();
     self.initschemes ();
-    self.initsplitter ();
-    self.resizableSet ();
     self.selectableSet ();
     self.initFilter ();
+    self.initsplitter ();
+    self.resizableSet ();
+    self.initClickEscape ();
     $(window).resize(function () { self.initsize (); });
     $('div#appname a').text('Local Player v' + player.version).click(function (e) {
       self.toggleAbout ();
@@ -89,13 +90,14 @@ var UI = {
         local.set ('globalcontrol', e.target.checked.toString());
       });
     self.div.notification
-      .attr({'checked': local.get ('notification') === 'true'})
+      .attr({'checked': (local.get ('notification') || 'true') === 'true'})
       .change(function (e) {
         local.set ('notification', e.target.checked.toString());
         if (undefined === local.get ('notificationmsec')) {
           local.set ('notificationmsec', self.div.notificationmsec.valueAsNumber);
         }
       });
+    local.set ('notification', self.div.notification.attr ('checked') === 'checked');
     function formatmsec (msec) {
       var sec = parseInt (parseInt (msec, 10) / 1000, 10);
       var secstr = sec < 10 ? "&nbsp;" + sec : sec;
@@ -132,7 +134,7 @@ var UI = {
 
   initsplitter: function () {
     var w;
-    if(local.get ('splitter') === undefined) {
+    if (local.get ('splitter') === undefined) {
       w = {
         'now': 0.05,
         'filename': 0.10,
@@ -187,6 +189,101 @@ var UI = {
         'stop': function (e, ui) { self.stopSlide (e, ui); }
       })
       .slider('disable');
+  },
+
+  initClickEscape: function () {
+    var self = this;
+    self.div.help.click(function () {
+      self.div.help.fadeOut(200);
+      self.focusIndex = 0;
+      self.focusUpdate (true);
+    });
+    self.div.config.click(function (e) {
+      if (['a', 'input', 'textarea'].indexOf(e.target.localName) < 0) {
+        self.div.config.fadeOut(200);
+        self.focusIndex = 0;
+        self.focusUpdate (true);
+      }
+    });
+    self.div.about.click(function (e) {
+      if (e.target.localName !== 'a') {
+        self.div.about.fadeOut(200);
+        self.focusIndex = 0;
+        self.focusUpdate (true);
+      }
+    });
+    self.div.property.click(function (e) {
+      if (e.target.localName !== 'a') {
+        self.div.property.fadeOut(200);
+        self.focusIndex = 0;
+        self.focusUpdate (true);
+      }
+    });
+    setTimeout (function () {
+      self.div.thead
+      .find('th')
+      .each(function (i, th) {
+        $(this).click( (function (i) {
+          var order = 1;
+          return function (e) {
+            self.sortorder (i, order);
+            order *= -1;
+          };
+        })(i))
+      });
+    }, 100);
+    // $('tr', self.div.thead)
+    //  .sortable();
+    // .children()
+    // .resizable({ handles: 'e, w' });
+  },
+
+  sortorder: (function () {
+    var stack = [{i: 3, order: 1, f: function (x) { return x; }}];
+    return function (i, order) {
+      var self = this;
+      console.log (order);
+      if (i === undefined) {
+        i = 1;
+      }
+      var f = function (x) {return x;};
+      // var c = function (s) {
+      //  return s.replace(/１/,'1').replace(/２/,'2').replace(/３/,'3').replace(/４/,'4').replace(/５/,'5').replace(/６/,'6').replace(/７/,'7').replace(/８/,'8').replace(/９/,'9').replace(/０/,'0');
+      //}
+      // var f = ($('th:not(.splitter)').eq(i).text() === 'track') ? function (x) {return parseInt(c(x), 10);} : function (x) {return x;};
+      stack[1] = stack[0] ? (i === stack[0].i ? stack[1] : stack[0]) : {i:1, order:1, f:function (x) {return x;}};
+      stack[0] = {i: i, order: order, f: f};
+      self.div.tbody.html(
+          $('tr', self.div.tbody).sort(
+            (function () {
+              var o = order, r = stack[1].order, j = i, k = stack[1].i, texts = [], nexts = [];
+              return function (a, b) {
+                var ajT = a.childNodes[j].innerText, bjT = b.childNodes[j].innerText,
+                    akT = a.childNodes[k].innerText, bkT = b.childNodes[k].innerText;
+                return /*f*/(ajT) > /*f*/(bjT) ?  o :
+                       /*f*/(ajT) < /*f*/(bjT) ? -o :
+                       /*stack[1].f*/(akT) >= /*stack[1].f*/(bkT) ? r : -r;
+                //return f(ajT) > f(bjT) ?  o :
+                //       f(ajT) < f(bjT) ? -o :
+                //       stack[1].f(akT) >= stack[1].f(bkT) ? r : -r;
+              };
+            })()
+          )
+        );
+      self.selectableSet();
+      self.setorder ();
+    };
+  })(),
+
+  setorder: function () {
+    var arr = [];
+    var self = this;
+    $('tr', self.div.tbody)
+      .each( function () { arr.push( parseInt( $(this).attr('number'), 10 ) ); });
+    self.player.order.changeArray (arr);
+    if (self.player.shuffle.value === 'true') {
+      self.player.order.shuffleOn ();
+    }
   },
 
   startSlide: function (e, ui) {
@@ -282,11 +379,8 @@ var UI = {
       var image = file.tags.picture;
       art.src = "data:" + image.format + ";base64," + Base64.encodeBytes(image.data);
       art.style.display = "block";
-      log ("displaying image")
-    console.log (art.src)
     } else {
       art.style.display = "none";
-      log ("hiding image")
     }
   },
 
@@ -437,15 +531,15 @@ var UI = {
         var $last = $('tr.last-select');
         self.focusIndex = 0;
         self.focusUpdate (true);
-        if(e.shiftKey && !e.altKey && $last.size()) {
-          if(e.ctrlKey) {
+        if (e.shiftKey && !e.altKey && $last.size()) {
+          if (e.ctrlKey) {
             var selected = $('tr.ui-selected');
             setTimeout(
               function () {
               selected.SELECT(true);
             }, 20);
           }
-          if(e.clientY < $last.position().top) {
+          if (e.clientY < $last.position().top) {
             setTimeout(
               function () {
               $last
@@ -479,7 +573,7 @@ var UI = {
       .addClass( $self.hasClass('moved') ? 'ui-selected moved': '' )
       .addClass( $self.hasClass('ui-selected') ? 'ui-selected': '' )
       .appendTo(self.div.tbody);
-      if($self.ISSELECTED()) {
+      if ($self.ISSELECTED()) {
         setTimeout(function () {n.SELECT(true);}, 30);
       }
     })
@@ -552,14 +646,20 @@ var UI = {
         var picture = image ? 'data:' + image.format + ';base64,' + Base64.encodeBytes (image.data)
                             : '../icon_128.png';
         if (self.formatTags (tags) === '') {
-          self.showNotification (picture, filename, "");
+          if (force) {
+            self.showNotification (picture, filename, "");
+          } else {
+            setTimeout (function () {
+              self.showFileName (filename, index, true);
+            }, 500);
+          }
         } else {
           self.showNotification (picture, tags.artist, tags.title + '  /  ' + tags.album);
         }
     } else {
       setTimeout (function () {
         self.showFileName (filename, index, true);
-      }, 100);
+      }, 500);
     }
   },
 
@@ -567,7 +667,7 @@ var UI = {
     var self = this;
     var $selected = $('tr.ui-selected'),
         $last = $('tr.last-select');
-    if($selected.size()) {
+    if ($selected.size()) {
       $selected
         .UNSELECT(true)
         .next()
@@ -575,7 +675,7 @@ var UI = {
         .last()
         .SELECT()
         .LASTSELECT();
-    } else if($last.size()) {
+    } else if ($last.size()) {
       $last
         .last()
         .SELECT()
@@ -597,8 +697,8 @@ var UI = {
 
   extendDown: function () {
     var $last = $('tr.last-select');
-    if($last.size()) {
-      if($last.prev().ISSELECTED()) {
+    if ($last.size()) {
+      if ($last.prev().ISSELECTED()) {
         $last
           .prevAll()
           .filter( ( function () {var flg = true; return function () {return flg && (flg = $(this).ISSELECTED());} })() )
@@ -618,7 +718,7 @@ var UI = {
     var self = this;
     var $selected = $('tr.ui-selected'),
         $last = $('tr.last-select');
-    if($selected.size()) {
+    if ($selected.size()) {
       $selected
         .UNSELECT(true)
         .prev()
@@ -626,7 +726,7 @@ var UI = {
         .first()
         .SELECT()
         .LASTSELECT();
-    } else if($last.size()) {
+    } else if ($last.size()) {
       $last
         .first()
         .SELECT()
@@ -648,8 +748,8 @@ var UI = {
 
   extendUp: function () {
     var $last = $('tr.last-select');
-    if($last.size()) {
-      if($last.next().ISSELECTED()) {
+    if ($last.size()) {
+      if ($last.next().ISSELECTED()) {
         $last
           .nextAll()
           .filter( ( function () {var flg = true; return function () {return flg && (flg = $(this).ISSELECTED());} })() )
@@ -737,7 +837,7 @@ var UI = {
   toggleHelp: function () {
     var self = this;
     self.div.help.fadeToggle(200);
-    if($('div#help:hidden').size()) {
+    if ($('div#help:hidden').size()) {
       div.tablebody.focus();
     }
   },
@@ -778,7 +878,7 @@ var UI = {
   extendPageDown: function () {
     var self = this;
     self.div.tablebody.scrollTop( self.div.tablebody.scrollTop() + self.div.tablebody.height() * 0.8 );
-    if($('tr.last-select').prev().ISSELECTED()) {
+    if ($('tr.last-select').prev().ISSELECTED()) {
       $('tr.ui-selected')
         .filter( function () { return $(this).position().top < self.div.thead.position().top + 40; } )
         .UNSELECT(true);
@@ -810,7 +910,7 @@ var UI = {
     self.div.tablebody.scrollTop( self.div.tablebody.scrollTop() - self.div.tablebody.height() * 0.8 );
     var h = window.innerHeight,
         $last = $('tr.last-select', self.div.tbody);
-    if($last.next().ISSELECTED()) {
+    if ($last.next().ISSELECTED()) {
       $('tr.ui-selected')
         .filter( function () { return $(this).position().top > h - 50; })
         .UNSELECT(true);
@@ -873,9 +973,10 @@ var UI = {
     self.filterEnd ();
     switch($('#help:visible,#config:visible,#about:visible,#property:visible,#filter:visible').size()) {
       case 0:
-        if($('div#musicSlider a:focus, div#volumeSlider a:focus').size()) {
-          // player.key.tab(0);
+        if ($('div#musicSlider a:focus, div#volumeSlider a:focus').size()) {
           $('div#musicSlider a, div#volumeSlider a').focusout();
+          self.focusIndex = 0;
+          self.focusUpdate (true);
         } else {
           $('tr.ui-selected').UNSELECT(true);
         }
@@ -947,9 +1048,7 @@ var UI = {
     var video = this.div.video;
     video.controls = false;
     video.style.cursor = 'none';
-    log ('fullScreenOn');
     document.onmousemove = function () { // TODO
-      log (video);
       video.controls = true;
       video.style.cursor = 'true';
       setTimeout (function () {
@@ -965,7 +1064,6 @@ var UI = {
   },
 
   fullScreenOff: function () {
-    log ('fullScreenOff');
     this.fullScreen = false;
     this.div.video.controls = true;
     this.div.video.style.cursor = 'auto';
@@ -1047,7 +1145,6 @@ var UI = {
 
   filterIndex: 0,
   filterBlink: function () {
-    log ('filterBlink');
     if (isNaN(this.filterIndex)) {
       this.filterIndex = 0;
     };
@@ -1060,10 +1157,10 @@ var UI = {
 };
 
 $.fn.SELECT = function (flg, anime) {
-  if(this.size()) {
+  if (this.size()) {
     this
       .addClass('ui-selected ddms_selected');
-    if(flg) {
+    if (flg) {
       // If flg is true, not scroll. Default is false(Scroll follows).
       return this;
     }
@@ -1071,14 +1168,14 @@ $.fn.SELECT = function (flg, anime) {
         firstRow = UI.div.tablebody.offset().top,
         rm = offsetTop - 30 - firstRow,
         ex = offsetTop + 60 - UI.div.tablediv.height() - firstRow;
-     if(rm < 0) {
+     if (rm < 0) {
        if (anime) {
          UI.div.tablebody.animate({scrollTop: '+=' + rm}, {duration: 'fast', easing: 'linear'});
        } else {
          UI.div.tablebody.scrollTop(UI.div.tablebody.scrollTop() + rm);
        }
-     } else if(ex > 0) {
-       if(anime) {
+     } else if (ex > 0) {
+       if (anime) {
          UI.div.tablebody.animate({scrollTop: '+=' + ex}, {duration: 'fast', easing: 'linear'});
        } else {
          UI.div.tablebody.scrollTop(UI.div.tablebody.scrollTop() + ex);
@@ -1090,12 +1187,12 @@ $.fn.SELECT = function (flg, anime) {
 };
 
 $.fn.UNSELECT = function (flg) {
-  if(!flg) this.SELECT();
+  if (!flg) this.SELECT();
   return this.removeClass('ui-selected ddms_selected last-select');
 };
 
 $.fn.LASTSELECT = function (flg) {
-  if(!flg) {
+  if (!flg) {
     $('tr.last-select', UI.div.tbody)
       .removeClass('last-select');
   }
@@ -1113,7 +1210,7 @@ $.fn.drag_drop_multi_select.defaults.after_drop_action = function ($item, $old, 
       $target = $('tr', UI.div.tbody)
                 .filter(function () { var d = eY - $(this).offset().top; return -trHgtHlf <= d && d < trHgtHlf; } )
                 .first();
-  if(itemNum === $target.attr('number')) {
+  if (itemNum === $target.attr('number')) {
     var $next = $item.last().next();
     $item
       .insertBefore($next)
@@ -1128,52 +1225,8 @@ $.fn.drag_drop_multi_select.defaults.after_drop_action = function ($item, $old, 
     function () {
       $('tr.ui-selected', UI.div.tbody)
         .removeClass('ui-selected moved last-select');
-      // player.order.set();
+      self.setorder ();
     }, 1000
   );
 };
 
-////             this.div.help.click(function () {
-////               this.div.help.fadeOut(200);
-////               key.tab(0);
-////             });
-////             this.div.config.click(function (e) {
-////               if(['a', 'input'].indexOf(e.target.localName) < 0) {
-////                 this.div.config.fadeOut(200);
-////                 key.tab(0);
-////               }
-////             });
-////             this.div.about.click(function (e) {
-////               if(e.target.localName !== 'a') {
-////                 this.div.about.fadeOut(200);
-////                 key.tab(0);
-////               }
-////             });
-////             this.div.property.click(function (e) {
-////               if(e.target.localName !== 'a') {
-////                 this.div.property.fadeOut(200);
-////                 key.tab(0);
-////               }
-////             });
-////             //this.div.firstrow.click(order.sort);
-////             this.div.thead
-////             .find('th')
-////             .each(function (i, th) {
-////               $(this).click( (function () {
-////                 var order = 1;
-////                 return function () {
-////                   order.sort(i, order);
-////                   order *= -1;
-////                 };
-////               })())
-////             });
-////             this.div.tagread
-////             .attr({'checked':data.tagread==='true'})
-////             .change(function (e) {
-////               L.tagread = data.tagread = e.target.checked.toString();
-////             });
-////             //$('tr', this.div.thead)
-////             //  .sortable();
-////             //.children()
-////             //.resizable({ handles: 'e, w' });
-////             //.resizable();

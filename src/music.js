@@ -101,12 +101,14 @@ Music.prototype = {
   },
 
   tagread: function (f) {
+    this.mytagreader (f);
+  },
+
+  readpicture: function () {
     var self = this;
     var url = webkitURL.createObjectURL (this.file);
-    self.mytagreader (f);
     ID3.loadTags (url, function () {
                    var tags = ID3.getAllTags(url);
-                   log (tags);
                    if (tags && tags.picture) {
                      self.tags.picture = tags.picture;
                    }

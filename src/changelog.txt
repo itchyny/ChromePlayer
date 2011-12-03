@@ -33,23 +33,24 @@ v1.5x (2011/02/06-)
 Shift + Click
 Color scheme
 Keyboard Shortcuts with ? key
-Infomation on this app with F1 key
+Infomation on this app with <F1>
 Global keyboard shortcuts
 ID3v2 tag reader
-Property with Alt+Enter
+Property with <Alt+Enter>
 Support in keyboard shortcuts for Mac users.
-Filter(Find) with &lt;c-f&gt;.
+Filter(Find) with <c-f>.
 
 v1.6x (2011/11/20-)
 Support for videos (mp4)
 Music or videos of large size
 Import from a directory
-Watch video in full screen (f key)
-Add &lt;c-i&gt; for invert selecting
+Watch video in full screen with <f>
+Invert selecting with <c-i>
 
 v2.0 (20?? - )
 Source code refined
 Vim like keybind
+Add Notification feature
 
 
 

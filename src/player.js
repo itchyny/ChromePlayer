@@ -4,17 +4,17 @@
 //
 // 優先
 // TODO: keyconfigを各自で設定できるように
-// TODO: ソート
 // TODO: album art from id3 tag https://github.com/aadsm/JavaScript-ID3-Reader
 // TODO: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/ http://phpjavascriptroom.com/?t=ajax&p=jquery_plugin_contextmenu
 // TODO: 別タブのキーボードがなんか効かなくなる? -> キーが無かったら返してdefaultを実行的な
-// TODO: background pageにする
+// TODO: property にalbum art (もしあれば)
 //
 // TODO: キーだけでファイルの入れ替え ファイル入れ替えた時のplayer.orderを更新
 // TODO: s-pgupがバグ
 // TODO: 読めないタグ
 // TODO: vim, visual mode
 // TODO: ファイル順入れ替えた時にorder更新
+// TODO: background pageにする
 // TODO: C-zで削除キャンセルなど
 // TODO: fixed first row of table
 // TODO: フルスクリーン時のUIについて. volumeとかどうする... カーソル消す
@@ -68,7 +68,6 @@ logfn ('Player.prototype.readFiles');
     var self = this;
     var first = true;
     [].forEach.call (files, function (file, index) {
-      log ('filetype: ' + file.type);
       files[index].filetype = file.type.match (self.filetypes.audio.regexp) ? self.filetypes.audio.string
                             : file.type.match (self.filetypes.video.regexp) ? self.filetypes.video.string : '';
     });
@@ -78,17 +77,21 @@ logfn ('Player.prototype.readFiles');
     var playindex = self.shuffle.value === 'false'
                   ? self.musics.length
                   : self.musics.length + Math.floor (Math.random () * mediafiles.length);
+    var ml = self.musics.length;
+    self.order.concat (mediafiles.map (function (file, index, files) {
+      return ml + index;
+    }));
     [].forEach.call (mediafiles, function (file, index, files) {
         setTimeout ( (function (file, first, last) {
-          return self.readOneFile (file, first, last);
-        }) (file
-           , false
-           , index === files.length - 1)
-        , 10 * index);
+            return self.readOneFile (file, first, last);
+          }) (file, false, index === files.length - 1)
+        , 5 * index);
     });
-    if (!self.playing) {
-      self.play (playindex);
-    }
+    setTimeout (function () {
+      if (!self.playing) {
+        self.play (playindex);
+      }
+    }, 200);
   },
 
   readOneFile: function (file, first, last) {
@@ -108,7 +111,6 @@ logfn ('Player.prototype.readOneFile');
         };
     }) (self, n, !self.playing && first));
     self.ui.addfile (file, n);
-    self.order.concat ([n]);
     if (last) {
       self.ui.selectableSet ();
       self.ui.setdblclick ();
@@ -127,7 +129,6 @@ console.log ('index: ' + index);
     if (index === undefined) {
       index = 0;
     }
-    console.dir (self.order);
     self.order.atfromEnum (index);
     self.pause ();
     if (self.playing) {
@@ -136,6 +137,9 @@ console.log ('index: ' + index);
     if (index !== undefined) {
       self.nowplaying = index;
       self.playing = self.musics[index];
+      if (!self.playing.tags.picture) {
+        self.playing.readpicture ();
+      }
       self.playing.play (self.volume.value / 256, function () { self.next (); });
       self.ui.play (index);
       if (self.playing.filetype === 'video') {

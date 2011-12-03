@@ -26,6 +26,9 @@ VERSION = $(shell cat version.txt)
 SED_VER = sed "s/@VERSION/${VERSION}/"
 
 CHANGELOG = $(shell cat changelog.txt |\
+                    sed 's/&/\\\&amp;/' |\
+                    sed 's/</\\\&lt;/' |\
+                    sed 's/>/\\\&gt;/' |\
                     sed 's/^/<br \/>/' |\
                     sed 's/<br \/>v1.0/v1.0/' |\
                     sed 's/\//\\\//g')
