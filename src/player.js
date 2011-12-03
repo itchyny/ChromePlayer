@@ -13,13 +13,11 @@
 // TODO: s-pgupがバグ
 // TODO: 読めないタグ
 // TODO: vim, visual mode
-// TODO: ファイル順入れ替えた時にorder更新
 // TODO: background pageにする
 // TODO: C-zで削除キャンセルなど
 // TODO: fixed first row of table
 // TODO: フルスクリーン時のUIについて. volumeとかどうする... カーソル消す
 // TODO: 音楽のフルスクリーン時のインターフェース, アルバムアートなど
-// TODO: ui.jsのaddfile高速化
 // TODO: id3タグの読み込みをUArrayってやつで高速化
 // TODO: title="..."にゴミが入る ?
 // TODO: filesystem API

@@ -51,6 +51,7 @@ v2.0 (20?? - )
 Source code refined
 Vim like keybind
 Add Notification feature
+Sort properly by track (1 < 2 < 10, rather than "1" < "10" < "2")
 
 
 

@@ -239,18 +239,31 @@ var UI = {
   },
 
   sortorder: (function () {
-    var stack = [{i: 3, order: 1, f: function (x) { return x; }}];
+    var stack = [];
     return function (i, order) {
       var self = this;
-      console.log (order);
       if (i === undefined) {
         i = 1;
       }
-      var f = function (x) {return x;};
-      // var c = function (s) {
-      //  return s.replace(/１/,'1').replace(/２/,'2').replace(/３/,'3').replace(/４/,'4').replace(/５/,'5').replace(/６/,'6').replace(/７/,'7').replace(/８/,'8').replace(/９/,'9').replace(/０/,'0');
-      //}
-      // var f = ($('th:not(.splitter)').eq(i).text() === 'track') ? function (x) {return parseInt(c(x), 10);} : function (x) {return x;};
+      var c = function (s) {
+       return s.replace(/１/,'1')
+               .replace(/２/,'2')
+               .replace(/３/,'3')
+               .replace(/４/,'4')
+               .replace(/５/,'5')
+               .replace(/６/,'6')
+               .replace(/７/,'7')
+               .replace(/８/,'8')
+               .replace(/９/,'9')
+               .replace(/０/,'0')
+               .replace(/ /g, '')
+               .replace(/\n/g, '')
+               .replace(/\0/g, '')
+               .replace(/\/.*/, '');
+      };
+      var f = $('th').eq(i).text() === 'track'
+            ? function (x) { x = c(x); return parseInt (x, 10); }
+            : function (x) { return x; };
       stack[1] = stack[0] ? (i === stack[0].i ? stack[1] : stack[0]) : {i:1, order:1, f:function (x) {return x;}};
       stack[0] = {i: i, order: order, f: f};
       self.div.tbody.html(
@@ -260,9 +273,9 @@ var UI = {
               return function (a, b) {
                 var ajT = a.childNodes[j].innerText, bjT = b.childNodes[j].innerText,
                     akT = a.childNodes[k].innerText, bkT = b.childNodes[k].innerText;
-                return /*f*/(ajT) > /*f*/(bjT) ?  o :
-                       /*f*/(ajT) < /*f*/(bjT) ? -o :
-                       /*stack[1].f*/(akT) >= /*stack[1].f*/(bkT) ? r : -r;
+                return f(ajT) > f(bjT) ?  o :
+                       f(ajT) < f(bjT) ? -o :
+                       stack[1].f(akT) >= stack[1].f(bkT) ? r : -r;
                 //return f(ajT) > f(bjT) ?  o :
                 //       f(ajT) < f(bjT) ? -o :
                 //       stack[1].f(akT) >= stack[1].f(bkT) ? r : -r;
@@ -641,17 +654,21 @@ var UI = {
     filename = self.formatTags (tags) || filename;
     document.title = filename;
     this.div.filename.texttitle(filename);
-    if (tags || force) {
+    if (tags && tags.picture || force) {
         var image = tags && tags.picture ? tags.picture : undefined;
         var picture = image ? 'data:' + image.format + ';base64,' + Base64.encodeBytes (image.data)
                             : '../icon_128.png';
-        if (self.formatTags (tags) === '') {
+        if (self.formatTags (tags) === '' || !tags.picture) {
           if (force) {
-            self.showNotification (picture, filename, "");
+            if (tags.artist && tags.title && tags.album) {
+              self.showNotification (picture, tags.artist, tags.title + '  /  ' + tags.album);
+            } else {
+              self.showNotification (picture, filename, "");
+            }
           } else {
             setTimeout (function () {
               self.showFileName (filename, index, true);
-            }, 500);
+            }, 200);
           }
         } else {
           self.showNotification (picture, tags.artist, tags.title + '  /  ' + tags.album);
@@ -659,7 +676,7 @@ var UI = {
     } else {
       setTimeout (function () {
         self.showFileName (filename, index, true);
-      }, 500);
+      }, 200);
     }
   },
 
@@ -1225,7 +1242,7 @@ $.fn.drag_drop_multi_select.defaults.after_drop_action = function ($item, $old, 
     function () {
       $('tr.ui-selected', UI.div.tbody)
         .removeClass('ui-selected moved last-select');
-      self.setorder ();
+      UI.setorder ();
     }, 1000
   );
 };
