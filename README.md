@@ -1,5 +1,5 @@
 # !!! WARNING: THIS IS UNSTABLE VERSION !!!
-# Stable version (version 1.58, without video feature) is available at https://github.com/itchyny/ChromePlayer/tree/3005dd77af29be16e808684dfc5d5df1691b49ce          
+# Stable version (version 1.58, without video feature) is available at https://github.com/itchyny/ChromePlayer/tree/3005dd77af29be16e808684dfc5d5df1691b49ce
 
 
 # This is the source code of Chrome Player
@@ -43,7 +43,7 @@ https://github.com/itchyny/ChromePlayer (Local Player used to be named Chrome Pl
 I allow you to fork another app from this code.
 
 ## Security
-You may wonder why this App accesses "all data from your website". Actually, this App gets no data from your browsing site. This permission is needed for "Global keyboard control." It is realized by following: listening the keydown event, and if it was → or ←, the player catches that event and seek for next or previous music. 
+You may wonder why this App accesses "all data from your website". Actually, this App gets no data from your browsing site. This permission is needed for "Global keyboard control." It is realized by following: listening the keydown event, and if it was → or ←, the player catches that event and seek for next or previous music.
 
 If you want see the script, open a site (www.google.com for example) and right click → inspect → Scripts, find chrome-extension://chkhjlbdflppmaddpjmjecgdagdljimc/js/shortcuts.js. "chkhjlbdflppmaddpjmjecgdagdljimc" is the id number for this App.
 

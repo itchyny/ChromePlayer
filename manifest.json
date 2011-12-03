@@ -12,7 +12,8 @@
     "128": "icon_128.png"
   },
   "permissions": [
-    "unlimitedStorage"
+    "unlimitedStorage",
+    "notifications"
   ],
   "content_scripts":[
     {

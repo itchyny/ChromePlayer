@@ -88,11 +88,18 @@
           <input id="globalcontrol" type="checkbox" />
           Global keyboard control
           </li>
+          <li>
+          <input id="notification" type="checkbox" />
+          Notify on playing music
+          <input id="notificationmsec" type="range" name="range" min="0" max="30000">
+          <span id="notificationresult"></span>
+          </li>
           <!-- <li> -->
           <!-- <input id="tagread" type="checkbox" /> -->
           <!-- ID3 tag reader -->
           <!-- </li> -->
         </ul>
+        <br />
         <div class="top">Keyboard Shortcuts Setting</div>
         <textarea id="shortcuts" name="shortcuts" rows="15" cols="30"></textarea>
       </div>

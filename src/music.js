@@ -104,16 +104,16 @@ Music.prototype = {
     var self = this;
     var url = webkitURL.createObjectURL (this.file);
     self.mytagreader (f);
-    // ID3.loadTags (url, function () {
-    //                var tags = ID3.getAllTags(url);
-    //                log (tags);
-    //                if (tags && tags.picture) {
-    //                  self.picture = tags.picture;
-    //                }
-    //              }, { tags: [ //"artist", "title", "album", "year", "comment", "track", "genre", "lyrics",
-    //                "picture"]
-    //                 , dataReader: FileAPIReader (this.file)
-    //              });
+    ID3.loadTags (url, function () {
+                   var tags = ID3.getAllTags(url);
+                   log (tags);
+                   if (tags && tags.picture) {
+                     self.tags.picture = tags.picture;
+                   }
+                 }, { tags: [ //"artist", "title", "album", "year", "comment", "track", "genre", "lyrics",
+                   "picture"]
+                    , dataReader: FileAPIReader (this.file)
+                 });
   },
 
   play: function (vol, next) {

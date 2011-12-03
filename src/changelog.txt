@@ -38,13 +38,14 @@ Global keyboard shortcuts
 ID3v2 tag reader
 Property with Alt+Enter
 Support in keyboard shortcuts for Mac users.
-Filter(Find) with C-F.
+Filter(Find) with &lt;c-f&gt;.
 
 v1.6x (2011/11/20-)
-Support for videos (avi)
+Support for videos (mp4)
 Music or videos of large size
 Import from a directory
 Watch video in full screen (f key)
+Add &lt;c-i&gt; for invert selecting
 
 v2.0 (20?? - )
 Source code refined

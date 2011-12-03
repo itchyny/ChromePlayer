@@ -13,7 +13,8 @@ var UI = {
          'firstrow'  , 'globalcontrol', 'help'    , 'musicSlider', 'mute'     , 'next'      , 
          'open'      , 'pause'        , 'play'    , 'playlist'   , 'prev'     , 'property'  , 
          'remain'    , 'repeat'       , 'scheme'  , 'shuffle'    , 'tablebody', 'tablediv'  , 
-         'tagread'   , 'volumeSlider' , 'volumeon', 'wrapper'    , 'filter'   , 'filterword', 'matchnum'], 
+         'tagread'   , 'volumeSlider' , 'volumeon', 'wrapper'    , 'filter'   , 'filterword',
+         'matchnum'  , 'notification' , 'notificationmsec'  , 'notificationresult' ], 
       { tbody: $('#tbody'),
         thead: $('thead'),
         table: $('table'),
@@ -87,6 +88,26 @@ var UI = {
       .change(function (e) {
         local.set ('globalcontrol', e.target.checked.toString());
       });
+    self.div.notification
+      .attr({'checked': local.get ('notification') === 'true'})
+      .change(function (e) {
+        local.set ('notification', e.target.checked.toString());
+        if (undefined === local.get ('notificationmsec')) {
+          local.set ('notificationmsec', self.div.notificationmsec.valueAsNumber);
+        }
+      });
+    function formatmsec (msec) {
+      var sec = parseInt (parseInt (msec, 10) / 1000, 10);
+      var secstr = sec < 10 ? "&nbsp;" + sec : sec;
+      return secstr + 'sec';
+    }
+    self.div.notificationmsec
+      .attr({'value': parseInt (local.get ('notificationmsec'), 10) || 5000 })
+      .change(function (e) {
+        local.set ('notificationmsec', e.target.valueAsNumber);
+        self.div.notificationresult.html (formatmsec (e.target.valueAsNumber));
+      });
+    self.div.notificationresult.html (formatmsec (self.div.notificationmsec.attr ('value')));
   },
 
   initsize: function () {
@@ -257,11 +278,12 @@ var UI = {
 
   showAlbumArt: function (file) {
     var art = $('img#art')[0];
-    if (file.picture) {
-      var image = file.picture;
+    if (file.tags && file.tags.picture) {
+      var image = file.tags.picture;
       art.src = "data:" + image.format + ";base64," + Base64.encodeBytes(image.data);
       art.style.display = "block";
       log ("displaying image")
+    console.log (art.src)
     } else {
       art.style.display = "none";
       log ("hiding image")
@@ -272,7 +294,7 @@ var UI = {
     var self = this;
     self.div.musicSlider.slider ('enable');
     var file = self.player.playing;
-    self.showAlbumArt (file);
+    // self.showAlbumArt (file);
     self.showFileName (file.name, index);
     $('tr.nP')
       .removeClass('nP')
@@ -490,14 +512,55 @@ var UI = {
     }
   },
 
-  showFileName: function (filename, index) {
-    var tags = this.player.musics[index].tags;
-    if(tags && tags['TIT2']) {
-      document.title =  (tags['TIT2'] || '') + ' - ' + (tags['TPE1'] || '') + ',' + (tags['TALB'] || '');
-      filename = tags['TPE1'] + ' - ' + tags['TIT2'];
+  prevNotification: null,
+
+  showNotification: function (picture, title, message) {
+    if (local.get ('notification') === 'true') {
+      if (webkitNotifications && webkitNotifications.checkPermission () === 0){
+        if (this.prevNotification) {
+          this.prevNotification.cancel ();
+          delete this.prevNotification;
+        }
+        var notification = webkitNotifications.createNotification
+                         ( picture
+                         , title
+                         , message);
+        this.prevNotification = notification;
+         notification.show ();
+         setTimeout (function () {
+           notification.cancel ();
+         }, parseInt (local.get ('notificationmsec'), 10));
+      } else {
+        webkitNotifications.requestPermission ();
+      }
     }
+  },
+
+  formatTags: function (tags) {
+    return (tags && tags['TPE1'] && tags['TIT2']) ? (tags['TPE1'] || '???') + ' - ' + (tags['TIT2'] || '???') : '';
+  },
+
+  showFileName: function (filename, index, force) {
+    var self = this;
+    var music = this.player.musics[index];
+    var tags = music.tags;
+    filename = self.formatTags (tags) || filename;
     document.title = filename;
     this.div.filename.texttitle(filename);
+    if (tags || force) {
+        var image = tags && tags.picture ? tags.picture : undefined;
+        var picture = image ? 'data:' + image.format + ';base64,' + Base64.encodeBytes (image.data)
+                            : '../icon_128.png';
+        if (self.formatTags (tags) === '') {
+          self.showNotification (picture, filename, "");
+        } else {
+          self.showNotification (picture, tags.artist, tags.title + '  /  ' + tags.album);
+        }
+    } else {
+      setTimeout (function () {
+        self.showFileName (filename, index, true);
+      }, 100);
+    }
   },
 
   selectDown: function () {

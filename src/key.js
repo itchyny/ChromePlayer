@@ -89,7 +89,6 @@ Key.prototype = {
   trigger: function (e) {
     var self = this;
     var f = self.callback [self.keyqueue.join (' ')];
-    log (self.keyqueue.join (' '));
     if (f) {
       self.prevent (e);
       f (self.app, e);

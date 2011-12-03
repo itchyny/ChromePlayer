@@ -7,7 +7,8 @@
 // TODO: ソート
 // TODO: album art from id3 tag https://github.com/aadsm/JavaScript-ID3-Reader
 // TODO: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/ http://phpjavascriptroom.com/?t=ajax&p=jquery_plugin_contextmenu
-// TODO: 別タブのキーボードがなんか効かなくなる?
+// TODO: 別タブのキーボードがなんか効かなくなる? -> キーが無かったら返してdefaultを実行的な
+// TODO: background pageにする
 //
 // TODO: キーだけでファイルの入れ替え ファイル入れ替えた時のplayer.orderを更新
 // TODO: s-pgupがバグ
@@ -21,6 +22,7 @@
 // TODO: ui.jsのaddfile高速化
 // TODO: id3タグの読み込みをUArrayってやつで高速化
 // TODO: title="..."にゴミが入る ?
+// TODO: filesystem API
 // 3) save playlists implement some sort of media library, so we don't have to add files every time
 // 6) allow us to "pop-out" the media player to a new, smaller window, always-on-top if possible.
 function Player () {
