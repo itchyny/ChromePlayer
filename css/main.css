@@ -13,7 +13,11 @@ div#header img#mute,div#header img#volumeon{height:30%;margin-top:-0.75%;}
 div#header img#shuffle{margin-left:2%;}
 div#header img#conf{margin-right:2%;}
 div#header div#volume{width:10%;margin:-9px auto;position:relative;top:50%;}
-div#header div#info{margin:-2.5em auto 0 -20%;position:absolute;top:3em;height:5em;left:50%;width:40%;min-width:360px;text-align:center;border-radius:1em;overflow:hidden;}div#header div#info div#filename{font-size:120%;line-height:2em;width:100%;white-space:nowrap;overflow:hidden;margin-top:0.3em;}
+div#header div#info{margin:-2.5em auto 0 -20%;position:absolute;top:3em;height:5em;left:50%;width:40%;min-width:360px;text-align:center;border-radius:1em;overflow:hidden;}div#header div#info.full{margin:0;top:0em;left:0%;width:100%;border-radius:0em;}div#header div#info.full div#albumart{visibility:visible;display:block;float:left;position:absolute;left:15%;top:50%;opacity:0.3;-webkit-box-reflect:below 1px -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0)), color-stop(0.8, rgba(0, 0, 0, 0)), to(rgba(0, 0, 0, 0.5)));}div#header div#info.full div#albumart.realart{opacity:1;}
+div#header div#info.full div#filename{font-size:300%;width:60%;position:absolute;left:65%;width:40%;margin-left:-20%;}
+div#header div#info.full div#seek{position:absolute;left:65%;margin-left:0%;width:50%;font-size:150%;}div#header div#info.full div#seek div#musicSliderParent{position:relative;}
+div#header div#info div#albumart{visibility:visible;display:none;}
+div#header div#info div#filename{font-size:120%;line-height:2em;width:100%;white-space:nowrap;overflow:hidden;margin-top:0.3em;}
 div#header div#info div#seek{position:relative;float:left;left:50%;margin:0 auto;}div#header div#info div#seek>div{float:left;margin:0.5% 0% 0;position:relative;left:-50%;}
 div#header div#info div#current,div#header div#info div#remain{padding:0 1em;}
 div#header div#info div#musicSliderParent{width:25em;}

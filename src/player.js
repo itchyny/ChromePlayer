@@ -8,6 +8,7 @@
 // TODO: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/ http://phpjavascriptroom.com/?t=ajax&p=jquery_plugin_contextmenu
 // TODO: 別タブのキーボードがなんか効かなくなる? -> キーが無かったら返してdefaultを実行的な
 // TODO: property にalbum art (もしあれば)
+// TODO: shuffleoff -> readfiles -> sort by track -> shuffle on -> shuffle off -> おかしくなる
 //
 // TODO: キーだけでファイルの入れ替え ファイル入れ替えた時のplayer.orderを更新
 // TODO: s-pgupがバグ

@@ -108,6 +108,49 @@ div#header {
     text-align: center;
     border-radius: 1em;
     overflow: hidden;
+    &.full {
+      margin: 0;
+      top: 0em;
+      left: 0%;
+      width: 100%;
+      border-radius: 0em;
+      div#albumart{
+        visibility: visible;
+        display: block;
+        float: left;
+        position: absolute;
+        left: 15%;
+        top: 50%;
+        opacity: 0.3;
+        -webkit-box-reflect:
+        below 1px -webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,0)), color-stop(0.7, rgba(0,0,0,0)), to(rgba(0,0,0,0.5)));
+        &.realart{
+          opacity: 1;
+        }
+      }
+      div#filename{
+        font-size: 300%;
+        width: 60%;
+        position: absolute;
+        left: 65%;
+        width: 40%;
+        margin-left: -20%;
+      }
+      div#seek{
+        position: absolute;
+        left: 65%;
+        margin-left: 0%;
+        width: 50%;
+        font-size: 150%;
+        div#musicSliderParent{
+          position: relative;
+        }
+      }
+    }
+    div#albumart{
+      visibility: visible;
+      display: none;
+    }
     div#filename{
       font-size: 120%;
       line-height: 2em;

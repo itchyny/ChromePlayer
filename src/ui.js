@@ -14,7 +14,8 @@ var UI = {
          'open'      , 'pause'        , 'play'    , 'playlist'   , 'prev'     , 'property'  , 
          'remain'    , 'repeat'       , 'scheme'  , 'shuffle'    , 'tablebody', 'tablediv'  , 
          'tagread'   , 'volumeSlider' , 'volumeon', 'wrapper'    , 'filter'   , 'filterword',
-         'matchnum'  , 'notification' , 'notificationmsec'  , 'notificationresult' ], 
+         'matchnum'  , 'notification' , 'notificationmsec'  , 'notificationresult' ,
+         'info'      , 'infowrapper'  , 'albumart'     , 'seek' ], 
       { tbody: $('#tbody'),
         thead: $('thead'),
         table: $('table'),
@@ -31,6 +32,7 @@ var UI = {
     self.initsplitter ();
     self.resizableSet ();
     self.initClickEscape ();
+    self.fullScreenOff ();
     $(window).resize(function () { self.initsize (); });
     $('div#appname a').text('Local Player v' + player.version).click(function (e) {
       self.toggleAbout ();
@@ -388,12 +390,14 @@ var UI = {
 
   showAlbumArt: function (file) {
     var art = $('img#art')[0];
+    console.dir (file);
     if (file.tags && file.tags.picture) {
       var image = file.tags.picture;
       art.src = "data:" + image.format + ";base64," + Base64.encodeBytes(image.data);
-      art.style.display = "block";
+      this.div.albumart.addClass ('realart');
     } else {
-      art.style.display = "none";
+      art.src = './icon_128.png';
+      this.div.albumart.removeClass ('realart');
     }
   },
 
@@ -401,7 +405,11 @@ var UI = {
     var self = this;
     self.div.musicSlider.slider ('enable');
     var file = self.player.playing;
-    // self.showAlbumArt (file);
+    self.showAlbumArt (file);
+    if (this.fullScreen) this.fullScreenOn ();
+    setTimeout (function () {
+      self.showAlbumArt (file);
+    }, 200);
     self.showFileName (file.name, index);
     $('tr.nP')
       .removeClass('nP')
@@ -1060,8 +1068,7 @@ var UI = {
     this.div.video.style.marginTop = (- height / 2) + 'px';
   },
 
-  fullScreenOn: function () {
-    this.fullScreen = true;
+  fullScreenOnVideo: function () {
     var video = this.div.video;
     video.controls = false;
     video.style.cursor = 'none';
@@ -1080,16 +1087,74 @@ var UI = {
     }
   },
 
-  fullScreenOff: function () {
-    this.fullScreen = false;
-    this.div.video.controls = true;
-    this.div.video.style.cursor = 'auto';
+  fullScreenOnAudio: function () {
+    this.div.info[0].webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+    var srcheight = window.screen.availHeight;
+    var styles = [
+      'div#wrapper div#info{',
+      '  height: ' + srcheight + 'px!important;',
+      '}',
+      'div#wrapper div#filename{',
+      '  margin-top:' + (0.5 - 0.1) * srcheight + 'px!important;',
+      '}',
+      'div#wrapper div#seek{',
+      '  top:' + (0.5) * srcheight + 'px!important;',
+      '}',
+      'div#wrapper div#albumart{',
+      '  width: ' + 0.4 * srcheight + 'px!important;',
+      '  height: ' + 0.4 * srcheight + 'px!important;',
+      '  margin-top:' + (-0.5 * 0.4) * srcheight + 'px!important;',
+      '}',
+      'div#wrapper div#albumart img{',
+      '  width: ' + 0.4 * srcheight + 'px!important;',
+      '  height: ' + 0.4 * srcheight + 'px!important;',
+      '}',
+    ];
+    $('style#full').text(styles.join('\n'));
+    this.div.info.addClass ('full');
+  },
+
+  fullScreenType: null,
+
+  fullScreenOn: function () {
+    if (!this.player.playing) return;
+    if (this.player.playing.filetype === 'video') {
+      if (this.fullScreen && this.fullScreenType === 'video') return;
+      this.fullScreenOffAudio ();
+      this.fullScreenOnVideo ();
+      var self = this;
+      setTimeout (function () {
+        self.fullScreenOnVideo ();
+      }, 500);
+      this.fullScreenType = 'video';
+    } else if (this.player.playing.filetype === 'audio') {
+      if (this.fullScreen && this.fullScreenType === 'audio') return;
+      this.fullScreenOffVideo ();
+      this.fullScreenOnAudio ();
+      this.fullScreenType = 'audio';
+    }
+    this.fullScreen = true;
+  },
+
+  fullScreenOffVideo: function () {
     var width;
     if (document.webkitCancelFullScreen) {
       document.webkitCancelFullScreen();
     } else {
       this.setVideoSize (width = window.outerWidth * 0.6, width / 16 * 9);
     }
+  },
+
+  fullScreenOffAudio: function () {
+    this.div.info.removeClass ('full');
+    $('style#full').text('');
+  },
+
+  fullScreenOff: function () {
+    this.fullScreenType = '';
+    this.fullScreen = false;
+    this.fullScreenOffVideo ();
+    this.fullScreenOffAudio ();
   },
 
   fullScreenToggle: function () {
