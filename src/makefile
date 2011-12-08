@@ -1,6 +1,7 @@
 SOURCE_FILES =\
 	_header.js \
 	prelude.js \
+	message.js \
 	limited.js \
 	enum.js \
 	enumlinear.js \
@@ -22,6 +23,8 @@ SOURCE_FILES =\
 BG_SOURCE_FILES =\
 	_header.js \
 	prelude.js \
+	message.js \
+	notification.js \
 	limited.js \
 	enum.js \
 	enumlinear.js \

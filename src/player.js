@@ -6,6 +6,7 @@
 //   sendRequestしたらみんながonRequestを受ける
 //   sendRequestで一意なもの(例: 時刻+乱数)を情報として入れて, 共有メモリーに未実行として登録, onRequestでそれをチェック
 //   実行したら共有メモリーから外せば, 一回だけ実行ができる → localStorageで実装
+//   notificationを発行するのは, 必ずbackground pageを介して
 //
 // 1: もう一回backgroundとかcontents scriptとかを見直す
 //    もうちょっとconnectとかを見てから実装したほうがいいかも
@@ -38,16 +39,9 @@ Player.prototype = {
   version: '@VERSION',
 
   start: function () {
-    chrome.extension.onRequest.addListener(function (e, sender, sendResponse) {
-          console.log (e.from);
+    chrome.extension.onRequest.addListener (function (e, sender, sendResponse) {
+      console.log (e.from);
     });
-setInterval (function () {
-  chrome.extension.sendRequest (
-    { type: 'ui'
-    , action: 'play'
-    , from: 'player'
-    });
-}, 10000);
     for (var x in this) {
       if (this[x] && this[x].init) {
         this[x].init (this);

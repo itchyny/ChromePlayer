@@ -3,6 +3,7 @@
 var local = {
 
   get: function (key) {
+    console.log (key);
     return localStorage.getItem (key);
   },
 
@@ -16,6 +17,10 @@ var local = {
 
   clear: function () {
     localStorage.clear ();
+  },
+
+  getSetting: function (key) {
+    return local.get ('store.' + 'settings' + '.' + key);
   }
 
 };

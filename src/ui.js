@@ -624,26 +624,14 @@ var UI = {
 
   prevNotification: null,
 
-  showNotification: function (picture, title, message) {
-    if (local.get ('notification') === 'true') {
-      if (webkitNotifications && webkitNotifications.checkPermission () === 0){
-        if (this.prevNotification) {
-          this.prevNotification.cancel ();
-          delete this.prevNotification;
-        }
-        var notification = webkitNotifications.createNotification
-                         ( picture
-                         , title
-                         , message);
-        this.prevNotification = notification;
-         notification.show ();
-         setTimeout (function () {
-           notification.cancel ();
-         }, parseInt (local.get ('notificationmsec'), 10));
-      } else {
-        webkitNotifications.requestPermission ();
-      }
-    }
+  showNotification: function (picture, title, mes) {
+    message.send (
+      { type: 'notification'
+        , from: 'player'
+        , icon: picture
+        , title: title
+        , message: mes
+    });
   },
 
   formatTags: function (tags) {

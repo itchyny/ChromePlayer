@@ -1,18 +1,15 @@
-// SAMPLE
 this.i18n = {
   "settings": {
     "en": "Settings",
-    // "de": "Optionen",
     "ja": "設定"
   },
   "search": {
     "en": "Search",
-    // "de": "Suche",
     "ja": "検索設定"
   },
   "nothing-found": {
     "en": "No matches were found.",
-    // "de": "Keine Übereinstimmungen gefunden."
+    "ja": "見つかりませんでした"
   },
 
 
@@ -90,3 +87,6 @@ this.i18n = {
     "ja": "キーバインド設定"
   }
 };
+
+
+
