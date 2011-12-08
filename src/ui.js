@@ -9,13 +9,13 @@ var UI = {
     self.div = (function (a, x) {
       a.forEach(function (b) { x[b] = $('#' + b); });
       return x;
-    }) (['about'     , 'conf'         , 'config'  , 'current'    , 'filename' , 'fileselect', 
-         'firstrow'  , 'globalcontrol', 'help'    , 'musicSlider', 'mute'     , 'next'      , 
-         'open'      , 'pause'        , 'play'    , 'playlist'   , 'prev'     , 'property'  , 
-         'remain'    , 'repeat'       , 'scheme'  , 'shuffle'    , 'tablebody', 'tablediv'  , 
+    }) (['about'     , 'conf'         , 'config'  , 'current'    , 'filename' , 'fileselect',
+         'firstrow'  , 'globalcontrol', 'help'    , 'musicSlider', 'mute'     , 'next'      ,
+         'open'      , 'pause'        , 'play'    , 'playlist'   , 'prev'     , 'property'  ,
+         'remain'    , 'repeat'       , 'scheme'  , 'shuffle'    , 'tablebody', 'tablediv'  ,
          'tagread'   , 'volumeSlider' , 'volumeon', 'wrapper'    , 'filter'   , 'filterword',
          'matchnum'  , 'notification' , 'notificationmsec'  , 'notificationresult' ,
-         'info'      , 'infowrapper'  , 'albumart'     , 'seek' ], 
+         'info'      , 'infowrapper'  , 'albumart', 'seek'        ],
       { tbody: $('#tbody'),
         thead: $('thead'),
         table: $('table'),
@@ -129,9 +129,6 @@ var UI = {
     // this.div.tbody
     //   .height(window.innerHeight - this.div.tablebody.offset().top - fontSize);
     $('tr').css({ 'width': tbodyWdt });
-    if (!this.fullScreenOff) {
-      this.fullScreenOff ();
-    }
   },
 
   initsplitter: function () {
@@ -147,7 +144,7 @@ var UI = {
       };
     } else {
       w = JSON.parse (local.get ('splitter'));
-      w.now = 0.05;
+      // w.now = 0.05;
     }
     for(var thname in w) {
       $('th.' + thname).width (w[thname] * (this.div.thead.width()));
@@ -234,12 +231,25 @@ var UI = {
         })(i))
       });
     }, 100);
-    // $('tr', self.div.thead)
-    //  .sortable();
-    // .children()
-    // .resizable({ handles: 'e, w' });
   },
 
+  setorder_identity: function (x) {
+    return x;
+  },
+  setorder_replace_num: function (x) {
+   return parseInt (x.replace(/１/,'1')
+                     .replace(/２/,'2')
+                     .replace(/３/,'3')
+                     .replace(/４/,'4')
+                     .replace(/５/,'5')
+                     .replace(/６/,'6')
+                     .replace(/７/,'7')
+                     .replace(/８/,'8')
+                     .replace(/９/,'9')
+                     .replace(/０/,'0')
+                     .replace(/[\0-\46]/g, '')
+                     .replace(/\/.*/, ''), 10);
+  },
   sortorder: (function () {
     var stack = [];
     return function (i, order) {
@@ -247,43 +257,23 @@ var UI = {
       if (i === undefined) {
         i = 1;
       }
-      var c = function (s) {
-       return s.replace(/１/,'1')
-               .replace(/２/,'2')
-               .replace(/３/,'3')
-               .replace(/４/,'4')
-               .replace(/５/,'5')
-               .replace(/６/,'6')
-               .replace(/７/,'7')
-               .replace(/８/,'8')
-               .replace(/９/,'9')
-               .replace(/０/,'0')
-               .replace(/ /g, '')
-               .replace(/\n/g, '')
-               .replace(/\0/g, '')
-               .replace(/\/.*/, '');
-      };
-      var f = $('th').eq(i).text() === 'track'
-            ? function (x) { x = c(x); return parseInt (x, 10); }
-            : function (x) { return x; };
-      stack[1] = stack[0] ? (i === stack[0].i ? stack[1] : stack[0]) : {i:1, order:1, f:function (x) {return x;}};
+      var f = $('th').eq(i).text() === 'track' ? this.setorder_replace_num : this.setorder_identity;
+      stack[1] = stack[0] ? (i === stack[0].i ? stack[1] : stack[0]) : {i:1, order:1, f: this.setorder_identity};
       stack[0] = {i: i, order: order, f: f};
       self.div.tbody.html(
-          $('tr', self.div.tbody).sort(
-            (function () {
-              var o = order, r = stack[1].order, j = i, k = stack[1].i, texts = [], nexts = [];
-              return function (a, b) {
-                var ajT = a.childNodes[j].innerText, bjT = b.childNodes[j].innerText,
-                    akT = a.childNodes[k].innerText, bkT = b.childNodes[k].innerText;
-                return f(ajT) > f(bjT) ?  o :
-                       f(ajT) < f(bjT) ? -o :
-                       stack[1].f(akT) >= stack[1].f(bkT) ? r : -r;
-                //return f(ajT) > f(bjT) ?  o :
-                //       f(ajT) < f(bjT) ? -o :
-                //       stack[1].f(akT) >= stack[1].f(bkT) ? r : -r;
-              };
-            })()
-          )
+          $('tr', self.div.tbody).sort((function () {
+            var o = order, r = stack[1].order, j = i, k = stack[1].i, jTs = [], kTs = [];
+            return function (a, b) {
+              var anum = a.getAttribute ('number'), bnum = b.getAttribute('number');
+              var ajT = jTs[anum] || (jTs[anum] = a.childNodes[j].innerText),
+                  bjT = jTs[bnum] || (jTs[bnum] = b.childNodes[j].innerText),
+                  akT = kTs[anum] || (kTs[anum] = a.childNodes[k].innerText),
+                  bkT = kTs[bnum] || (kTs[bnum] = b.childNodes[k].innerText);
+              return f(ajT) > f(bjT) ?  o :
+                     f(ajT) < f(bjT) ? -o :
+                     stack[1].f(akT) >= stack[1].f(bkT) ? r : -r;
+            };
+          })())
         );
       self.selectableSet();
       self.setorder ();
@@ -366,7 +356,6 @@ var UI = {
         var index = parseInt( $(e.target).closest('tr').attr('number') || e.closest('tr').attr('number') || e.attr('number'), 10 );
         self.player.pause ();
         self.player.play (index);
-        // TODO: この時, player.orderをどう動かすか
     });
   },
 
@@ -390,11 +379,15 @@ var UI = {
 
   showAlbumArt: function (file) {
     var art = $('img#art')[0];
-    console.dir (file);
     if (file.tags && file.tags.picture) {
-      var image = file.tags.picture;
-      art.src = "data:" + image.format + ";base64," + Base64.encodeBytes(image.data);
-      this.div.albumart.addClass ('realart');
+      try {
+        var image = file.tags.picture;
+        art.src = "data:" + image.format + ";base64," + Base64.encodeBytes(image.data);
+        this.div.albumart.addClass ('realart');
+      } catch (e) {
+        art.src = './icon_128.png';
+        this.div.albumart.removeClass ('realart');
+      }
     } else {
       art.src = './icon_128.png';
       this.div.albumart.removeClass ('realart');
@@ -405,11 +398,7 @@ var UI = {
     var self = this;
     self.div.musicSlider.slider ('enable');
     var file = self.player.playing;
-    self.showAlbumArt (file);
     if (this.fullScreen) this.fullScreenOn ();
-    setTimeout (function () {
-      self.showAlbumArt (file);
-    }, 200);
     self.showFileName (file.name, index);
     $('tr.nP')
       .removeClass('nP')
@@ -430,6 +419,12 @@ var UI = {
     self.seeking = setInterval (function () { self.seek (); }, 1000);
     setTimeout (function () { self.reflesh (); }, 50);
     setTimeout (function () { self.reflesh (); }, 500);
+    try {
+    self.showAlbumArt (file);
+    setTimeout (function () {
+      self.showAlbumArt (file);
+    }, 200);
+    } catch (e) {};
   },
 
   pause: function () {
@@ -503,7 +498,7 @@ var UI = {
       .each(function (i) {
         var flg = false;
         var splitter = $('<th />', {'class': 'splitter'}).mousedown(function (e) { flg = true; }).insertBefore($(this));
-        if (i === 0) return; // First column is unresizable.
+        // if (i === 0) return; // First column is unresizable.
         $(window)
           .mouseup(function (e) {
             if (flg) {
@@ -652,7 +647,7 @@ var UI = {
   },
 
   formatTags: function (tags) {
-    return (tags && tags['TPE1'] && tags['TIT2']) ? (tags['TPE1'] || '???') + ' - ' + (tags['TIT2'] || '???') : '';
+    return (tags && tags['TPE1'] && tags['TIT2']) ? tags['TPE1'] + ' - ' + tags['TIT2'] : '';
   },
 
   showFileName: function (filename, index, force) {
@@ -664,8 +659,12 @@ var UI = {
     this.div.filename.texttitle(filename);
     if (tags && tags.picture || force) {
         var image = tags && tags.picture ? tags.picture : undefined;
+        // try {
         var picture = image ? 'data:' + image.format + ';base64,' + Base64.encodeBytes (image.data)
                             : '../icon_128.png';
+        // } catch (e) {
+        //   var picture = '../icon_128.png';
+        // }
         if (self.formatTags (tags) === '' || !tags.picture) {
           if (force) {
             if (tags.artist && tags.title && tags.album) {
@@ -983,8 +982,8 @@ var UI = {
         'TPE1':'artist',
         'TRCK': 'track',
         'TDRC': 'year'
-      },
-      tags = $('tr.ui-selected').map( function (i, tr) {return player.tags[parseInt($(tr).attr('number'), 10)];});
+      };
+      var tags = $('tr.ui-selected').map( function (i, tr) {return player.tags[parseInt($(tr).attr('number'), 10)];});
       for(var flameid in m) {
         $('dd#id' + m[flameid])
           .text('　' + tags.map( function (i, x) {return x[flameid]}).unique().join());
@@ -996,6 +995,7 @@ var UI = {
     var self = this;
     self.player.key.unlockAll ();
     self.filterEnd ();
+    self.fullScreenOff ();
     switch($('#help:visible,#config:visible,#about:visible,#property:visible,#filter:visible').size()) {
       case 0:
         if ($('div#musicSlider a:focus, div#volumeSlider a:focus').size()) {
@@ -1011,7 +1011,6 @@ var UI = {
           .filter( function () { return $(':visible', this).size(); })
           .last()
           .fadeOut(200);
-        // player.filter.end();
         return;
       };
   },
@@ -1108,7 +1107,7 @@ var UI = {
       'div#wrapper div#albumart img{',
       '  width: ' + 0.4 * srcheight + 'px!important;',
       '  height: ' + 0.4 * srcheight + 'px!important;',
-      '}',
+      '}'
     ];
     $('style#full').text(styles.join('\n'));
     this.div.info.addClass ('full');

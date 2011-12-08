@@ -99,6 +99,7 @@ div#header {
   }
   div#info{
     margin: -2.5em auto 0 -20%;
+    z-index: 20;
     position: absolute;
     top: 3em;
     height: 5em;
@@ -122,8 +123,7 @@ div#header {
         left: 15%;
         top: 50%;
         opacity: 0.3;
-        -webkit-box-reflect:
-        below 1px -webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,0)), color-stop(0.7, rgba(0,0,0,0)), to(rgba(0,0,0,0.5)));
+        -webkit-box-reflect: below 1px -webkit-gradient(linear, left top, left bottom, from(transparent), color-stop(30%, transparent), to(white));
         &.realart{
           opacity: 1;
         }

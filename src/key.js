@@ -88,7 +88,9 @@ Key.prototype = {
 
   trigger: function (e) {
     var self = this;
-    var f = self.callback [self.keyqueue.join (' ')];
+    var keys = self.keyqueue.join (' ');
+    log (keys);
+    var f = self.callback [keys];
     if (f) {
       self.prevent (e);
       f (self.app, e);
@@ -264,7 +266,7 @@ Key.prototype = {
     if (96 <= keyCode && keyCode <= 105) {
       return keyCode - 96;
     }
-    console.log ('unknown key: ' + keyCode);
+    log ('unknown key: ' + keyCode);
   }
 
 };

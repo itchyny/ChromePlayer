@@ -1,29 +1,34 @@
 // Main player
-//   !!!!!実装に妥協しない!!!!!!
-//    使いやすく  読みやすく
 //
-// 優先
-// TODO: keyconfigを各自で設定できるように
-// TODO: album art from id3 tag https://github.com/aadsm/JavaScript-ID3-Reader
-// TODO: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/ http://phpjavascriptroom.com/?t=ajax&p=jquery_plugin_contextmenu
-// TODO: 別タブのキーボードがなんか効かなくなる? -> キーが無かったら返してdefaultを実行的な
-// TODO: property にalbum art (もしあれば)
-// TODO: shuffleoff -> readfiles -> sort by track -> shuffle on -> shuffle off -> おかしくなる
+// sendRequestに関して分かったこと:
+//   sendRequestでFile/Blobを送ってもObjectになり, createObjectURLがtype errorを起こす
+//   blob:/// のurlは, メインのページが死んでもbackground-pageが生きていれば生き続けられる しかしChromeを再起動したら死ぬ
+//   sendRequestしたらみんながonRequestを受ける
+//   sendRequestで一意なもの(例: 時刻+乱数)を情報として入れて, 共有メモリーに未実行として登録, onRequestでそれをチェック
+//   実行したら共有メモリーから外せば, 一回だけ実行ができる → localStorageで実装
 //
-// TODO: キーだけでファイルの入れ替え ファイル入れ替えた時のplayer.orderを更新
-// TODO: s-pgupがバグ
-// TODO: 読めないタグ
-// TODO: vim, visual mode
-// TODO: background pageにする
-// TODO: C-zで削除キャンセルなど
-// TODO: fixed first row of table
-// TODO: フルスクリーン時のUIについて. volumeとかどうする... カーソル消す
-// TODO: 音楽のフルスクリーン時のインターフェース, アルバムアートなど
-// TODO: id3タグの読み込みをUArrayってやつで高速化
-// TODO: title="..."にゴミが入る ?
-// TODO: filesystem API
-// 3) save playlists implement some sort of media library, so we don't have to add files every time
-// 6) allow us to "pop-out" the media player to a new, smaller window, always-on-top if possible.
+// 1: もう一回backgroundとかcontents scriptとかを見直す
+//    もうちょっとconnectとかを見てから実装したほうがいいかも
+// 1: background pageにする
+// 1: オプションページ作る
+// 1: keyconfigを各自で設定できるように
+// 1: shuffleoff -> readfiles -> sort by track -> shuffle on -> shuffle off -> おかしくなる
+//
+// 2: fullscreeにするのは, 動画→音楽でも変化なしというか... fullscreenのままdivを動かして動画にしたり
+// 2: 別タブ, キーが無かったら返してdefaultを実行的な
+// 2: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/ http://phpjavascriptroom.com/?t=ajax&p=jquery_plugin_contextmenu
+//   http://code.google.com/chrome/extensions/contextMenus.html
+// 2: C-zで削除キャンセルなど
+// 2: 常にポップアップを表示し続ける → notification html ver
+// 3: album art from id3 tag ::: reading code https://github.com/aadsm/JavaScript-ID3-Reader
+// 3: property にalbum art (もしあれば)
+// 4: 読めないタグ title="..."にゴミが入る ?
+// 7: キーだけでファイルの入れ替え ファイル入れ替えた時のplayer.orderを更新
+// 7: vim, visual mode
+// 7: fixed first row of table
+// 7: フルスクリーン時のUIについて. volumeとかどうする... カーソル消す
+// 9: id3タグの読み込みをUArrayってやつで高速化
+// 9: filesystem API
 function Player () {
   this.ui = UI;
 }
@@ -33,7 +38,16 @@ Player.prototype = {
   version: '@VERSION',
 
   start: function () {
-logfn ('Player.prototype.start');
+    chrome.extension.onRequest.addListener(function (e, sender, sendResponse) {
+          console.log (e.from);
+    });
+setInterval (function () {
+  chrome.extension.sendRequest (
+    { type: 'ui'
+    , action: 'play'
+    , from: 'player'
+    });
+}, 10000);
     for (var x in this) {
       if (this[x] && this[x].init) {
         this[x].init (this);
@@ -73,27 +87,27 @@ logfn ('Player.prototype.readFiles');
     var mediafiles = [].filter.call (files, function (file) {
       return file.filetype !== '';
     });
+    console.log (self.shuffle.value)
     var playindex = self.shuffle.value === 'false'
                   ? self.musics.length
                   : self.musics.length + Math.floor (Math.random () * mediafiles.length);
+    console.log (playindex)
     var ml = self.musics.length;
     self.order.concat (mediafiles.map (function (file, index, files) {
       return ml + index;
     }));
+    if (self.order.shuffle.value === 'true') {
+      self.order.shuffleOn ();
+    }
     [].forEach.call (mediafiles, function (file, index, files) {
-        setTimeout ( (function (file, first, last) {
-            return self.readOneFile (file, first, last);
-          }) (file, false, index === files.length - 1)
-        , 5 * index);
+        setTimeout ( (function (file, play, last) {
+            return function () { self.readOneFile (file, play, last); };
+          }) (file, ml + index === playindex, index === files.length - 1)
+        , 10 * index);
     });
-    setTimeout (function () {
-      if (!self.playing) {
-        self.play (playindex);
-      }
-    }, 200);
   },
 
-  readOneFile: function (file, first, last) {
+  readOneFile: function (file, play, last) {
 logfn ('Player.prototype.readOneFile');
     var self = this;
     var n = self.musics.length;
@@ -105,25 +119,20 @@ logfn ('Player.prototype.readOneFile');
           self.tags[j] = tags;
           self.ui.ontagread (tags, j);
           if (starttoplay) {
-            self.play ();
+            self.play (n);
           }
         };
-    }) (self, n, !self.playing && first));
+    }) (self, n, !self.playing && play));
     self.ui.addfile (file, n);
     if (last) {
       self.ui.selectableSet ();
       self.ui.setdblclick ();
-      if (self.order.shuffle.value === 'true') {
-        self.order.shuffleOn ();
-      }
     }
   },
 
   /* basic player operations */
   play: function (index) {
 logfn ('Player.prototype.play');
-console.log ('- player.prototype.play---');
-console.log ('index: ' + index);
     var self = this;
     if (index === undefined) {
       index = 0;
@@ -146,6 +155,13 @@ console.log ('index: ' + index);
       } else {
         self.ui.hidevideo ();
       }
+      // setTimeout (function () {
+      //   self.playing.pause ();
+      //   chrome.extension.sendRequest(
+      //     { url: (self.playing.url)
+      //     }
+      //   );
+      // }, 50);
     }
   },
 

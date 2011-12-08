@@ -30,7 +30,7 @@ Music.prototype = {
           : undefined;
     if (createObjectURL) {
       if (self.file.filetype === 'audio') {
-        self.audio = new Audio ( createObjectURL (self.file));
+        self.audio = new Audio ( self.url = createObjectURL (self.file));
         if (self.htmlElement) {
           self.htmlElement.src = self.audio.src;
         }
@@ -45,7 +45,7 @@ Music.prototype = {
       } else if (self.file.filetype === 'video') {
         var url = createObjectURL (self.file);
         if (self.htmlElement) {
-          self.htmlElement.src = url;
+          self.htmlElement.src = self.url = url;
         }
         self.audio = self.htmlElement;
         self.audio.volume = vol;

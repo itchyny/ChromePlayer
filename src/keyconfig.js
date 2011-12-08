@@ -13,15 +13,15 @@ Player.prototype.key = new Key ({
   '<c-o>':         command.OpenFile ([]),
   ':  o':          '<c-o>', // vim
   ':  e':          '<c-o>', // vim
-  '<right>':       command.SeekForward ([10]),
-  '<s-right>':     command.SeekForward ([30]),
+  '<right>':       command.SeekForward (['10']),
+  '<s-right>':     command.SeekForward (['30']),
   'l':             '<right>', // vim
   'w':             '<s-right>', // vim
-  '<left>':        command.SeekBackward ([10]),
-  '<s-left>':      command.SeekBackward ([30]),
+  '<left>':        command.SeekBackward (['10']),
+  '<s-left>':      command.SeekBackward (['30']),
   'h':             '<left>', // vim
   'b':             '<s-left>', // vim
-  '<s-4>':         command.SeekPercent ([100]), // vim
+  '<s-4>':         command.SeekPercent (['100']), // vim
 
   /* change setting */
   '<c-r>':         command.ToggleRepeat ([]),
@@ -61,7 +61,7 @@ Player.prototype.key = new Key ({
   '<s-pgdn>':      command.ExtendPageDown ([]),
   '<pgup>':        command.PageUp ([]),
   '<c-b>':         '<pgup>', // vim
-  '<s-pdup>':      command.ExtendPageUp ([]),
+  '<s-pgup>':      command.ExtendPageUp ([]),
   // 'v':             command.ShiftLock ([]), // vim // TODO
 
   /* toggle popup menu, ui */

@@ -19,6 +19,23 @@ SOURCE_FILES =\
 	globalcontrol.js \
 	_footer.js
 
+BG_SOURCE_FILES =\
+	_header.js \
+	prelude.js \
+	limited.js \
+	enum.js \
+	enumlinear.js \
+	enumcycle.js \
+	enumdinamic.js \
+	music.js \
+	local.js \
+	schemeconfig.js \
+	key.js \
+	command.js \
+	bg_player.js \
+	_footer.js
+
+
 DATE=$(shell TZ=GMT date '+%Y\/%m\/%d %T (GMT)')
 SED_DATE = sed "s/@DATE/${DATE}/"
 
@@ -40,6 +57,10 @@ main.js : ${SOURCE_FILES}
 	@cat ${SOURCE_FILES} | ${SED_DATE} | ${SED_VER} | node closure-command.js  > $@
 	@cp $@ ../js/
 
+bg_main.js : ${SOURCE_FILES}
+	@cat ${BG_SOURCE_FILES} | ${SED_DATE} | ${SED_VER} | node closure-command.js  > $@
+	@cp $@ ../js/
+
 manifest.json : manifest_base.json version.txt
 	@cat manifest_base.json | ${SED_VER} > $@
 	@cp $@ ../
@@ -48,8 +69,14 @@ index.html : index_base.html changelog.txt
 	@cat index_base.html | ${SED_CHANGELOG} > $@
 	@cp $@ ../
 
+bg_index.html : bg_index_base.html
+	@cat bg_index_base.html > $@
+	@cp $@ ../
+
 all:
 	make main.js
+	make bg_main.js
 	make manifest.json
 	make index.html
+	make bg_index.html
 

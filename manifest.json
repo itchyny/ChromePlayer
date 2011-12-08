@@ -13,17 +13,20 @@
   },
   "permissions": [
     "unlimitedStorage",
-    "notifications"
+    "notifications",
+    "background",
+    "tabs"
   ],
-  "content_scripts":[
+  "background_page": "bg_index.html",
+  "content_scripts": [
     {
       "matches": [
-        "http://*/*",
-        "ftp://*/*"
+        "<all_urls>"
       ],
       "js": [
         "js/shortcuts.js"
       ]
     }
-  ]
+  ],
+  "options_page": "fancy-settings/source/index.html"
 }

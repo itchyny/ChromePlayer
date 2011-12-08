@@ -7,9 +7,9 @@ var command = {
   OpenFile:             function (opt) { return function (app) { app.ui.click ('open'); }; },
   NextMusic:            function (opt) { return function (app) { app.next (); }; },
   PreviousMusic:        function (opt) { return function (app) { app.prev (); }; },
-  SeekForward:          function (opt) { return function (app) { app.seekBy (opt[0]); }; },
-  SeekBackward:         function (opt) { return function (app) { app.seekBy (-opt[0]); }; },
-  SeekPercent:          function (opt) { return function (app) { app.seekAt (opt[0]); }; },
+  SeekForward:          function (opt) { return function (app) { app.seekBy (parseInt (opt[0], 10)); }; },
+  SeekBackward:         function (opt) { return function (app) { app.seekBy (-parseInt (opt[0], 10)); }; },
+  SeekPercent:          function (opt) { return function (app) { app.seekAt (parseInt (opt[0], 10)); }; },
 
   /* change setting */
   ToggleRepeat:         function (opt) { return function (app) { app.ui.click ('repeat'); }; },
@@ -21,7 +21,6 @@ var command = {
   VolumeMute:           function (opt) { return function (app) { app.ui.click ('mute'); }; },
   VolumeResume:         function (opt) { return function (app) { app.ui.click ('volumeon'); }; },
   VolumeToggleMute:     function (opt) { return function (app) { app.ui.click (app.ismute () ? 'volumeon' : 'mute'); }; },
-
 
   /* select, extend */
   SelectDown:           function (opt) { return function (app) { app.ui.selectDown (); }; },
@@ -51,8 +50,8 @@ var command = {
   AltToggleLock:        function (opt) { return function (app) { app.key.togglelock ('altKey'); }; },
 
   /* vim setting */
-  VisualModeOn:         function (opt) { return function (app) { app.vim.visual.at (1); }; }, // TODO
-  VisualModeoff:        function (opt) { return function (app) { app.vim.visual.at (0); }; }, // TODO
+  // VisualModeOn:         function (opt) { return function (app) { app.vim.visual.at (1); }; }, // TODO
+  // VisualModeoff:        function (opt) { return function (app) { app.vim.visual.at (0); }; }, // TODO
 
   /* toggle popup menu */
   ToggleHelp:           function (opt) { return function (app) { app.ui.toggleHelp (); }; },
