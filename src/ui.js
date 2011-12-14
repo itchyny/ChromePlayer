@@ -34,7 +34,7 @@ var UI = {
     self.initClickEscape ();
     self.fullScreenOff ();
     $(window).resize(function () { self.initsize (); });
-    $('div#appname a').text('Local Player v' + player.version).click(function (e) {
+    $('div#appname a').text('Local Player ver ' + player.version).click(function (e) {
       self.toggleAbout ();
     });
   },
@@ -75,13 +75,7 @@ var UI = {
     $('img.lbutton, img.rbutton')
       .mouseup(function (e) { $(this).css({ 'top': '50%' }); })
       .mousedown(function (e) { $(this).css({ 'top': parseInt($(this).css('top'), 10) * 1.03 + '%' }); });
-    self.div.filename
-      .click(function () {
-        $('tr.ui-selected').UNSELECT();
-        $('tr.nP').SELECT().LASTSELECT();
-        self.focusIndex = 0;
-        self.focusUpdate ();
-      });
+    self.div.filename.click(function () { self.selectNowplaying (); });
     self.div.tablebody.click (function () {
       self.focusIndex = 0;
       self.focusUpdate (true);
@@ -872,6 +866,14 @@ var UI = {
           return player.remove ( parseInt($(tr).attr('number'), 10) );
       });
     $('tr.ui-selected').remove();
+  },
+
+  selectNowplaying: function () {
+    var self = this;
+    $('tr.ui-selected').UNSELECT();
+    $('tr.nP').SELECT().LASTSELECT();
+    self.focusIndex = 0;
+    self.focusUpdate ();
   },
 
   pageDown: function () {

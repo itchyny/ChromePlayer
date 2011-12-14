@@ -107,6 +107,7 @@ Music.prototype = {
   readpicture: function () {
     var self = this;
     var url = webkitURL.createObjectURL (this.file);
+    try {
     ID3.loadTags (url, function () {
                    var tags = ID3.getAllTags(url);
                    if (tags && tags.picture) {
@@ -116,6 +117,9 @@ Music.prototype = {
                    "picture"]
                     , dataReader: FileAPIReader (this.file)
                  });
+    } catch (e) {
+      console.dir (e);
+    };
   },
 
   play: function (vol, next) {

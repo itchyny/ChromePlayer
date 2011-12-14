@@ -50,7 +50,7 @@ Array.prototype.unique = function () {
   return ans;
 };
 
-if (typeof $ !== 'undefined') {
+if (typeof $ !== 'undefined' && typeof $.fn !== 'undefined') {
 
   $.fn.texttitle = function (t) {
     return this.text(t).attr('title', t);

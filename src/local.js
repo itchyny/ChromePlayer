@@ -3,7 +3,6 @@
 var local = {
 
   get: function (key) {
-    console.log (key);
     return localStorage.getItem (key);
   },
 

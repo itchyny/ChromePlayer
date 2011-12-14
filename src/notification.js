@@ -13,7 +13,6 @@ var notification = {
       var msec = JSON.parse (local.getSetting ('notificationmsec'));
       if (notify === 'true') {
         var n = webkitNotifications.createNotification (icon, title, message);
-        console.dir (n);
         n.show ();
         setTimeout (function () {
           n.cancel ();

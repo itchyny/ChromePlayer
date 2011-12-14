@@ -25,6 +25,13 @@ this.manifest = {
       return parseInt (value / 1000, 10).floor() + "sec";
     }
   },
+  {
+    "tab": i18n.get ("general"),
+    "group": i18n.get ("playing"),
+    "type": "checkbox",
+    "name": "appclosing",
+    "label": i18n.get ("appclosing")
+  },
     {
     "tab": i18n.get ("keyboard"),
     // "group": "Food",

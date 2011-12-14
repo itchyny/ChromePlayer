@@ -85,6 +85,14 @@ this.i18n = {
   "keyboardlabel": {
     "en": "Key settings",
     "ja": "キーバインド設定"
+  },
+  "play": {
+    "en": "playing",
+    "ja": "再生"
+  },
+  "appclosing": {
+    "en": "Continue to play music even after closing App tab",
+    "ja": "Local Playerのタブを閉じても音楽を再生し続ける",
   }
 };
 

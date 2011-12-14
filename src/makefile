@@ -60,7 +60,7 @@ main.js : ${SOURCE_FILES}
 	@cat ${SOURCE_FILES} | ${SED_DATE} | ${SED_VER} | node closure-command.js  > $@
 	@cp $@ ../js/
 
-bg_main.js : ${SOURCE_FILES}
+bg_main.js : ${BG_SOURCE_FILES}
 	@cat ${BG_SOURCE_FILES} | ${SED_DATE} | ${SED_VER} | node closure-command.js  > $@
 	@cp $@ ../js/
 

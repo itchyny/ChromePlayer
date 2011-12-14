@@ -8,9 +8,12 @@
 //   実行したら共有メモリーから外せば, 一回だけ実行ができる → localStorageで実装
 //   notificationを発行するのは, 必ずbackground pageを介して
 //
+//
+// 1: どうもid3-...js がlengthエラー
 // 1: もう一回backgroundとかcontents scriptとかを見直す
 //    もうちょっとconnectとかを見てから実装したほうがいいかも
 // 1: background pageにする
+//      background pageにするのはいいけど, アプリ画面を複数開いた時どうするかなぁ...
 // 1: オプションページ作る
 // 1: keyconfigを各自で設定できるように
 // 1: shuffleoff -> readfiles -> sort by track -> shuffle on -> shuffle off -> おかしくなる
@@ -39,14 +42,20 @@ Player.prototype = {
   version: '@VERSION',
 
   start: function () {
-    chrome.extension.onRequest.addListener (function (e, sender, sendResponse) {
-      console.log (e.from);
-    });
     for (var x in this) {
       if (this[x] && this[x].init) {
         this[x].init (this);
         log ("init: " + x);
       }
+    }
+  },
+
+  message: {
+    init: function (app) {
+      this.app = app;
+      chrome.extension.onRequest.addListener (function (e, sender, sendResponse) {
+        console.log (e.from);
+      });
     }
   },
 
@@ -341,7 +350,7 @@ Player.prototype.vim = {
 };
 
 var player = new Player ();
-window.onload = function () {
+window.onload = function (e) {
   player.start ();
 };
 

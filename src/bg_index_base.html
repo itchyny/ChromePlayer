@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <title></title>
+    <title>Background page of Local Player</title>
     <!-- <script src="./js/bg_main.js" type="text/javascript"></script>-->
 
     <script src="./src/prelude.js" type="text/javascript"></script>
@@ -18,27 +18,13 @@
     <script src="./src/music.js" type="text/javascript"></script>
     <script src="./src/local.js" type="text/javascript"></script>
     <script src="./src/schemeconfig.js" type="text/javascript"></script>
-    <!-- <script src="./src/ui.js" type="text/javascript"></script> -->
     <script src="./src/key.js" type="text/javascript"></script>
     <script src="./src/command.js" type="text/javascript"></script>
     <script src="./src/notification.js" type="text/javascript"></script>
-    <!-- <script src="./src/player.js" type="text/javascript"></script> -->
+    <script src="./src/bg_player.js" type="text/javascript"></script>
     <!-- <script src="./src/keyconfig.js" type="text/javascript"></script> -->
     <!-- <script src="./src/globalcontrol.js" type="text/javascript"></script> -->
-    <script type="text/javascript">
-      window.onload = function (e) {
-        notification.createNotification ('../icon_128.png', 'Local Player', 'Background page created');
-      };
-      chrome.extension.onRequest.addListener (function (e, sender, sendResponse) {
-          switch (e.type) {
-            case 'notification':
-              notification.createNotification (e.icon, e.title, e.message);
-              break;
-            default:
-              break;
-          }
-      });
-</script>
+
 </head>
 <body>
 </body>

@@ -39,6 +39,7 @@ var command = {
   PageUp:               function (opt) { return function (app) { app.ui.pageUp (); }; },
   ExtendPageUp:         function (opt) { return function (app) { app.ui.extendPageUp (); }; },
   DeleteSelected:       function (opt) { return function (app) { app.ui.deleteSelected (); }; },
+  SelectNowplaying:     function (opt) { return function (app) { app.ui.selectNowplaying (); }; },
   ShiftLock:            function (opt) { return function (app) { app.key.lock ('shiftKey'); }; },
   CtrlLock:             function (opt) { return function (app) { app.key.lock ('ctrlKey'); }; },
   AltLock:              function (opt) { return function (app) { app.key.lock ('altKey'); }; },
