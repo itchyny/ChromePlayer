@@ -10,26 +10,35 @@ Player.prototype = {
     for (var x in this) {
       if (this[x] && this[x].init) {
         this[x].init (this);
+        this[x].app = this;
         log ("init: " + x);
       }
     }
-  },
-
-  message: {
-    init: function (app) {
-      this.app = app;
-      chrome.extension.onRequest.addListener (function (e, sender, sendResponse) {
-        switch (e.type) {
-          case 'notification':
-            notification.createNotification (e.icon, e.title, e.message);
-            break;
-          default:
-            break;
-        }
-      });
-    }
   }
+};
 
+Player.prototype.message = {
+  init: function (app) {
+    chrome.extension.onRequest.addListener (function (e, sender, sendResponse) {
+      console.dir (e);
+      switch (e.type) {
+        case 'notification':
+          notification.createNotification (e.icon, e.title, e.message);
+          break;
+        case 'globalkeydown':
+          var g = local.getSetting ('globalcontrol');
+          if (g === undefined || g === 'false') {
+            return;
+          }
+          var newe = e;
+          newe.type = 'globalkeydown-bg';
+          chrome.extension.sendRequest (newe);
+          break;
+        default:
+          break;
+      }
+    });
+  }
 };
 
 Player.prototype.version = {

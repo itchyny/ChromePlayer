@@ -32,6 +32,7 @@ window.addEventListener(
             , ctrlKey: e.ctrlKey
             , altKey: e.altKey
             , global: true
+            , type: 'globalkeydown'
             }
           );
         } catch(e){};

@@ -17,7 +17,6 @@ SOURCE_FILES =\
 	command.js \
 	player.js \
 	keyconfig.js \
-	globalcontrol.js \
 	_footer.js
 
 BG_SOURCE_FILES =\

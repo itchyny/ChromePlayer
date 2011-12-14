@@ -671,8 +671,7 @@ var UI = {
 
   selectDown: function () {
     var self = this;
-    var $selected = $('tr.ui-selected'),
-        $last = $('tr.last-select');
+    var $selected = $('tr.ui-selected');
     if ($selected.size()) {
       $selected
         .UNSELECT(true)
@@ -681,23 +680,26 @@ var UI = {
         .last()
         .SELECT()
         .LASTSELECT();
-    } else if ($last.size()) {
-      $last
-        .last()
-        .SELECT()
-        .LASTSELECT();
     } else {
-      $('tr.nP')
-        .next()
-        .andSelf()
-        .last()
-        .SELECT()
-        .LASTSELECT()
-        .size()
-        || $('tr', self.div.tbody)
-            .first()
-            .SELECT()
-            .LASTSELECT();
+      var $last = $('tr.last-select');
+      if ($last.size()) {
+        $last
+          .last()
+          .SELECT()
+          .LASTSELECT();
+      } else {
+        $('tr.nP')
+          .next()
+          .andSelf()
+          .last()
+          .SELECT()
+          .LASTSELECT()
+          .size()
+          || $('tr', self.div.tbody)
+              .first()
+              .SELECT()
+              .LASTSELECT();
+      }
     }
   },
 
@@ -722,8 +724,7 @@ var UI = {
 
   selectUp: function () {
     var self = this;
-    var $selected = $('tr.ui-selected'),
-        $last = $('tr.last-select');
+    var $selected = $('tr.ui-selected');
     if ($selected.size()) {
       $selected
         .UNSELECT(true)
@@ -732,23 +733,26 @@ var UI = {
         .first()
         .SELECT()
         .LASTSELECT();
-    } else if ($last.size()) {
-      $last
-        .first()
-        .SELECT()
-        .LASTSELECT();
     } else {
-      $('tr.nP')
-        .prev()
-        .andSelf()
-        .first()
-        .SELECT()
-        .LASTSELECT()
-        .size()
-        || $('tr', self.div.tbody)
-            .last()
-            .SELECT()
-            .LASTSELECT();
+      var $last = $('tr.last-select');
+      if ($last.size()) {
+        $last
+          .first()
+          .SELECT()
+          .LASTSELECT();
+      } else {
+        $('tr.nP')
+          .prev()
+          .andSelf()
+          .first()
+          .SELECT()
+          .LASTSELECT()
+          .size()
+          || $('tr', self.div.tbody)
+              .last()
+              .SELECT()
+              .LASTSELECT();
+      }
     }
   },
 
@@ -945,12 +949,19 @@ var UI = {
     }
     switch($('div#help:visible,div#config:visible,div#about:visible,div#property:visible').size()) {
       case 0:
-        $('tr.ui-selected')
-          .UNSELECT(true)
-        .first()
-        .children()
-        .first()
-        .dblclick();
+        var $last = $('tr.last-select');
+        if ($last.size ()) {
+          $('tr.ui-selected')
+            .UNSELECT(true)
+          $last.SELECT().children().first().dblclick();
+        } else {
+          $('tr.ui-selected')
+            .UNSELECT(true)
+          .first()
+          .children()
+          .first()
+          .dblclick();
+        }
         return;
       default:
         self.div.config.add(self.div.help).add(self.div.property).add(self.div.about)
@@ -990,8 +1001,8 @@ var UI = {
       case 0:
         if ($('div#musicSlider a:focus, div#volumeSlider a:focus').size()) {
           $('div#musicSlider a, div#volumeSlider a').focusout();
-          self.focusIndex = 0;
-          self.focusUpdate (true);
+          // self.focusIndex = 0;
+          // self.focusUpdate (true);
         } else {
           $('tr.ui-selected').UNSELECT(true);
         }
@@ -1221,7 +1232,7 @@ var UI = {
     };
     var selected = $('tr.ui-selected');
     var x = selected.eq(this.filterIndex).UNSELECT(true);
-    setTimeout( function () { x.SELECT(false, true); }, 200);
+    setTimeout( function () { x.SELECT(false, true).LASTSELECT(); }, 200);
     this.filterIndex = (++this.filterIndex) % selected.size();
   }
 

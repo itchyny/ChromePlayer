@@ -17,6 +17,7 @@
 // 1: オプションページ作る
 // 1: keyconfigを各自で設定できるように
 // 1: shuffleoff -> readfiles -> sort by track -> shuffle on -> shuffle off -> おかしくなる
+// 1: remove duplicated command
 //
 // 2: fullscreeにするのは, 動画→音楽でも変化なしというか... fullscreenのままdivを動かして動画にしたり
 // 2: 別タブ, キーが無かったら返してdefaultを実行的な
@@ -50,17 +51,6 @@ Player.prototype = {
     }
   },
 
-  message: {
-    init: function (app) {
-      this.app = app;
-      chrome.extension.onRequest.addListener (function (e, sender, sendResponse) {
-        console.log (e.from);
-      });
-    }
-  },
-
-  files: [],
-
   musics: [],
 
   tags: [],
@@ -90,11 +80,9 @@ logfn ('Player.prototype.readFiles');
     var mediafiles = [].filter.call (files, function (file) {
       return file.filetype !== '';
     });
-    console.log (self.shuffle.value)
     var playindex = self.shuffle.value === 'false'
                   ? self.musics.length
-                  : self.musics.length + Math.floor (Math.random () * mediafiles.length);
-    console.log (playindex)
+                  : self.musics.length + Math.floor (Math.random () * Math.min (30, mediafiles.length));
     var ml = self.musics.length;
     self.order.concat (mediafiles.map (function (file, index, files) {
       return ml + index;
@@ -193,7 +181,6 @@ logfn ('Player.prototype.toggle');
   nextundefinedcount: 0,
   next: function () {
 logfn ('Player.prototype.next');
-    console.dir (this.order);
     this.pause ();
     var index = this.order.next ();
     if (index === undefined) {
@@ -342,6 +329,21 @@ Player.prototype.volume = new Limited (0, 256, 16
      app.playing.setvolume (volume / 256);
    }
 });
+
+Player.prototype.message = {
+  init: function (app) {
+    var self = this;
+    chrome.extension.onRequest.addListener (function (e, sender, sendResponse) {
+      switch (e.type) {
+        case 'globalkeydown-bg':
+          self.app.key.keydown (e);
+          break;
+        default:
+          break;
+      }
+    });
+  }
+};,
 
 Player.prototype.vim = {
   visual: new Enumcycle ([false, true], false, function (visual) {
