@@ -1,5 +1,13 @@
-// commands
-// TODO: arguments to String
+// Commands which user can access by setting keybinding
+//
+// The reason I use the form of
+//   Command : function (opt) { return function () ... }
+// is for options (rather, arguments?). See SeekForward command for example.
+// If option for command is not allowed, we must provide lots of commands like
+//   SeekForward10, SeekForward20, SeekForward30, ...
+//
+// The "app" here is actually player in global closure, and is player.key.app, too.
+// See keyconfig.js and key.js.
 var command = {
 
   /* operate player */

@@ -176,7 +176,7 @@ Music.prototype = {
       if (sec < 0 && cT < -sec) {
         this.audio.currentTime = 0;
         if (cT < -sec / 4) {
-          return true; // TODO: previous music
+          return true;
         }
       } else if (cT + sec > dr) {
         this.audio.currentTime = dr;
