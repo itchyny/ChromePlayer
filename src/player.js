@@ -102,6 +102,7 @@ logfn ('Player.prototype.readFiles');
 logfn ('Player.prototype.readOneFile');
     var self = this;
     var n = self.musics.length;
+    self.files = self.files || [];
     self.files[n] = file;
     self.musics[n] = new Music (file, file.filetype === 'video' ? self.ui.div.video : null);
     self.musics[n].tagread (
@@ -343,7 +344,7 @@ Player.prototype.message = {
       }
     });
   }
-};,
+};
 
 Player.prototype.vim = {
   visual: new Enumcycle ([false, true], false, function (visual) {
