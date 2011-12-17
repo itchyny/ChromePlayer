@@ -1,39 +1,5 @@
 // Main player
 //
-// sendRequestに関して分かったこと:
-//   sendRequestでFile/Blobを送ってもObjectになり, createObjectURLがtype errorを起こす
-//   blob:/// のurlは, メインのページが死んでもbackground-pageが生きていれば生き続けられる しかしChromeを再起動したら死ぬ
-//   sendRequestしたらみんながonRequestを受ける
-//   sendRequestで一意なもの(例: 時刻+乱数)を情報として入れて, 共有メモリーに未実行として登録, onRequestでそれをチェック
-//   実行したら共有メモリーから外せば, 一回だけ実行ができる → localStorageで実装
-//   notificationを発行するのは, 必ずbackground pageを介して
-//
-//
-// 1: どうもid3-...js がlengthエラー
-// 1: もう一回backgroundとかcontents scriptとかを見直す
-//    もうちょっとconnectとかを見てから実装したほうがいいかも
-// 1: background pageにする
-//      background pageにするのはいいけど, アプリ画面を複数開いた時どうするかなぁ...
-// 1: オプションページ作る
-// 1: keyconfigを各自で設定できるように
-// 1: shuffleoff -> readfiles -> sort by track -> shuffle on -> shuffle off -> おかしくなる
-// 1: remove duplicated command
-//
-// 2: fullscreeにするのは, 動画→音楽でも変化なしというか... fullscreenのままdivを動かして動画にしたり
-// 2: 別タブ, キーが無かったら返してdefaultを実行的な
-// 2: menu for right click http://www.trendskitchens.co.nz/jquery/contextmenu/ http://phpjavascriptroom.com/?t=ajax&p=jquery_plugin_contextmenu
-//   http://code.google.com/chrome/extensions/contextMenus.html
-// 2: C-zで削除キャンセルなど
-// 2: 常にポップアップを表示し続ける → notification html ver
-// 3: album art from id3 tag ::: reading code https://github.com/aadsm/JavaScript-ID3-Reader
-// 3: property にalbum art (もしあれば)
-// 4: 読めないタグ title="..."にゴミが入る ?
-// 7: キーだけでファイルの入れ替え ファイル入れ替えた時のplayer.orderを更新
-// 7: vim, visual mode
-// 7: fixed first row of table
-// 7: フルスクリーン時のUIについて. volumeとかどうする... カーソル消す
-// 9: id3タグの読み込みをUArrayってやつで高速化
-// 9: filesystem API
 function Player () {
   this.ui = UI;
 }

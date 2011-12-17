@@ -1286,9 +1286,13 @@ $.fn.ISSELECTED = function () {
 };
 
 $.fn.drag_drop_multi_select.defaults.after_drop_action = function ($item, $old, $new, e, ui) {
+logfn ('drag_drop_multi_select.defaults.after_drop_action');
+console.dir(e)
+console.dir(e.clientY) // undefined
+console.dir($(e))
   var itemNum = $item.first().attr('number'),
       trHgtHlf = $('tr', UI.div.tbody).first().height() / 2,
-      eY = e.clientY,
+      eY = e.clientY, // bug here
       $target = $('tr', UI.div.tbody)
                 .filter(function () { var d = eY - $(this).offset().top; return -trHgtHlf <= d && d < trHgtHlf; } )
                 .first();
@@ -1297,18 +1301,20 @@ $.fn.drag_drop_multi_select.defaults.after_drop_action = function ($item, $old, 
     $item
       .insertBefore($next)
       .addClass('ui-selected moved');
+      console.log($next)
   } else {
     $item
       .insertBefore($target)
       .addClass('ui-selected moved');
+      console.log($target)
   }
   setTimeout(function () { UI.selectableSet(); }, 30);
-  setTimeout(
-    function () {
-      $('tr.ui-selected', UI.div.tbody)
-        .removeClass('ui-selected moved last-select');
-      UI.setorder ();
-    }, 1000
-  );
+  // setTimeout(
+  //   function () {
+  //     $('tr.ui-selected', UI.div.tbody)
+  //       .removeClass('ui-selected moved last-select');
+  //     UI.setorder ();
+  //   }, 1000
+  // );
 };
 

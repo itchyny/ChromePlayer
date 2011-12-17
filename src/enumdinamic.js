@@ -37,12 +37,12 @@ function Enumdinamic (array, initializer, callback) {
                   });
   this.repeat = new Enumcycle ( ['false', 'true', 'one'], 'false'
               , function (repeat) {
-                console.log ('repeat:' + repeat);
+                log ('repeat:' + repeat);
               });
   this.shuffle = new Enumcycle ( ['false', 'true']
                , 'false'
                , function (shuffle) {
-                console.log ('shuffle:::' + shuffle);
+                log ('shuffle:::' + shuffle);
                 log (self.repeat.value)
                 if (!self.orderedarray) {
                   self.orderedarray = self.enumlinear.enumclass.array || self.array || self.enumlinear.array || [];
@@ -78,8 +78,8 @@ logfn ('Enumdinamic.prototype.at');
 };
 Enumdinamic.prototype.next = function (j) {
 logfn ('Enumdinamic.prototype.next');
-  // console.log ('Enumdinamic next:' + this.index);
-  // console.log ('Enumdinamic next:' + this.array);
+  // log ('Enumdinamic next:' + this.index);
+  // log ('Enumdinamic next:' + this.array);
   /*! when goes out of the array:
    *                |                               repeat                            |
    *                |   false                        |   true     |    one            |
