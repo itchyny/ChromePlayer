@@ -32,7 +32,14 @@ Player.prototype.message = {
           }
           var newe = e;
           newe.type = 'globalkeydown-bg';
-          chrome.extension.sendRequest (newe);
+          message.send (newe);
+          break;
+        case 'get-globalkeybind':
+          var ans = { type: 'ans-globalkeybind'
+                    , ans: ''// TODO
+                    , to: e.from
+          };
+          message.send (ans);
           break;
         default:
           break;

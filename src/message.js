@@ -16,7 +16,7 @@ var message = {
   },
 
   send: function (obj) {
-    obj.id = this.createId ();
+    // obj.id = this.createId ();
     chrome.extension.sendRequest (obj);
   }
 
