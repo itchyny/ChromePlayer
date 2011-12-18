@@ -107,7 +107,7 @@ window.onload = function (e) {
 
 
 // The only stuff which should be exposed to window
-// because this function is called from fancu-settings/source/setting.js
+// because this function is called from fancy-settings/source/setting.js
 this.resetSettings = function () {
   player.setting.reset ();
 };
