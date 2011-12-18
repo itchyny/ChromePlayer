@@ -308,6 +308,9 @@ Player.prototype.message = {
         case 'globalkeydown-bg':
           self.app.key.keydown (e);
           break;
+        case 'changescheme':
+          self.app.ui.colorset ();
+          break;
         default:
           break;
       }

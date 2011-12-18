@@ -68,7 +68,7 @@ Player.prototype.key = new Key ({
   '<s-/>':         command.ToggleHelp ([]),
   '<f1>':          command.ToggleAbout ([]),
   '[':             '<f1>',
-  '<c-,>':         command.ToggleConfig ([]),
+  '<c-,>':         command.OpenConfig ([]),
   '<delete>':      command.DeleteSelected ([]),
   '<backspace>':   '<delete>',
   'd':             '<delete>', // vim

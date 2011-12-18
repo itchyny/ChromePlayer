@@ -26,7 +26,7 @@ var UI = {
     self.colorset ();
     self.initsize ();
     self.initslider ();
-    self.initschemes ();
+    // self.initschemes ();
     self.selectableSet ();
     self.initFilter ();
     self.initsplitter ();
@@ -71,7 +71,8 @@ var UI = {
     self.div.volumeon.click(    function ()  { player.resume (); });
     self.div.repeat.click(      function ()  { player.repeat.next (); });
     self.div.shuffle.click(     function ()  { player.shuffle.next (); });
-    self.div.conf.click(        function ()  { self.div.config.fadeToggle(200); });
+    // self.div.conf.click(        function ()  { self.div.config.fadeToggle(200); });
+    self.div.conf.click(        function ()  { window.open('./fancy-settings/source/index.html'); });
     $('img.lbutton, img.rbutton')
       .mouseup(function (e) { $(this).css({ 'top': '50%' }); })
       .mousedown(function (e) { $(this).css({ 'top': parseInt($(this).css('top'), 10) * 1.03 + '%' }); });
@@ -81,15 +82,15 @@ var UI = {
       self.focusUpdate (true);
     });
     self.div.globalcontrol
-      .attr({'checked':local.get('globalcontrol')==='true'})
+      .attr({'checked':local.getSetting('globalcontrol')==='true'})
       .change(function (e) {
         local.set ('globalcontrol', e.target.checked.toString());
       });
     self.div.notification
-      .attr({'checked': (local.get ('notification') || 'true') === 'true'})
+      .attr({'checked': (local.getSetting ('notification') || 'true') === 'true'})
       .change(function (e) {
         local.set ('notification', e.target.checked.toString());
-        if (undefined === local.get ('notificationmsec')) {
+        if (undefined === local.getSetting ('notificationmsec')) {
           local.set ('notificationmsec', self.div.notificationmsec.valueAsNumber);
         }
       });
@@ -100,7 +101,7 @@ var UI = {
       return secstr + 'sec';
     }
     self.div.notificationmsec
-      .attr({'value': parseInt (local.get ('notificationmsec'), 10) || 5000 })
+      .attr({'value': parseInt (local.getSetting ('notificationmsec'), 10) || 5000 })
       .change(function (e) {
         local.set ('notificationmsec', e.target.valueAsNumber);
         self.div.notificationresult.html (formatmsec (e.target.valueAsNumber));
@@ -146,7 +147,7 @@ var UI = {
   },
 
   initschemes: function () {
-    var theme = local.get ('scheme') || 'classic-default';
+    var theme = local.getSettingParse ('scheme') || 'classic-default';
     var self = this;
     for(var s in scheme) {
       $('<a />')
@@ -364,11 +365,11 @@ var UI = {
   },
 
   popupvideo: function () {
-      this.div.video.parentNode.style.visibility = 'visible';
+    this.div.video.parentNode.style.visibility = 'visible';
   },
 
   hidevideo: function () {
-      this.div.video.parentNode.style.visibility = 'hidden';
+    this.div.video.parentNode.style.visibility = 'hidden';
   },
 
   showAlbumArt: function (file) {
@@ -467,7 +468,7 @@ var UI = {
   })(),
 
   colorset: function () {
-    var theme = local.get ('scheme') || 'classic-default';
+    var theme = local.getSettingParse ('scheme') || 'classic-default';
     var colorscheme = scheme[theme];
     $('a.currentScheme').removeClass('currentScheme');
     $('a[scheme=' + theme + ']').addClass('currentScheme');
@@ -856,9 +857,9 @@ var UI = {
     this.div.about.fadeToggle(200);
   },
 
-  toggleConfig: function () {
-    this.div.config.fadeToggle(200);
-  },
+  // toggleConfig: function () {
+  //   this.div.config.fadeToggle(200);
+  // },
 
   deleteSelected: function () {
     var player = this.player;
@@ -1183,7 +1184,7 @@ var UI = {
           a.push(x[i])
         }
         return a;
-      })(self.player.musics[$(x).attr('number')].tags)).join('__').toLowerCase();
+      })(self.player.musics[$(x).attr('number')].tags)).join('•').toLowerCase();
     });
     this.div.matchnum.text('');
     this.filterTags = tags;
@@ -1309,12 +1310,12 @@ console.dir($(e))
       console.log($target)
   }
   setTimeout(function () { UI.selectableSet(); }, 30);
-  // setTimeout(
-  //   function () {
-  //     $('tr.ui-selected', UI.div.tbody)
-  //       .removeClass('ui-selected moved last-select');
-  //     UI.setorder ();
-  //   }, 1000
-  // );
+  setTimeout(
+    function () {
+      $('tr.ui-selected', UI.div.tbody)
+        .removeClass('ui-selected moved last-select');
+      UI.setorder ();
+    }, 1000
+  );
 };
 

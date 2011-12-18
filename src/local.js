@@ -20,6 +20,10 @@ var local = {
 
   getSetting: function (key) {
     return local.get ('store.' + 'settings' + '.' + key);
+  },
+
+  getSettingParse: function (key) {
+    return JSON.parse(local.get ('store.' + 'settings' + '.' + key));
   }
 
 };

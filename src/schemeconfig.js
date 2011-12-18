@@ -97,7 +97,7 @@ var scheme = {
       'tbody tr.ui-selected': '#fff'
     }
   },
-  'classic-lblue': {
+  'classic-blue': {
     'background-color': {
       'div#wrapper': '#66f',
       'div#info': '#bbf',

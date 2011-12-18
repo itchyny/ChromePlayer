@@ -1,8 +1,25 @@
+function reset(settings) {
+    var store = new Store("settings");
+    chrome.extension.getBackgroundPage().resetSettings();
+    for (var name in settings.manifest) {
+        var setting = settings.manifest[name];
+        if (typeof setting.set === "function") {
+            setting.set(store.get(setting.params.name));
+        }
+    }
+}
 window.addEvent("domready", function () {
     // Option 1: Use the manifest:
     new FancySettings.initWithManifest(function (settings) {
-        settings.manifest.myButton.addEvent("action", function () {
-            alert("You clicked me!");
+      // To bind a event to a button of named "hoge",
+      // setting.manifest.hoge is the DOM element.
+      // Here, "named" means that I set the "name" property in manifest.js
+        settings.manifest.initialize.addEvent('action', function() {
+          if (confirm("This will reset this extension's settings.  Are you sure?"))
+            reset(settings);
+        });
+        settings.manifest.scheme.addEvent ('action', function (e) {
+          chrome.extension.sendRequest ({ type: 'changescheme' });
         });
     });
     

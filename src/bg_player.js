@@ -41,6 +41,38 @@ Player.prototype.message = {
   }
 };
 
+Player.prototype.setting = {
+  defaultSetting: {
+    notification: true,
+    notificationmsec: 5000,
+    globalcontrol: true,
+    scheme: "classic-default",
+    playerrc:
+      [ ""
+      , "# This is configuration of Local Player"
+      , ""
+      , "# Vim like keymappings"
+      , "map j <down>"
+      , "map k <up>"
+      , "map gg <home>"
+      , "map <s-g> <end>"
+      , "map <c-f> PageDown"
+      , "map <c-b> PageUp"
+      , ""
+      , "unmap f"
+      , ""
+    ].join ('\n')
+  },
+  init: function () {
+    // initialized within this constructor
+    // if the key was already set, it is ignored
+    this.settings = new Store ("settings", this.defaultSetting);
+  },
+  reset: function () {
+    this.settings.fromObject (this.defaultSetting);
+  }
+};
+
 Player.prototype.version = {
   toString: function () {
     return '@VERSION';
@@ -64,5 +96,12 @@ Player.prototype.version = {
 var player = new Player ();
 window.onload = function (e) {
   player.start ();
+};
+
+
+// The only stuff which should be exposed to window
+// because this function is called from fancu-settings/source/setting.js
+this.resetSettings = function () {
+  player.setting.reset ();
 };
 

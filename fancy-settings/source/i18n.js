@@ -62,6 +62,10 @@ this.i18n = {
     "en": "General",
     "ja": "一般"
   },
+  "advanced": {
+    "en": "Advanced",
+    "ja": "高度な設定"
+  },
   "globalcontrol": {
     "en": "Keyboard control from other tabs",
     "ja": "他のタブからのキーボード操作"
@@ -86,13 +90,47 @@ this.i18n = {
     "en": "Key settings",
     "ja": "キーバインド設定"
   },
-  "play": {
+  "playing": {
     "en": "playing",
     "ja": "再生"
   },
   "appclosing": {
     "en": "Continue to play music even after closing App tab",
     "ja": "Local Playerのタブを閉じても音楽を再生し続ける",
+  },
+  "about": {
+    "en": "About",
+    "ja": "情報"
+  },
+  "author": {
+    "en": "Author",
+    "ja": "作者"
+  },
+  "myDescription": {
+    "en": 'name: itchyny<br />github: <a href="https://github.com/itchyny/">https://github.com/itchyny/</a><br />'
+  },
+  "application": {
+    "en": "Application",
+    "ja": "アプリケーション"
+  },
+  "appDescription": {
+    "en": 'name: Local Player<br/>github: <a href="https://github.com/itchyny/ChromePlayer/">https://github.com/itchyny/ChromePlayer/</a><br />'
+  },
+  "initialize": {
+    "en": "Initialization",
+    "ja": "初期化"
+  },
+  "initializeall": {
+    "en": "Initialize all settings",
+    "ja": "全ての設定を初期化"
+  },
+  "appearance": {
+    "en": "Appearance",
+    "ja": "外観"
+  },
+  "colorscheme": {
+    "en": "Color Scheme",
+    "ja": "カラースキーム"
   }
 };
 

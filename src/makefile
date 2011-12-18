@@ -21,6 +21,7 @@ SOURCE_FILES =\
 
 BG_SOURCE_FILES =\
 	_header.js \
+	../fancy-settings/source/lib/store.js \
 	prelude.js \
 	message.js \
 	notification.js \
@@ -31,8 +32,6 @@ BG_SOURCE_FILES =\
 	enumdinamic.js \
 	music.js \
 	local.js \
-	schemeconfig.js \
-	key.js \
 	command.js \
 	bg_player.js \
 	_footer.js

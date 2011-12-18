@@ -4,7 +4,7 @@ this.manifest = {
   "name": "Local Player",
   "icon": "../../icon_128.png",
   "settings": [
-  {
+    {
     "tab": i18n.get ("general"),
     "group": i18n.get ("notification"),
     "type": "checkbox",
@@ -25,155 +25,83 @@ this.manifest = {
       return parseInt (value / 1000, 10).floor() + "sec";
     }
   },
+  // {
+  //   "tab": i18n.get ("general"),
+  //   "group": i18n.get ("playing"),
+  //   "type": "checkbox",
+  //   "name": "appclosing",
+  //   "label": i18n.get ("appclosing")
+  // },
   {
     "tab": i18n.get ("general"),
-    "group": i18n.get ("playing"),
-    "type": "checkbox",
-    "name": "appclosing",
-    "label": i18n.get ("appclosing")
-  },
-    {
-    "tab": i18n.get ("keyboard"),
-    // "group": "Food",
+    "group": i18n.get ("keyboard"),
     "name": "globalcontrol",
     "type": "checkbox",
     "label": i18n.get ("globalcontrol")
   },
   {
-    "tab": i18n.get ("keyboard"),
-    // "group": "Food",
+    "tab": i18n.get ("general"),
+    "group": i18n.get ("appearance"),
+    "name": "scheme",
+    "type": "popupButton",
+    "label": i18n.get ("colorscheme"),
+    "options": {
+      "values": [
+        { "value": "classic-default"
+        , "text": "default"
+      },
+      { "value": "classic-pink"
+      , "text": "pink"
+      },
+      { "value": "classic-yellow"
+      , "text": "yellow"
+      },
+      { "value": "classic-orange"
+      , "text": "orange"
+      },
+      { "value": "classic-lime"
+      , "text": "lime"
+      },
+      { "value": "classic-blue"
+      , "text": "blue"
+      },
+      { "value": "classic-purple"
+      , "text": "purple"
+      },
+      { "value": "classic-dark"
+      , "text": "dark"
+      }
+      ]
+    }
+  },
+  {
+    "tab": i18n.get ("advanced"),
+    "group": i18n.get ("keyboard"),
     "name": "playerrc",
     "type": "textarea",
     "label": i18n.get ("keyboardlabel"),
-    "text": "hoge\nhoge"
+    "text": ""
   },
+  {
+    "tab": i18n.get ("advanced"),
+    "group": i18n.get ("initialize"),
+    "name": "initialize",
+    "type": "button",
+    "text": i18n.get ("initializeall")
+  },
+  {
+    "tab": i18n.get ("about"),
+    "group": i18n.get ("author"),
+    "name": "author",
+    "type": "description",
+    "text": i18n.get ("myDescription")
+  },
+  {
+    "tab": i18n.get ("about"),
+    "group": i18n.get ("application"),
+    "name": "application",
+    "type": "description",
+    "text": i18n.get ("appDescription")
+  }
   ]
-  // {
-  //   "tab": i18n.get("information"),
-  //   "group": i18n.get("login"),
-  //   "name": "username",
-  //   "type": "text",
-  //   "label": i18n.get("username"),
-  //   "text": i18n.get("x-characters")
-  // },
-  // {
-  //   "tab": i18n.get("information"),
-  //   "group": i18n.get("login"),
-  //   "name": "password",
-  //   "type": "text",
-  //   "label": i18n.get("password"),
-  //   "text": i18n.get("x-characters-pw"),
-  //   "masked": true
-  // },
-  // {
-  //   "tab": i18n.get("information"),
-  //   "group": i18n.get("login"),
-  //   "name": "myDescription",
-  //   "type": "description",
-  //   "text": i18n.get("description")
-  // },
-  // {
-  //   "tab": i18n.get("information"),
-  //   "group": i18n.get("logout"),
-  //   "name": "myCheckbox",
-  //   "type": "checkbox",
-  //   "label": i18n.get("enable")
-  // },
-  // {
-  //   "tab": i18n.get("information"),
-  //   "group": i18n.get("logout"),
-  //   "name": "myButton",
-  //   "type": "button",
-  //   "label": i18n.get("disconnect"),
-  //   "text": i18n.get("logout")
-  // },
-  // {
-  //   "tab": "Details",
-  //   "group": "Sound",
-  //   "name": "noti_volume",
-  //   "type": "slider",
-  //   "label": "Notification volume:",
-  //   "max": 1,
-  //   "min": 0,
-  //   "step": 0.01,
-  //   "display": true,
-  //   "displayModifier": function (value) {
-  //     return (value * 100).floor() + "%";
-  //   }
-  // },
-  // {
-  //   "tab": "Details",
-  //   "group": "Sound",
-  //   "name": "sound_volume",
-  //   "type": "slider",
-  //   "label": "Sound volume:",
-  //   "max": 100,
-  //   "min": 0,
-  //   "step": 1,
-  //   "display": true,
-  //   "displayModifier": function (value) {
-  //     return value + "%";
-  //   }
-  // },
-  // {
-  //   "tab": "Details",
-  //   "group": "Food",
-  //   "name": "myPopupButton",
-  //   "type": "popupButton",
-  //   "label": "Soup 1 should be:",
-  //   "options": {
-  //     "groups": [
-  //       "Hot", "Cold",
-  //     ],
-  //     "values": [
-  //       {
-  //       "value": "hot",
-  //       "text": "Very hot",
-  //       "group": "Hot",
-  //     },
-  //     {
-  //       "value": "Medium",
-  //       "group": 1,
-  //     },
-  //     {
-  //       "value": "Cold",
-  //       "group": 2,
-  //     },
-  //     ["Non-existing"]
-  //     ],
-  //   },
-  // },
-  // {
-  //   "tab": "Details",
-  //   "group": "Food",
-  //   "name": "myListBox",
-  //   "type": "listBox",
-  //   "label": "Soup 2 should be:",
-  //   "options": [
-  //     ["hot", "Hot and yummy"],
-  //     ["cold"]
-  //   ]
-  // },
-  // {
-  //   "tab": "Details",
-  //   "group": "Food",
-  //   "name": "myRadioButtons",
-  //   "type": "radioButtons",
-  //   "label": "Soup 3 should be:",
-  //   "options": [
-  //     ["hot", "Hot and yummy"],
-  //     ["cold"]
-  //   ]
-  // }
-  // ],
-  // "alignment": [
-  //   [
-  //     "username",
-  //     "password"
-  // ],
-  // [
-  //   "noti_volume",
-  //   "sound_volume"
-  // ]
-  // ]
 };

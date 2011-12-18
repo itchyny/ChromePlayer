@@ -112,6 +112,10 @@ text-shadow: white 0 1px 1px;
 -webkit-padding-end: 24px;
 }
 
+#tab-container >*:nth-child(4n) {
+  margin-top: 1em;
+}
+
 #search-container {
     margin-top: 5px;
     margin-bottom: 5px;
