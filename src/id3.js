@@ -19,24 +19,23 @@ String.prototype.unsynchsafe = function () {
 function decode (chars) {
   switch (chars.charCodeAt(0)) {
     case 0:  // ISO-8859-1
-      // log("ISO-8859-1"); // UTF-16?
-    // console.log(chars);
+      log("ISO-8859-1");
     var a = "";
-    for (var i = -1; i < chars.length; ) { // TODO
-      // console.log(chars.charCodeAt(i++))
-      // console.log(chars.charCodeAt(i++))
-      // console.log(" --- ")
+    for (var i = 0; i < chars.length; ) {
       a += String.fromCharCode((chars.charCodeAt(i++))
-                               |chars.charCodeAt(i++))<<8;
-    };
-    // log ("a: " + a);
-    // return a;
-    return chars.toString ();
+                               |(chars.charCodeAt(i++)<<8));
+    }
+    var r = /(.*?)[\uff01\ufe00]./;
+    if (r.test(a)) {
+      return a.replace(r, '');
+    } else {
+      return chars.toString ();
+    }
     case 2: { // UTF-16BE without BOM
-      // log("UTF-16BE without BOM");
+      log("UTF-16BE without BOM");
     }
     case 1: { // UTF-16 with BOM
-      // log("UTF-16 with BOM");
+      log("UTF-16 with BOM");
       var a = "", StringfromCharCode = String.fromCharCode, kind;
       for (var i = 1, charslen = chars.length; i < charslen; ) {
         if (kind === 1 || ((chars.charCodeAt(i) & 0xff) === 0xff)) { // 2bytes
@@ -60,7 +59,7 @@ function decode (chars) {
       return a;
     }
     case 3: { // UTF-8
-      // log("UTF-8");
+      log("UTF-8");
       var a = "", StringfromCharCode = String.fromCharCode;
       for(var i = 1, charslen = chars.length; i < charslen; ) {
         var charsi = chars.charCodeAt(i);
@@ -147,9 +146,9 @@ _ID3.prototype = {
   },
 
   readFrameSize: function (result) {
-    return ((( parseInt (result.charCodeAt (0), 10)  * 16 * 16
-             + parseInt (result.charCodeAt (1), 10)) * 16 * 16
-             + parseInt (result.charCodeAt (2), 10)) * 16 * 16
+    return ((( parseInt (result.charCodeAt (0), 10)  * 128
+             + parseInt (result.charCodeAt (1), 10)) * 128
+             + parseInt (result.charCodeAt (2), 10)) * 128
              + parseInt (result.charCodeAt (3), 10));
   },
 
@@ -159,7 +158,6 @@ _ID3.prototype = {
     var tags = {};
     var i = this.i;
     var ldecode = decode;
-    var lparseInt = parseInt;
     while (i < this.tagsize) {
       var flameid = this.result.slice(i, i += 4);
       // console.log(flameid);
