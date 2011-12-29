@@ -146,6 +146,13 @@ _ID3.prototype = {
     }
   },
 
+  readFrameSize: function (result) {
+    return ((( parseInt (result.charCodeAt (0), 10)  * 16 * 16
+             + parseInt (result.charCodeAt (1), 10)) * 16 * 16
+             + parseInt (result.charCodeAt (2), 10)) * 16 * 16
+             + parseInt (result.charCodeAt (3), 10));
+  },
+
   frames: function () {
     // ??bytes frames
     // log("------    frames   ------");
@@ -156,14 +163,14 @@ _ID3.prototype = {
     while (i < this.tagsize) {
       var flameid = this.result.slice(i, i += 4);
       // console.log(flameid);
-      var flamesize = ( function (x) {return lparseInt(x.charCodeAt(3), 10);})(this.result.slice(i, i += 4));
+      var flamesize = this.readFrameSize (this.result.slice(i, i += 4));
       var flameflg = this.result.slice(i, i += 2).toBin();
       var flametext = ldecode(this.result.slice(i, i += flamesize));
       if (flamesize) {
-        // log("flame id: " + flameid);
-        // log("flame size: " + flamesize);
+        log("flame id: " + flameid);
+        log("flame size: " + flamesize);
         // log("flame flg: " + flameflg);
-        // log("flame text: " + flametext);
+        log("flame text: " + flametext);
         if (flametext) {
           tags[flameid] = flametext;
           if (this.shortcuts[flameid]) {
@@ -184,7 +191,8 @@ _ID3.prototype = {
     TRCK: "track",
     TCON: "genre",
     APIC: "picture",
-    USLT: "lyrics"
+    USLT: "lyrics",
+    APIC: "picture"
   }
 
 };

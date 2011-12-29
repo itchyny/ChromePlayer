@@ -642,12 +642,12 @@ var UI = {
     this.div.filename.texttitle(filename);
     if (tags && tags.picture || force) {
         var image = tags && tags.picture ? tags.picture : undefined;
-        // try {
-        var picture = image ? 'data:' + image.format + ';base64,' + Base64.encodeBytes (image.data)
-                            : '../icon_128.png';
-        // } catch (e) {
-        //   var picture = '../icon_128.png';
-        // }
+        try {
+          var picture = image ? 'data:' + image.format + ';base64,' + Base64.encodeBytes (image.data)
+                              : '../icon_128.png';
+        } catch (e) {
+          var picture = '../icon_128.png';
+        }
         if (self.formatTags (tags) === '' || !tags.picture) {
           if (force) {
             if (tags.artist && tags.title && tags.album) {

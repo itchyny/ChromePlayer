@@ -1,5 +1,5 @@
-# This is the source code of Chrome Player
-## Chrome Player is an App for Google Chrome,
+# This is the source code of Local Player
+## Local Player is an App for Google Chrome,
 ### available at https://chrome.google.com/webstore/detail/chkhjlbdflppmaddpjmjecgdagdljimc
 
 
@@ -14,7 +14,7 @@
 
 ## Motivation
 Yet you can open and play (and pause, and so on) a mp3 file with Google Chrome, but only one file.
-Chrome Player allows you to listen to multiple files without any annoying operation.
+Local Player allows you to listen to multiple files without any annoying operation.
 
 ## Key bindings
 Press ? to see the keyboard shortcuts.

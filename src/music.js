@@ -97,7 +97,7 @@ Music.prototype = {
     binaryReader.onload = function (e) {
       self.ontagload (e, f);
     };
-    binaryReader.readAsBinaryString (this.file.webkitSlice(0, 1000));
+    binaryReader.readAsBinaryString (this.file.webkitSlice(0, 200000));
   },
 
   tagread: function (f) {

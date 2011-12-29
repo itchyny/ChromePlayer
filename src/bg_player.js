@@ -66,6 +66,8 @@ Player.prototype.setting = {
       , "map <c-f> PageDown"
       , "map <c-b> PageUp"
       , ""
+      , "map m VolumeToggleMute"
+      , ""
       , "unmap f"
       , ""
     ].join ('\n')
