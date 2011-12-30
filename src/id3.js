@@ -25,7 +25,7 @@ function decode (chars) {
       a += String.fromCharCode((chars.charCodeAt(i++))
                                |(chars.charCodeAt(i++)<<8));
     }
-    var r = /(.*?)[\uff01\ufe00]./;
+    var r = /.{0,2}[\uff01\ufe00]./;
     if (r.test(a)) {
       return a.replace(r, '');
     } else {
@@ -105,6 +105,22 @@ function decode (chars) {
   }
 }
 
+function decodepic (data, ver) {
+  ver = ver || '3';
+  var i = 0;
+  var charset = data.charCodeAt(i++).toString();
+  var format;
+  switch (ver) {
+    case '2':
+      var format = decode(data.slice(i, i+=3));
+      break;
+    default:
+      var format = decode(data.slice(i, i+=4));
+      i += 4;
+  }
+  return data;
+}
+
 function _ID3 (result) {
   this.result = result;
   this.i = 0;
@@ -147,8 +163,8 @@ _ID3.prototype = {
 
   readFrameSize: function (result) {
     return ((( parseInt (result.charCodeAt (0), 10)  * 128
-             + parseInt (result.charCodeAt (1), 10)) * 128
-             + parseInt (result.charCodeAt (2), 10)) * 128
+             + parseInt (result.charCodeAt (1), 10)) * 128 * 0
+             + parseInt (result.charCodeAt (2), 10)) * 128 * 2 // ?????
              + parseInt (result.charCodeAt (3), 10));
   },
 
@@ -159,22 +175,32 @@ _ID3.prototype = {
     var i = this.i;
     var ldecode = decode;
     while (i < this.tagsize) {
-      var flameid = this.result.slice(i, i += 4);
+      var flameid = this.result.slice(i, i += 4).toString();
       // console.log(flameid);
       var flamesize = this.readFrameSize (this.result.slice(i, i += 4));
       var flameflg = this.result.slice(i, i += 2).toBin();
-      var flametext = ldecode(this.result.slice(i, i += flamesize));
-      if (flamesize) {
-        log("flame id: " + flameid);
-        log("flame size: " + flamesize);
-        // log("flame flg: " + flameflg);
-        log("flame text: " + flametext);
-        if (flametext) {
-          tags[flameid] = flametext;
-          if (this.shortcuts[flameid]) {
-            tags[this.shortcuts[flameid]] = flametext;
+      // if (flameid === 'APIC') {
+      //   var pic = decodepic (this.result.slice(i, i += flamesize));
+      //   tags.picture = tags['APIC'] = pic;
+      //   // log (tags.picture);
+      //   // throw "APIC";
+      // } else if (flameid === 'PIC') {
+      //   var pic = decodepic (this.result.slice(i, i += flamesize), '2');
+      //   throw "PIC";
+      // } else {
+        var flametext = ldecode(this.result.slice(i, i += flamesize));
+        if (flamesize) {
+          log("flame id: " + flameid);
+          log("flame size: " + flamesize);
+          // log("flame flg: " + flameflg);
+          if (flameid !== 'APIC') log("flame text: " + flametext);
+          if (flametext) {
+            tags[flameid] = flametext;
+            if (this.shortcuts[flameid]) {
+              tags[this.shortcuts[flameid]] = flametext;
+            }
           }
-        }
+        // }
       }
     }
     this.tags = tags;

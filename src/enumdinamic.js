@@ -134,15 +134,18 @@ logfn ('Enumdinamic.prototype.concat');
   }
 };
 Enumdinamic.prototype.remove = function (value) {
+  log (this);
 logfn ('Enumdinamic.prototype.remove');
   if (this.orderedarray) {
     this.orderedarray = this.orderedarray.drop (value);
   }
   this.enumlinear.remove (value);
+  log (this);
 };
 Enumdinamic.prototype.changeArray = function (array) {
 logfn ('Enumdinamic.prototype.changeArray');
 log (this.value);
+  array = array.drop(undefined);
   this.enumlinear.changeArray (array);
   this.array = this.enumlinear.array;
 log ("this.array: " + this.array.join (','));

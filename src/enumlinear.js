@@ -128,6 +128,7 @@ console.log ("removing : " +value);
   changeArray: function (array) {
 logfn ('Enumlinear.prototype.changeArray');
 console.log (array);
+    array = array.drop(undefined);
     this.enumclass = new Enum (array);
     this.array = this.enumclass.array;
     var index = this.enumclass.fromEnum (this.value) || 0;

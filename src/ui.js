@@ -380,8 +380,13 @@ var UI = {
         art.src = "data:" + image.format + ";base64," + Base64.encodeBytes(image.data);
         this.div.albumart.addClass ('realart');
       } catch (e) {
-        art.src = './icon_128.png';
-        this.div.albumart.removeClass ('realart');
+        log (e);
+        try {
+          // TODO
+        } catch (e) {
+          art.src = './icon_128.png';
+          this.div.albumart.removeClass ('realart');
+        }
       }
     } else {
       art.src = './icon_128.png';

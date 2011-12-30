@@ -106,7 +106,7 @@ logfn ('Player.prototype.play');
     if (index !== undefined) {
       self.nowplaying = index;
       self.playing = self.musics[index];
-      if (!self.playing.tags.picture) {
+      if (self.playing.tags && !self.playing.tags.picture) {
         self.playing.readpicture ();
       }
       self.playing.play (self.volume.value / 256, function () { self.next (); });
