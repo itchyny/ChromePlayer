@@ -163,8 +163,8 @@ _ID3.prototype = {
 
   readFrameSize: function (result) {
     return ((( parseInt (result.charCodeAt (0), 10)  * 128
-             + parseInt (result.charCodeAt (1), 10)) * 128 * 0
-             + parseInt (result.charCodeAt (2), 10)) * 128 * 2 // ?????
+             + parseInt (result.charCodeAt (1), 10)) * 128 * 1
+             + parseInt (result.charCodeAt (2), 10)) * 128 * 1 // ?????
              + parseInt (result.charCodeAt (3), 10));
   },
 
