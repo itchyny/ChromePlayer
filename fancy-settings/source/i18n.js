@@ -114,7 +114,7 @@ this.i18n = {
     "ja": "アプリケーション"
   },
   "appDescription": {
-    "en": 'name: Local Player<br/>github: <a href="https://github.com/itchyny/ChromePlayer/">https://github.com/itchyny/ChromePlayer/</a><br />'
+    "en": 'name: Local Player<br/>github: <a href="https://github.com/itchyny/ChromePlayer/">https://github.com/itchyny/ChromePlayer/</a><br />Chrome Web Store: <a href="https://chrome.google.com/webstore/detail/chkhjlbdflppmaddpjmjecgdagdljimc">https://chrome.google.com/webstore/detail/chkhjlbdflppmaddpjmjecgdagdljimc</a><br />'
   },
   "initialize": {
     "en": "Initialization",
