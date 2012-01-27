@@ -1,6 +1,6 @@
 SOURCE_FILES =\
 	_header.js \
-	base64.js
+	base64.js \
 	prelude.js \
 	message.js \
 	limited.js \

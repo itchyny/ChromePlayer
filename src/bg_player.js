@@ -4,7 +4,6 @@ function Player() {
 }
 
 Player.prototype = {
-
   start: function () {
     notification.createNotification ('../icon_128.png', 'Local Player', 'Background page created');
     for (var x in this) {
@@ -26,6 +25,7 @@ Player.prototype.message = {
           notification.createNotification (e.icon, e.title, e.message);
           break;
         case 'globalkeydown':
+          log (e);
           var g = local.getSetting ('globalcontrol');
           if (g === undefined || g === 'false') {
             return;
@@ -66,9 +66,19 @@ Player.prototype.setting = {
       , "map <c-f> PageDown"
       , "map <c-b> PageUp"
       , ""
-      , "map m VolumeToggleMute"
       , ""
+      , ""
+      , "map m VolumeToggleMute"
+      , "map <rd> RemoveDuplicated"
+      , "map <c-j> Nop"
+      , "map <c-h> Nop"
+      , ""
+      , "# unmap keybind registered once"
       , "unmap f"
+      , ""
+      , "# do not import musics matching regular expression"
+      , "avoid /[iI]nstrument|[oO]ff vocal|([rR]e)?mix/"
+      , ""
       , ""
     ].join ('\n')
   },

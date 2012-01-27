@@ -11,8 +11,8 @@ Player.prototype.key = new Key ({
   '<c-left>':      command.PreviousMusic ([]),
   '<g-c-left>':    '<c-left>',
   '<c-o>':         command.OpenFile ([]),
-  ':  o':          '<c-o>', // vim
-  ':  e':          '<c-o>', // vim
+  ':o':            '<c-o>', // vim
+  ':e':            '<c-o>', // vim
   '<right>':       command.SeekForward (['10']),
   '<s-right>':     command.SeekForward (['30']),
   'l':             '<right>', // vim
@@ -88,6 +88,7 @@ Player.prototype.key = new Key ({
   '/':             '<c-f>', // vim
 
   /* special command */
+  '<c-p>':         '<nop>',
   '<nop>':         command.Nop ([])
 
 });

@@ -80,7 +80,7 @@ logfn ('Player.prototype.readOneFile');
           self.tags[j] = tags;
           self.ui.ontagread (tags, j);
           if (starttoplay) {
-            // self.play (n);
+            self.play (n);
           }
         };
     }) (self, n, !self.playing && play));
@@ -306,6 +306,7 @@ Player.prototype.message = {
     chrome.extension.onRequest.addListener (function (e, sender, sendResponse) {
       switch (e.type) {
         case 'globalkeydown-bg':
+          log (e);
           self.app.key.keydown (e);
           break;
         case 'changescheme':

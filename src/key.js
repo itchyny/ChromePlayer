@@ -93,7 +93,7 @@ Key.prototype = {
     var f = self.callback [keys];
     if (f) {
       self.prevent (e);
-      f (self.app, e);
+      f.fn (self.app, e);
     }
     self.keyqueue = [];
   },
@@ -142,11 +142,11 @@ Key.prototype = {
 
   set: function (key, callback) {
     var self = this;
-    if (typeof callback === 'function') {
+    if (typeof callback.fn === 'function') {
       self.callback [key] = callback;
     } else if (typeof callback === 'string') {
       self.callback [key] = (function (env) {
-        return function () {
+        return { fn: function () {
           var keyseq = self.parse (callback).split (' ');
           for (var i = 0; i < keyseq.length; i++) {
             setTimeout ( (function (i) { return function () {
@@ -154,7 +154,7 @@ Key.prototype = {
             };}) (i)
             , 10 * i);
           }
-        };
+        } };
       }) (self.callback);
     }
   },

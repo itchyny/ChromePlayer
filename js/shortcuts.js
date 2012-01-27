@@ -28,7 +28,7 @@ chrome.extension.onRequest.addListener (function (e, sender, sendResponse) {
   }
 });
 chrome.extension.sendRequest ( { type: 'get-globalkeybind', from: (messageid = randomstr (30)) });
-window.addEventListener('keydown', function (e) {
+window.addEventListener('keypress', function (e) {
     switch (e.target.localName) {
       case 'input': case 'textarea': return;
       default:
