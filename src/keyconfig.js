@@ -81,7 +81,7 @@ Player.prototype.key = new Key ({
   '<tab>':         command.FocusToggle ([]),
   '<s-tab>':       command.FocusToggleReverse ([]),
   'f':             command.FullScreenToggle ([]),
-  '<c-s-f>':       command.FullScreenToggle ([]),
+  '<c-s-f>':       'f',
 
   /* filter interface */
   '<c-f>':         command.FilterStart ([]),

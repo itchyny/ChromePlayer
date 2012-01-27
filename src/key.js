@@ -13,6 +13,10 @@ function Key (config) {
     }
   }
   this.keys = this.keys.sort ();
+  var self = this;
+  setTimeout (function () {
+    self.viewshortcuts ();
+  }, 2000);
 }
 
 Key.prototype = {
@@ -140,10 +144,18 @@ Key.prototype = {
     return arr.join (' ');
   },
 
+  keyinfo: [],
+
   set: function (key, callback) {
     var self = this;
     if (typeof callback.fn === 'function') {
       self.callback [key] = callback;
+      if (callback.str !== "") {
+        var dt = 0;
+        while (dt < 5 && self.keyinfo[callback.id * 5 + dt]) dt++;
+        if (dt < 5)
+          self.keyinfo [callback.id * 5 + dt] = { callback: callback, key: key };
+      }
     } else if (typeof callback === 'string') {
       self.callback [key] = (function (env) {
         return { fn: function () {
@@ -156,6 +168,82 @@ Key.prototype = {
           }
         } };
       }) (self.callback);
+    }
+  },
+
+  wrapkey: function (key) {
+    return '<span class="key">' + key + '</span>';
+  },
+
+  wrapmetakey: function (key) {
+    key = key[0].toUpperCase() + key.slice(1);
+    return this.wrapkey('&lt;' + key + '&gt;');
+  },
+
+  prettykey: function (key) {
+    if (/-/.test(key)) {
+      if (/s-/.test(key)) key = this.wrapmetakey('Shift') + ' + ' + key.replace (/s-/, '');
+      if (/a-/.test(key)) key = this.wrapmetakey('Alt') + ' + ' + key.replace (/a-/, '');
+      if (/c-/.test(key)) key = this.wrapmetakey('Ctrl') + ' + ' + key.replace (/c-/, '');
+      if (/g-/.test(key)) { var global = true; key = key.replace (/g-/, ''); }
+    }
+    if (/<(.)>/.test(key)) {
+      var s = this.wrapkey(RegExp.$1.toUpperCase())
+      key = key.replace (/<(.)>/, s);
+    } else {
+      if (/^(.)$/.test(key)) {
+        var s = this.wrapkey(RegExp.$1.toUpperCase())
+        key = key.replace (/^(.)$/, s);
+      }
+    }
+    for (var x in this.codes) {
+      var metakey = this.codes[x];
+      if (metakey.length > 1) {
+        key = key.replace ('<' + metakey + '>', this.wrapmetakey(metakey));
+      }
+    }
+    key = key.replace (/&lt;Left&gt;/, '←');
+    key = key.replace (/&lt;Right&gt;/, '→');
+    key = key.replace (/&lt;Up&gt;/, '↑');
+    key = key.replace (/&lt;Down&gt;/, '↓');
+    return { key: key, global: global };
+  },
+
+  // TODO: global check, merge
+  viewshortcuts: function () {
+    var self = this;
+    var div = $('<div />');
+    var dls = [];
+    for (var i = 0; i < self.keyinfo.length; i++) {
+      var info = self.keyinfo[i]
+      if (info !== undefined) {
+        var key = self.prettykey (info.key);
+        var str = info.callback.str;
+        var type = info.callback.type;
+        var dt = $('<dt />')
+          .append (
+            (key.global ? $('<span class="global"/>') : $('<span />'))
+              .append (
+                $('<span />')
+                  .html (key.key)
+              )
+          );
+        var dd = $('<dd />')
+          .text (str);
+        if (!dls[type]) {
+          dls[type] = $('<dl />');
+        }
+        dls[type].append(dt).append(dd);
+      }
+    }
+    $('div#help>div[class!=top]').remove();
+    for (var i = 0; i < dls.length; i++) {
+      dl = dls[i];
+      if (dl) {
+        $('div#help').append(
+          $('<div />').append(dl)
+        );
+      }
     }
   },
 

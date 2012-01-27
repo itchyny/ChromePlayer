@@ -11,8 +11,8 @@ Player.prototype = {
   start: function () {
     for (var x in this) {
       if (this[x] && this[x].init) {
-        this[x].init (this);
         this[x].app = this;
+        this[x].init (this);
         log ("init: " + x);
       }
     }
