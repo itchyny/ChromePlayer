@@ -71,7 +71,7 @@ logfn ('Player.prototype.readFiles');
     if (index < files.length && !self.interruptflag) {
       setTimeout (function () {
         self.asyncread (index + 1, files, playindex);
-      }, 100);
+      }, index < 60 ? 0 : index < 150 ? 100 : 150);
     } else {
       self.interruptflag = false;
       if (self.order.shuffle.value === 'true') {
