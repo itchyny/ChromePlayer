@@ -43,7 +43,8 @@ div#help span.global{text-decoration:underline;}
 div#help dt,div#help dd{display:inline-block;width:16em;}
 div#help dt{padding-right:0.25em;text-align:right;}
 div#help dd:before{content:": ";}
-div#help>div{margin:0 0 1em;}
+div#help div.keygroups{margin-top:1em;overflow-y:scroll;height:30em;}
+div#help div.keygroup{margin:0 0 1em;}
 div#config{z-index:7;position:absolute;top:50%;left:50%;height:34em;width:40em;border-radius:2em;margin:-18em 0 0 -21em;padding:2em;background-color:rgba(0, 0, 0, 0.8);color:#fff;font-size:1.2em;list-style:none;display:none;box-shadow:0.1em 0.1em 0.3em rgba(255, 255, 255, 0.5);}div#config *{line-height:1.25;}
 div#config>div{width:100%;overflow:auto;}
 div#config .top{font-size:1.5em;text-shadow:1px 1px 3px #000;}

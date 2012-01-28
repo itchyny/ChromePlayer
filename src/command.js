@@ -20,7 +20,7 @@ var command = {
   SeekBackward:         function (opt) { var sec = parseInt (opt[0], 10); return { type: 0, id: 6, str: "Seek backward by " + sec + " seconds", fn: function (app) { app.seekBy (-sec); } }; },
   SeekPercent:          function (opt) { return { type: 0, id: 7, str: "", fn: function (app) { app.seekAt (parseInt (opt[0], 10)); } }; },
   OpenFile:             function (opt) { return { type: 1, id: 8, str: "Open Files", fn: function (app) { app.ui.click ('open'); } }; },
-  Interrupt:            function (opt) { return { type: 1, id: 9, str: "Interrupt file reading", fn: function (app) { app.interrupt (); } }; },
+  Interrupt:            function (opt) { return { type: 1, id: 9, str: "Interrupt music importing", fn: function (app) { app.interrupt (); } }; },
 
   /* change setting */
   ToggleRepeat:         function (opt) { return { type: 1, id: 10, str: "Toggle repeat", fn: function (app) { app.ui.click ('repeat'); } }; },

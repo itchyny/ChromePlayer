@@ -20,7 +20,7 @@ function Key (config) {
   var self = this;
   setTimeout (function () {
     self.viewshortcuts ();
-  }, 2000);
+  }, 1000);
 }
 
 Key.prototype = {
@@ -249,11 +249,11 @@ Key.prototype = {
         dls[type].append(dt).append(dd);
       }
     }
-    $('div#help>div.keygroup').remove();
+    $('div.keygroup').remove();
     for (var i = 0; i < dls.length; i++) {
-      dl = dls[dls.length - i - 1];
+      dl = dls[i];
       if (dl) {
-        $('div#help>div.top').after(
+        $('div.keygroups').append(
           $('<div class="keygroup"/>').append(dl)
         );
       }

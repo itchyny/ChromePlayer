@@ -81,7 +81,6 @@ logfn ('Player.prototype.readFiles');
   },
 
   readOneFile: function (file, play, last) {
-logfn ('Player.prototype.readOneFile');
     var self = this;
     var n = self.musics.length;
     self.files = self.files || [];
@@ -120,23 +119,20 @@ logfn ('Player.prototype.play');
     if (index !== undefined) {
       self.nowplaying = index;
       self.playing = self.musics[index];
-      if (self.playing.tags && !self.playing.tags.picture) {
-        self.playing.readpicture ();
-      }
-      self.playing.play (self.volume.value / 256, function () { self.next (); });
-      self.ui.play (index);
-      if (self.playing.filetype === 'video') {
-        self.ui.popupvideo ();
-      } else {
-        self.ui.hidevideo ();
-      }
-      // setTimeout (function () {
-      //   self.playing.pause ();
-      //   chrome.extension.sendRequest(
-      //     { url: (self.playing.url)
-      //     }
-      //   );
-      // }, 50);
+      // if (!self.playing) {
+        if (self.playing.tags && !self.playing.tags.picture) {
+          self.playing.readpicture ();
+        }
+        self.playing.play (self.volume.value / 256, function () { self.next (); });
+        self.ui.play (index);
+        if (self.playing.filetype === 'video') {
+          self.ui.popupvideo ();
+        } else {
+          self.ui.hidevideo ();
+        }
+      // } else {
+      //   self.next ();
+      // }
     }
   },
 
