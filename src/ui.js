@@ -1299,7 +1299,10 @@ $.fn.drag_drop_multi_select.defaults.while_dragging_action = function (e, ui) {
                 .filter(function () { var d = eY - $(this).offset().top; return -trHgtHlf <= d && d < trHgtHlf; } )
                 .first();
   trs.removeClass('dragover');
-  $target.addClass('dragover');
+  var $dragover = $target.addClass('dragover');
+  setTimeout (function () {
+    $dragover.removeClass ('dragover');
+  }, 5000);
 };
 
 $.fn.drag_drop_multi_select.defaults.after_drop_action = function ($item, $old, $new, e, ui) {
