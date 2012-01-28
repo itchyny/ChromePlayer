@@ -34,6 +34,9 @@ Player.prototype.message = {
           newe.type = 'globalkeydown-bg';
           message.send (newe);
           break;
+        case 'changeplayerrc':
+          console.log (e);
+          break;
         case 'get-globalkeybind':
           var ans = { type: 'ans-globalkeybind'
                     , ans: ''// TODO
@@ -86,6 +89,9 @@ Player.prototype.setting = {
     // initialized within this constructor
     // if the key was already set, it is ignored
     this.settings = new Store ("settings", this.defaultSetting);
+    var playerrc = local.getSetting ('playerrc');
+    console.dir (playerrc);
+    console.dir (Rc.parselines (playerrc.split ('\\n').slice(1).slice(0,-1)));
   },
   reset: function () {
     this.settings.fromObject (this.defaultSetting);
@@ -116,7 +122,6 @@ var player = new Player ();
 window.onload = function (e) {
   player.start ();
 };
-
 
 // The only stuff which should be exposed to window
 // because this function is called from fancy-settings/source/setting.js

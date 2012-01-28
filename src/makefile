@@ -18,6 +18,7 @@ SOURCE_FILES =\
 	command.js \
 	player.js \
 	keyconfig.js \
+	rc.js \
 	_footer.js
 
 BG_SOURCE_FILES =\
@@ -34,6 +35,7 @@ BG_SOURCE_FILES =\
 	music.js \
 	local.js \
 	command.js \
+	rc.js \
 	bg_player.js \
 	_footer.js
 

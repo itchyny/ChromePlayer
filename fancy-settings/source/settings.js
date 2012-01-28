@@ -21,6 +21,10 @@ window.addEvent("domready", function () {
         settings.manifest.scheme.addEvent ('action', function (e) {
           chrome.extension.sendRequest ({ type: 'changescheme' });
         });
+        console.dir(m=settings.manifest)
+        settings.manifest.playerrc.addEvent ('action', function (e) {
+          chrome.extension.sendRequest ({ type: 'changeplayerrc' });
+        });
     });
     
     // Option 2: Do everything manually:
