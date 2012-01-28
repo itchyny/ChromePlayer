@@ -181,11 +181,12 @@ Key.prototype = {
   },
 
   prettykey: function (key) {
+    var global;
     if (/-/.test(key)) {
       if (/s-/.test(key)) key = this.wrapmetakey('Shift') + ' + ' + key.replace (/s-/, '');
       if (/a-/.test(key)) key = this.wrapmetakey('Alt') + ' + ' + key.replace (/a-/, '');
       if (/c-/.test(key)) key = this.wrapmetakey('Ctrl') + ' + ' + key.replace (/c-/, '');
-      if (/g-/.test(key)) { var global = true; key = key.replace (/g-/, ''); }
+      if (/g-/.test(key)) { global = true; key = key.replace (/g-/, ''); }
     }
     if (/<(.)>/.test(key)) {
       var s = this.wrapkey(RegExp.$1.toUpperCase())

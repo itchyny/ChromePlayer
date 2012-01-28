@@ -1291,14 +1291,22 @@ $.fn.ISSELECTED = function () {
   return this.hasClass('ui-selected');
 };
 
+$.fn.drag_drop_multi_select.defaults.while_dragging_action = function (e, ui) {
+  var eY = e.originalEvent.clientY;
+  var trHgtHlf = $('tr', UI.div.tbody).first().height() / 2;
+  var $target = $('tr', UI.div.tbody)
+                .filter(function () { var d = eY - $(this).offset().top; return -trHgtHlf <= d && d < trHgtHlf; } )
+                .first();
+  console.dir($target);
+  $('tr.dragover', UI.div.tbody).removeClass('dragover');
+  $target.addClass('dragover');
+};
+
 $.fn.drag_drop_multi_select.defaults.after_drop_action = function ($item, $old, $new, e, ui) {
 logfn ('drag_drop_multi_select.defaults.after_drop_action');
-console.dir(e)
-console.dir(e.clientY) // undefined
-console.dir($(e))
   var itemNum = $item.first().attr('number'),
       trHgtHlf = $('tr', UI.div.tbody).first().height() / 2,
-      eY = e.clientY, // bug here
+      eY = e.originalEvent.clientY,
       $target = $('tr', UI.div.tbody)
                 .filter(function () { var d = eY - $(this).offset().top; return -trHgtHlf <= d && d < trHgtHlf; } )
                 .first();

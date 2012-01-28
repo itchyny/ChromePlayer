@@ -136,6 +136,7 @@
                     dragging = true;
                 },
                 drag:function(e,ui){
+                    $.fn.drag_drop_multi_select.defaults.while_dragging_action (e, ui);
 
                 },
                 stop:function(e,ui){
@@ -165,6 +166,7 @@
                     }
 
                     $target.addClass($.fn.drag_drop_multi_select.settings[unique_id].hoverClass);
+                    var $target = $(e.target);
                 },
                 out: function(e,ui) {
                     var $target = $(e.target);
@@ -197,7 +199,8 @@
         hoverClass: 'ddms_hover', //class for acceptable drop targets on hover
         moveClass:  'ddms_move', //class to apply to items when moving them.
         selectedClass: 'ddms_selected', // class to apply to items that will be select.
-        after_drop_action:function($item_instance,$old_container,$new_container,event,helper){}
+        after_drop_action:function($item_instance,$old_container,$new_container,event,helper){},
+        while_dragging_action:function(event,ui){}
     };
     $.fn.drag_drop_multi_select.unique=0;
     $.fn.drag_drop_multi_select.stack=[];
