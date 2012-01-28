@@ -157,96 +157,85 @@ Key.prototype = {
       if (callback.str !== "") {
         var dt = 0;
         while (dt < 5 && self.keyinfo[callback.id * 5 + dt]) dt++;
-        if (dt < 5)
-          self.keyinfo [callback.id * 5 + dt] = { callback: callback, key: key };
+        if (dt < 5) {
+          self.keyinfo [callback.id * 5 + dt] = { callback: callback, key: key, opt: callback.opt };
+        }
       }
     } else if (typeof callback === 'string') {
       self.callback [key] = (function (env) {
+        var keyseq = self.parse (callback).split (' ');
+        if (keyseq.length === 1 && env[keyseq[0]]) {
+          var eqkey = keyseq[0];
+          var newcallback = env[eqkey];
+          var id = newcallback.id;
+          var opt = newcallback.opt;
+          var str = newcallback.str;
+          if (id && str !== '' && !/g-/.test(key)) {
+            var dt = 0;
+            while (dt < 5 && self.keyinfo[id * 5 + dt]) dt++;
+            if (dt < 5) {
+              self.keyinfo [id * 5 + dt] = { callback: newcallback, key: key, opt: opt };
+            }
+          } else { // if (key.replace('g-', '') === eqkey) {
+            var keywithoutglobal = key.replace ('g-', '');
+            for (var dt = 0; dt < 5; dt++) {
+              if (self.keyinfo [id * 5 + dt]) {
+                if (self.keyinfo [id * 5 + dt].key === keywithoutglobal) {
+                  self.keyinfo [id * 5 + dt].key = key;
+                }
+              }
+            }
+          }
+        }
         return { fn: function () {
-          var keyseq = self.parse (callback).split (' ');
           for (var i = 0; i < keyseq.length; i++) {
             setTimeout ( (function (i) { return function () {
               self.keydownstr (keyseq [i]);
             };}) (i)
             , 10 * i);
           }
-        } };
+        }, callback: newcallback, key: key, opt: opt };
       }) (self.callback);
     }
   },
 
-  // wrapkey: function (key) {
-  //   return '<span class="key">' + key + '</span>';
-  // },
-
-  // wrapmetakey: function (key) {
-  //   key = key[0].toUpperCase() + key.slice(1);
-  //   return this.wrapkey('&lt;' + key + '&gt;');
-  // },
-
-  // prettyonekey: function (k) {
-  //   var key = new Onekey (k);
-  // },
-  // prettykey: function (key) {
-  //   var keys = Rc.parsekey (key).result;
-  //   var global;
-  //   if (/-/.test(key)) {
-  //     if (/s-/.test(key)) key = this.wrapmetakey('Shift') + ' + ' + key.replace (/s-/, '');
-  //     if (/a-/.test(key)) key = this.wrapmetakey('Alt') + ' + ' + key.replace (/a-/, '');
-  //     if (/c-/.test(key)) key = this.wrapmetakey('Ctrl') + ' + ' + key.replace (/c-/, '');
-  //     if (/g-/.test(key)) { global = true; key = key.replace (/g-/, ''); }
-  //   }
-  //   if (/<(.)>/.test(key)) {
-  //     var s = this.wrapkey(RegExp.$1.toUpperCase())
-  //     key = key.replace (/<(.)>/, s);
-  //   } else {
-  //     if (/^(.)$/.test(key)) {
-  //       var s = this.wrapkey(RegExp.$1.toUpperCase())
-  //       key = key.replace (/^(.)$/, s);
-  //     }
-  //   }
-  //   for (var x in this.codes) {
-  //     var metakey = this.codes[x];
-  //     if (metakey.length > 1) {
-  //       key = key.replace ('<' + metakey + '>', this.wrapmetakey(metakey));
-  //     }
-  //   }
-  //   key = key.replace (/&lt;Left&gt;/, '←');
-  //   key = key.replace (/&lt;Right&gt;/, '→');
-  //   key = key.replace (/&lt;Up&gt;/, '↑');
-  //   key = key.replace (/&lt;Down&gt;/, '↓');
-  //   return { key: key, global: global };
-  // },
-
-  // TODO: global check, merge
   viewshortcuts: function () {
     var self = this;
     var div = $('<div />');
     var dls = [];
+    var checked = [];
     for (var i = 0; i < self.keyinfo.length; i++) {
-      var info = self.keyinfo[i]
-      if (info !== undefined) {
-        // var key = self.prettykey (info.key);
-        var keys = Rc.parsekey (info.key)
-                     .map (function (x) { return new Onekey (x); });
-        var keyshtml = keys.map (function (x) { return x.toHTML (); }).join (' &amp; ');
-        var key = new Onekey (info.key);
-        var str = info.callback.str;
-        var type = info.callback.type;
-        var dt = $('<dt />')
-          .append (
-            $('<span ' + (key.global ? 'class="global"' : '') + '/>')
-              .append (
-                $('<span />')
-                  .html (keyshtml)
-              )
-          );
-        var dd = $('<dd />')
-          .text (str);
-        if (!dls[type]) {
-          dls[type] = $('<dl />');
+      if (!checked[i]) {
+        checked[i] = true;
+        var info = self.keyinfo[i];
+        if (info !== undefined) {
+          var keys = Rc.parsekey (info.key)
+                       .map (function (x) { return new Onekey (x); });
+          var keyshtml = keys.map (function (x) { return x.toHTML (); }).join ('');
+          for (var j = i - parseInt(i/5) * 5; j < 5; j++) {
+            if (!checked[i + j]) {
+              var _info = self.keyinfo[i + j];
+              if (_info && _info.opt.deepEqual(info.opt)) {
+                checked[i+j] = true;
+                var _keys = Rc.parsekey (_info.key)
+                         .map (function (x) { return new Onekey (x); });
+                keyshtml += ' / ';
+                keyshtml += _keys.map (function (x) { return x.toHTML (); }).join ('');
+              }
+            }
+          }
+          var key = new Onekey (info.key);
+          var str = info.callback.str;
+          var type = info.callback.type;
+          var dt = $('<dt />')
+            .append (keyshtml);
+          var dd = $('<dd />')
+            .text (str);
+          if (!dls[type]) {
+            dls[type] = $('<dl />');
+          }
+          dls[type].append(dt).append(dd);
         }
-        dls[type].append(dt).append(dd);
       }
     }
     $('div.keygroup').remove();
@@ -420,7 +409,7 @@ Onekey.prototype = {
     key = key.replace (/Down/, '↓');
     var keyhtml = this.wrapkey (key.length > 1 ? '&lt;' + key + '&gt;' : key);
     ans.push (keyhtml);
-    return ans.join (' + ');
+    return this.wrapglobalkey (ans.join (' + '));
   },
 
   wrapkey: function (key) {
@@ -430,7 +419,14 @@ Onekey.prototype = {
   wrapmetakey: function (key) {
     key = key[0].toUpperCase() + key.slice(1);
     return this.wrapkey ('&lt;' + key + '&gt;');
-  }
+  },
+
+  wrapglobalkey: function (html) {
+    return '<span ' + (this.global ? 'class="global"' : '') + '>' +
+              '<span>' + (html) + '</span>' +
+              '</span>';
+  },
+
 
 };
 

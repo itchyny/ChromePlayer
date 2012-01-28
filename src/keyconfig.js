@@ -36,7 +36,7 @@ Player.prototype.key = new Key ({
   '<c-a-down>':    command.VolumeToggleMute ([]),
   '<g-c-a-down>':  '<c-a-down>',
   '9':             command.VolumeDown ([]), // mplayer
-  // '0':          command.VolumeUp ([]), // mplayer
+  '0':          command.VolumeUp ([]), // mplayer
 
   /* select, expand */
   '<down>':        command.SelectDown ([]),
@@ -49,7 +49,7 @@ Player.prototype.key = new Key ({
   '<s-k>':         '<s-up>', // vim
   '<home>':        command.SelectHome ([]),
   'gg':            '<home>', // vim
-  '0':             '<home>', // vim
+  // '0':             '<home>', // vim
   '<s-home>':      command.ExtendToHome ([]),
   '<end>':         command.SelectEnd ([]),
   '<s-g>':         '<end>', // vim
@@ -79,6 +79,7 @@ Player.prototype.key = new Key ({
   '<c-s-[>':       '<esc>', // vim
   '<enter>':       command.DefaultEnter ([]),
   '<a-enter>':     command.ViewInformation ([]),
+  'pp':            command.ViewInformation ([]), // for enviroment <a-enter> doesn't work
   '<tab>':         command.FocusToggle ([]),
   '<s-tab>':       command.FocusToggleReverse ([]),
   'f':             command.FullScreenToggle ([]),
@@ -89,7 +90,9 @@ Player.prototype.key = new Key ({
   '/':             '<c-f>', // vim
 
   /* special command */
-  '<c-p>':         '<nop>',
+  '<c-p>':         '<nop>', // disable browser mapping
+  '<c-j>':         '<nop>', // disable browser mapping
+  '<c-h>':         '<nop>', // disable browser mapping
   '<nop>':         command.Nop ([])
 
 });

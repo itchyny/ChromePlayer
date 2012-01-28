@@ -50,6 +50,14 @@ Array.prototype.unique = function () {
   return ans;
 };
 
+Array.prototype.deepEqual = function (arr) {
+  if (this.length !== arr.length) return false;
+  for (var i = 0; i < this.length; i++) {
+    if (this[i] !== arr[i]) return false;
+  }
+  return true;
+};
+
 if (typeof $ !== 'undefined' && typeof $.fn !== 'undefined') {
 
   $.fn.texttitle = function (t) {
