@@ -13,19 +13,20 @@ var command = {
   /* operate player */
   DefaultEnter:         function (opt) { return { type: 0, id: 0, str: "Play selected file", fn: function (app) { app.ui.defaultEnter (); } }; },
   PlayPause:            function (opt) { return { type: 0, id: 1, str: "Play / Pause", fn: function (app) { app.ui.click ('play'); } }; },
-  NextMusic:            function (opt) { return { type: 0, id: 2, str: "Next", fn: function (app) { app.next (); } }; },
-  PreviousMusic:        function (opt) { return { type: 0, id: 3, str: "Previous", fn: function (app) { app.prev (); } }; },
-  SeekForward:          function (opt) { var sec = parseInt (opt[0], 10); return { type: 0, id: 4, str: "Seek forward by " + sec + " seconds", fn: function (app) { app.seekBy (sec); } }; },
-  SeekBackward:         function (opt) { var sec = parseInt (opt[0], 10); return { type: 0, id: 5, str: "Seek backward by " + sec + " seconds", fn: function (app) { app.seekBy (-sec); } }; },
-  SeekPercent:          function (opt) { return { type: 0, id: 6, str: "", fn: function (app) { app.seekAt (parseInt (opt[0], 10)); } }; },
-  OpenFile:             function (opt) { return { type: 1, id: 7, str: "Open Files", fn: function (app) { app.ui.click ('open'); } }; },
+  DeleteSelected:       function (opt) { return { type: 0, id: 2, str: "Delete selected files", fn: function (app) { app.ui.deleteSelected (); } }; },
+  NextMusic:            function (opt) { return { type: 0, id: 3, str: "Next", fn: function (app) { app.next (); } }; },
+  PreviousMusic:        function (opt) { return { type: 0, id: 4, str: "Previous", fn: function (app) { app.prev (); } }; },
+  SeekForward:          function (opt) { var sec = parseInt (opt[0], 10); return { type: 0, id: 5, str: "Seek forward by " + sec + " seconds", fn: function (app) { app.seekBy (sec); } }; },
+  SeekBackward:         function (opt) { var sec = parseInt (opt[0], 10); return { type: 0, id: 6, str: "Seek backward by " + sec + " seconds", fn: function (app) { app.seekBy (-sec); } }; },
+  SeekPercent:          function (opt) { return { type: 0, id: 7, str: "", fn: function (app) { app.seekAt (parseInt (opt[0], 10)); } }; },
+  OpenFile:             function (opt) { return { type: 1, id: 8, str: "Open Files", fn: function (app) { app.ui.click ('open'); } }; },
 
   /* change setting */
-  ToggleRepeat:         function (opt) { return { type: 1, id: 8, str: "Toggle repeat", fn: function (app) { app.ui.click ('repeat'); } }; },
-  ToggleShuffle:        function (opt) { return { type: 1, id: 9, str: "Toggle shuffle", fn: function (app) { app.ui.click ('shuffle'); } }; },
+  ToggleRepeat:         function (opt) { return { type: 1, id: 9, str: "Toggle repeat", fn: function (app) { app.ui.click ('repeat'); } }; },
+  ToggleShuffle:        function (opt) { return { type: 1, id: 10, str: "Toggle shuffle", fn: function (app) { app.ui.click ('shuffle'); } }; },
 
   /* filter interface */
-  FilterStart:          function (opt) { return { type: 1, id: 10, str: "Start filter", fn: function (app) { app.ui.filterStart (); } }; },
+  FilterStart:          function (opt) { return { type: 1, id: 11, str: "Start filter", fn: function (app) { app.ui.filterStart (); } }; },
 
   /* select, extend */
   SelectDown:           function (opt) { return { type: 1, id: 9, str: "", fn: function (app) { app.ui.selectDown (); } }; },
@@ -43,7 +44,6 @@ var command = {
   ExtendPageDown:       function (opt) { return { type: 1, id: 21, str: "", fn: function (app) { app.ui.extendPageDown (); } }; },
   PageUp:               function (opt) { return { type: 1, id: 22, str: "", fn: function (app) { app.ui.pageUp (); } }; },
   ExtendPageUp:         function (opt) { return { type: 1, id: 23, str: "", fn: function (app) { app.ui.extendPageUp (); } }; },
-  DeleteSelected:       function (opt) { return { type: 1, id: 24, str: "Delete selected files", fn: function (app) { app.ui.deleteSelected (); } }; },
   SelectNowplaying:     function (opt) { return { type: 1, id: 25, str: "", fn: function (app) { app.ui.selectNowplaying (); } }; },
   ShiftLock:            function (opt) { return { type: 1, id: 26, str: "", fn: function (app) { app.key.lock ('shiftKey'); } }; },
   CtrlLock:             function (opt) { return { type: 1, id: 27, str: "", fn: function (app) { app.key.lock ('ctrlKey'); } }; },

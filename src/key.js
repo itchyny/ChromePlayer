@@ -242,7 +242,7 @@ Key.prototype = {
       dl = dls[dls.length - i - 1];
       if (dl) {
         $('div#help>div.top').after(
-          $('<div />').append(dl)
+          $('<div class="keygroup"/>').append(dl)
         );
       }
     }
