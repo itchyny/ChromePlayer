@@ -15,7 +15,7 @@
  *     {setting}:'{value}'
  * });
  *
- * Copyright (c) 2010 Samuel Cl駻oux-Bouthillier
+ * Copyright (c) 2010 Samuel Cléroux-Bouthillier
  *
  * Dual licensed under MIT and GNU General Public License version 3 (GPLv3)
  * http://www.opensource.org/licenses

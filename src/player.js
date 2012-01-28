@@ -80,7 +80,7 @@ logfn ('Player.prototype.readOneFile');
           self.tags[j] = tags;
           self.ui.ontagread (tags, j);
           if (starttoplay) {
-            // self.play (n);
+            self.play (n);
           }
         };
     }) (self, n, !self.playing && play));

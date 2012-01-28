@@ -1292,12 +1292,12 @@ $.fn.ISSELECTED = function () {
 };
 
 $.fn.drag_drop_multi_select.defaults.while_dragging_action = function (e, ui) {
+logfn ('drag_drop_multi_select.defaults.while_dragging_action');
   var eY = e.originalEvent.clientY;
   var trHgtHlf = $('tr', UI.div.tbody).first().height() / 2;
   var $target = $('tr', UI.div.tbody)
                 .filter(function () { var d = eY - $(this).offset().top; return -trHgtHlf <= d && d < trHgtHlf; } )
                 .first();
-  console.dir($target);
   $('tr.dragover', UI.div.tbody).removeClass('dragover');
   $target.addClass('dragover');
 };
