@@ -118,7 +118,7 @@ Music.prototype = {
                     , dataReader: FileAPIReader (this.file)
                  });
     } catch (e) {
-      console.dir (e);
+      log (e);
     };
   },
 

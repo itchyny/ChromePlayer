@@ -60,7 +60,6 @@ logfn ('Enumlinear.prototype.at');
   atfromEnum: function (value) {
 logfn ('Enumlinear.prototype.atfromEnum');
     /*! return value; return undefined if value is not found in array */
-console.log ('atfromEnum value: ' + value);
     var index = this.enumclass.fromEnum (value);
     if (index === undefined) {
       return undefined;
@@ -121,13 +120,11 @@ logfn ('Enumlinear.prototype.splice');
 
   remove: function (value) {
 logfn ('Enumlinear.prototype.remove');
-console.log ("removing : " +value);
     return this.splice (this.enumclass.fromEnum (value), 1);
   },
 
   changeArray: function (array) {
 logfn ('Enumlinear.prototype.changeArray');
-console.log (array);
     array = array.drop(undefined);
     this.enumclass = new Enum (array);
     this.array = this.enumclass.array;

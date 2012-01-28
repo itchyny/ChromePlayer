@@ -64,7 +64,7 @@ var Rc = {
   },
 
   parseerror: function (obj) {
-    console.dir (obj)
+    log (obj)
     throw obj.str + '\n' +
       "Parse Error at line: " + obj.line + " column: " + obj.col;
   },
@@ -150,7 +150,7 @@ var Rc = {
       }
     }
     return ans;
-  },
+  }
 };
 
 /*
@@ -161,9 +161,7 @@ ss = '   unmap jj<s-f> '
 com = ' map p j F  #oijoiaj oai jo ijoi jo i'
 obj = { str: s, col: 0, line: 0 }
 r = Rc.parseline (obj);
-console.log (r)
 r = Rc.parselines (s + "\n" + ss + "\n"+  com + "\n" + s);
-console.log (r)
 */
 
 if (typeof exports !== 'undefined') {

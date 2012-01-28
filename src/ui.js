@@ -1319,12 +1319,10 @@ logfn ('drag_drop_multi_select.defaults.after_drop_action');
     $item
       .insertBefore($next)
       .addClass('ui-selected moved');
-      console.log($next)
   } else {
     $item
       .insertBefore($target)
       .addClass('ui-selected moved');
-      console.log($target)
   }
   setTimeout(function () { UI.selectableSet(); }, 30);
   setTimeout(

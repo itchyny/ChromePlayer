@@ -176,7 +176,7 @@ _ID3.prototype = {
     var ldecode = decode;
     while (i < this.tagsize) {
       var flameid = this.result.slice(i, i += 4).toString();
-      // console.log(flameid);
+      // log(flameid);
       var flamesize = this.readFrameSize (this.result.slice(i, i += 4));
       var flameflg = this.result.slice(i, i += 2).toBin();
       // if (flameid === 'APIC') {
@@ -190,8 +190,8 @@ _ID3.prototype = {
       // } else {
         var flametext = ldecode(this.result.slice(i, i += flamesize));
         if (flamesize) {
-          log("flame id: " + flameid);
-          log("flame size: " + flamesize);
+          // log("flame id: " + flameid);
+          // log("flame size: " + flamesize);
           // log("flame flg: " + flameflg);
           if (flameid !== 'APIC') log("flame text: " + flametext);
           if (flametext) {
