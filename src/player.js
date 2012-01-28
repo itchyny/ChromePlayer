@@ -49,22 +49,35 @@ logfn ('Player.prototype.readFiles');
     var mediafiles = [].filter.call (files, function (file) {
       return file.filetype !== '';
     });
+    var mediafileslength = mediafiles.length;
     var playindex = self.shuffle.value === 'false'
                   ? self.musics.length
                   : self.musics.length + Math.floor (Math.random () * Math.min (30, mediafiles.length));
     var ml = self.musics.length;
-    self.order.concat (mediafiles.map (function (file, index, files) {
-      return ml + index;
-    }));
-    if (self.order.shuffle.value === 'true') {
-      self.order.shuffleOn ();
+    self.interruptflag = false;
+    self.asyncread (0, mediafiles, playindex - ml);
+  },
+
+  interrupt: function () {
+    this.interruptflag = true;
+  },
+
+  asyncread: function (index, files, playindex) {
+    var file = files[index];
+    var last = (index === files.length - 1) || this.interruptflag;
+    var play = (index === playindex);
+    this.readOneFile (file, play, last);
+    var self = this;
+    if (index < files.length && !self.interruptflag) {
+      setTimeout (function () {
+        self.asyncread (index + 1, files, playindex);
+      }, 100);
+    } else {
+      self.interruptflag = false;
+      if (self.order.shuffle.value === 'true') {
+        self.order.shuffleOn ();
+      }
     }
-    [].forEach.call (mediafiles, function (file, index, files) {
-        setTimeout ( (function (file, play, last) {
-            return function () { self.readOneFile (file, play, last); };
-          }) (file, ml + index === playindex, index === files.length - 1)
-        , 10 * index);
-    });
   },
 
   readOneFile: function (file, play, last) {
@@ -73,6 +86,7 @@ logfn ('Player.prototype.readOneFile');
     var n = self.musics.length;
     self.files = self.files || [];
     self.files[n] = file;
+    self.order.concat (n);
     self.musics[n] = new Music (file, file.filetype === 'video' ? self.ui.div.video : null);
     self.musics[n].tagread (
       (function (self, j, starttoplay) {

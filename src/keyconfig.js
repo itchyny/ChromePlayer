@@ -22,6 +22,7 @@ Player.prototype.key = new Key ({
   'h':             '<left>', // vim
   'b':             '<s-left>', // vim
   '<s-4>':         command.SeekPercent (['100']), // vim
+  '<c-c>':         command.Interrupt ([]),
 
   /* change setting */
   '<c-r>':         command.ToggleRepeat ([]),
