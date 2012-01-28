@@ -303,19 +303,21 @@ Player.prototype.volume = new Limited (0, 256, 16
 Player.prototype.message = {
   init: function (app) {
     var self = this;
-    chrome.extension.onRequest.addListener (function (e, sender, sendResponse) {
-      switch (e.type) {
-        case 'globalkeydown-bg':
-          log (e);
-          self.app.key.keydown (e);
-          break;
-        case 'changescheme':
-          self.app.ui.colorset ();
-          break;
-        default:
-          break;
-      }
-    });
+    if (chrome && chrome.extension) {
+      chrome.extension.onRequest.addListener (function (e, sender, sendResponse) {
+        switch (e.type) {
+          case 'globalkeydown-bg':
+            log (e);
+            self.app.key.keydown (e);
+            break;
+          case 'changescheme':
+            self.app.ui.colorset ();
+            break;
+          default:
+            break;
+        }
+      });
+    }
   }
 };
 

@@ -52,7 +52,6 @@ var Rc = {
     return obj;
   },
 
-  // obj :: { str: String, col: Number }
   parseerror: function (obj) {
     console.dir (obj)
     throw obj.str + '\n' +
@@ -107,7 +106,6 @@ var Rc = {
           var keys = obj.result;
           obj = this.delwhiteandcomment (obj);
           if (obj.str === '') {
-            console.dir (obj);
             return { obj: obj, result: { command: command, result: keys } };
           }
           if (obj.result === []) {

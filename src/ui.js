@@ -655,7 +655,7 @@ var UI = {
         }
         if (self.formatTags (tags) === '' || !tags.picture) {
           if (force) {
-            if (tags.artist && tags.title && tags.album) {
+            if (tags && tags.artist && tags.title && tags.album) {
               self.showNotification (picture, tags.artist, tags.title + '  /  ' + tags.album);
             } else {
               self.showNotification (picture, filename, "");
