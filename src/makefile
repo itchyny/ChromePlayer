@@ -14,11 +14,11 @@ SOURCE_FILES =\
 	local.js \
 	schemeconfig.js \
 	ui.js \
+	rc.js \
 	key.js \
 	command.js \
 	player.js \
 	keyconfig.js \
-	rc.js \
 	_footer.js
 
 BG_SOURCE_FILES =\

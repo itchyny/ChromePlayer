@@ -1,5 +1,9 @@
 // Key maneger
 
+if (typeof window === 'undefined') {
+  var Rc = require ('./rc').Rc;
+}
+
 function Key (config) {
   if (config) {
     for (var key in config) {
@@ -171,44 +175,48 @@ Key.prototype = {
     }
   },
 
-  wrapkey: function (key) {
-    return '<span class="key">' + key + '</span>';
-  },
+  // wrapkey: function (key) {
+  //   return '<span class="key">' + key + '</span>';
+  // },
 
-  wrapmetakey: function (key) {
-    key = key[0].toUpperCase() + key.slice(1);
-    return this.wrapkey('&lt;' + key + '&gt;');
-  },
+  // wrapmetakey: function (key) {
+  //   key = key[0].toUpperCase() + key.slice(1);
+  //   return this.wrapkey('&lt;' + key + '&gt;');
+  // },
 
-  prettykey: function (key) {
-    var global;
-    if (/-/.test(key)) {
-      if (/s-/.test(key)) key = this.wrapmetakey('Shift') + ' + ' + key.replace (/s-/, '');
-      if (/a-/.test(key)) key = this.wrapmetakey('Alt') + ' + ' + key.replace (/a-/, '');
-      if (/c-/.test(key)) key = this.wrapmetakey('Ctrl') + ' + ' + key.replace (/c-/, '');
-      if (/g-/.test(key)) { global = true; key = key.replace (/g-/, ''); }
-    }
-    if (/<(.)>/.test(key)) {
-      var s = this.wrapkey(RegExp.$1.toUpperCase())
-      key = key.replace (/<(.)>/, s);
-    } else {
-      if (/^(.)$/.test(key)) {
-        var s = this.wrapkey(RegExp.$1.toUpperCase())
-        key = key.replace (/^(.)$/, s);
-      }
-    }
-    for (var x in this.codes) {
-      var metakey = this.codes[x];
-      if (metakey.length > 1) {
-        key = key.replace ('<' + metakey + '>', this.wrapmetakey(metakey));
-      }
-    }
-    key = key.replace (/&lt;Left&gt;/, '←');
-    key = key.replace (/&lt;Right&gt;/, '→');
-    key = key.replace (/&lt;Up&gt;/, '↑');
-    key = key.replace (/&lt;Down&gt;/, '↓');
-    return { key: key, global: global };
-  },
+  // prettyonekey: function (k) {
+  //   var key = new Onekey (k);
+  // },
+  // prettykey: function (key) {
+  //   var keys = Rc.parsekey (key).result;
+  //   var global;
+  //   if (/-/.test(key)) {
+  //     if (/s-/.test(key)) key = this.wrapmetakey('Shift') + ' + ' + key.replace (/s-/, '');
+  //     if (/a-/.test(key)) key = this.wrapmetakey('Alt') + ' + ' + key.replace (/a-/, '');
+  //     if (/c-/.test(key)) key = this.wrapmetakey('Ctrl') + ' + ' + key.replace (/c-/, '');
+  //     if (/g-/.test(key)) { global = true; key = key.replace (/g-/, ''); }
+  //   }
+  //   if (/<(.)>/.test(key)) {
+  //     var s = this.wrapkey(RegExp.$1.toUpperCase())
+  //     key = key.replace (/<(.)>/, s);
+  //   } else {
+  //     if (/^(.)$/.test(key)) {
+  //       var s = this.wrapkey(RegExp.$1.toUpperCase())
+  //       key = key.replace (/^(.)$/, s);
+  //     }
+  //   }
+  //   for (var x in this.codes) {
+  //     var metakey = this.codes[x];
+  //     if (metakey.length > 1) {
+  //       key = key.replace ('<' + metakey + '>', this.wrapmetakey(metakey));
+  //     }
+  //   }
+  //   key = key.replace (/&lt;Left&gt;/, '←');
+  //   key = key.replace (/&lt;Right&gt;/, '→');
+  //   key = key.replace (/&lt;Up&gt;/, '↑');
+  //   key = key.replace (/&lt;Down&gt;/, '↓');
+  //   return { key: key, global: global };
+  // },
 
   // TODO: global check, merge
   viewshortcuts: function () {
@@ -218,7 +226,11 @@ Key.prototype = {
     for (var i = 0; i < self.keyinfo.length; i++) {
       var info = self.keyinfo[i]
       if (info !== undefined) {
-        var key = self.prettykey (info.key);
+        // var key = self.prettykey (info.key);
+        var keys = Rc.parsekey (info.key)
+                     .map (function (x) { return new Onekey (x); });
+        var keyshtml = keys.map (function (x) { return x.toHTML (); }).join (' &amp; ');
+        var key = new Onekey (info.key);
         var str = info.callback.str;
         var type = info.callback.type;
         var dt = $('<dt />')
@@ -226,7 +238,7 @@ Key.prototype = {
             $('<span ' + (key.global ? 'class="global"' : '') + '/>')
               .append (
                 $('<span />')
-                  .html (key.key)
+                  .html (keyshtml)
               )
           );
         var dd = $('<dd />')
@@ -361,7 +373,66 @@ Key.prototype = {
 };
 
 
+function Onekey (str) {
+  this.ctrl = this.alt = this.meta = this.shift = this.global = null;
+  this.parse (str);
+};
+Onekey.prototype = {
+  parse: function (str) {
+    var r;
+    if (r = Rc.regex.number.exec (str)) {
+      this.key = r[0];
+    } else if (r = Rc.regex.smallalphabets.exec (str)){
+      this.key = r[0];
+    } else if (r = Rc.regex.specialkeys.exec (str)){
+      this.key = r[0];
+    } else if (r = Rc.regex.keygroup.exec (str)){
+      str = str.slice (1).slice (0, -1);
+      r = Rc.regex.metakeypyphen.exec (str);
+      while (r) {
+        str = str.slice (r[0].length);
+        r = r[0][0];
+        switch (r) {
+          case 'c': this.ctrl = true; break;
+          case 'a': this.alt = true; break;
+          case 'm': this.meta = true; break;
+          case 's': this.shift = true; break;
+          case 'g': this.global = true; break;
+          default: break;
+        }
+        r = Rc.regex.metakeypyphen.exec (str);
+      }
+      this.key = str;
+    } else {
+      console.log ("unknown key:" + str);
+    }
+  },
 
+  toHTML: function () {
+    var ans = [];
+    if (this.ctrl) ans.push (this.wrapmetakey ('Ctrl'));
+    if (this.alt) ans.push (this.wrapmetakey ('Alt'));
+    if (this.shift) ans.push (this.wrapmetakey ('Shift'));
+    var key = this.key[0].toUpperCase() + this.key.slice (1);
+    key = key.replace (/Left/, '←');
+    key = key.replace (/Right/, '→');
+    key = key.replace (/Up/, '↑');
+    key = key.replace (/Down/, '↓');
+    var keyhtml = this.wrapkey (key.length > 1 ? '&lt;' + key + '&gt;' : key);
+    ans.push (keyhtml);
+    return ans.join (' + ');
+  },
+
+  wrapkey: function (key) {
+    return '<span class="key">' + key + '</span>';
+  },
+
+  wrapmetakey: function (key) {
+    key = key[0].toUpperCase() + key.slice(1);
+    return this.wrapkey('&lt;' + key + '&gt;');
+  },
+
+};
 
 
 
