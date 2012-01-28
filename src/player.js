@@ -162,6 +162,7 @@ logfn ('Player.prototype.toggle');
   next: function () {
 logfn ('Player.prototype.next');
     this.pause ();
+    this.ui.slideZero ();
     var index = this.order.next ();
     if (index === undefined) {
       if (this.playing) {

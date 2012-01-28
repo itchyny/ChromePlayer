@@ -429,7 +429,7 @@ Onekey.prototype = {
 
   wrapmetakey: function (key) {
     key = key[0].toUpperCase() + key.slice(1);
-    return this.wrapkey('&lt;' + key + '&gt;');
+    return this.wrapkey ('&lt;' + key + '&gt;');
   }
 
 };

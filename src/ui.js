@@ -299,6 +299,11 @@ var UI = {
     }
   },
 
+  slideZero: function () {
+    this.div.musicSlider.slider ({ 'value': 0 });
+    this.div.current.text ('00:00');
+  },
+
   addfile: function (file, index) {
     var html = [];
     var trs = '<td></td>'
