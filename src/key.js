@@ -223,7 +223,7 @@ Key.prototype = {
         var type = info.callback.type;
         var dt = $('<dt />')
           .append (
-            (key.global ? $('<span class="global"/>') : $('<span />'))
+            $('<span ' + (key.global ? 'class="global"' : '') + '/>')
               .append (
                 $('<span />')
                   .html (key.key)
@@ -237,11 +237,11 @@ Key.prototype = {
         dls[type].append(dt).append(dd);
       }
     }
-    $('div#help>div[class!=top]').remove();
+    $('div#help>div.keygroup').remove();
     for (var i = 0; i < dls.length; i++) {
-      dl = dls[i];
+      dl = dls[dls.length - i - 1];
       if (dl) {
-        $('div#help').append(
+        $('div#help>div.top').after(
           $('<div />').append(dl)
         );
       }
