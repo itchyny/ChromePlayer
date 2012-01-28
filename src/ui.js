@@ -110,8 +110,8 @@ var UI = {
   },
 
   initsize: function () {
-    var tbodyWdt = this.div.tbody.width(),
-        fontSize = 12 * (window.innerWidth - 1280) / 2360 + 12;
+    var tbodyWdt = this.div.tbody.width();
+    var fontSize = 12 * (window.innerWidth - 1280) / 2360 + 12;
     this.div.wrapper.css({ 'font-size': fontSize });
     this.div.playlist
       .height(window.innerHeight - this.div.playlist.offset().top - fontSize);
@@ -260,10 +260,10 @@ var UI = {
             var o = order, r = stack[1].order, j = i, k = stack[1].i, jTs = [], kTs = [];
             return function (a, b) {
               var anum = a.getAttribute ('number'), bnum = b.getAttribute('number');
-              var ajT = jTs[anum] || (jTs[anum] = a.childNodes[j].innerText),
-                  bjT = jTs[bnum] || (jTs[bnum] = b.childNodes[j].innerText),
-                  akT = kTs[anum] || (kTs[anum] = a.childNodes[k].innerText),
-                  bkT = kTs[bnum] || (kTs[bnum] = b.childNodes[k].innerText);
+              var ajT = jTs[anum] || (jTs[anum] = a.childNodes[j].innerText);
+              var bjT = jTs[bnum] || (jTs[bnum] = b.childNodes[j].innerText);
+              var akT = kTs[anum] || (kTs[anum] = a.childNodes[k].innerText);
+              var bkT = kTs[bnum] || (kTs[bnum] = b.childNodes[k].innerText);
               return f(ajT) > f(bjT) ?  o :
                      f(ajT) < f(bjT) ? -o :
                      stack[1].f(akT) >= stack[1].f(bkT) ? r : -r;
@@ -452,8 +452,8 @@ var UI = {
     var convertTime = function (sec) {
       sec = parseInt(sec, 10);
       if (isNaN(sec)) return '00:00';
-      var min = parseInt((sec / 60) % 60, 10),
-          hour = parseInt(sec / 3600, 10);
+      var min = parseInt((sec / 60) % 60, 10);
+      var hour = parseInt(sec / 3600, 10);
       sec %= 60;
       if (hour > 0) {
         return hour.toString() + ':' + (min < 10 ? '0' : '') + min.toString() + ':' + (sec < 10 ? '0' : '') + sec.toString();
@@ -463,8 +463,8 @@ var UI = {
     };
     return function () {
       if (this.player.playing != undefined && this.player.playing.audio) {
-        var audioCurrentTime = this.player.playing.audio.currentTime,
-            audioDuration = this.player.playing.audio.duration;
+        var audioCurrentTime = this.player.playing.audio.currentTime;
+        var audioDuration = this.player.playing.audio.duration;
         this.div.musicSlider.slider ({ 'value': audioCurrentTime / audioDuration });
         this.div.current.text (convertTime (audioCurrentTime));
         this.div.remain.text ('-' + convertTime (audioDuration - audioCurrentTime));
@@ -537,8 +537,8 @@ var UI = {
     var tbodyWdt = self.div.tbody.width();
     $('tr', self.div.tbody)
     .each(function () {
-      var $self = $(this),
-      n = $('<tr />')
+      var $self = $(this);
+      var n = $('<tr />')
       .attr({
         'number': $self.attr('number')
       })
@@ -932,8 +932,8 @@ var UI = {
   extendPageUp:  function () {
     var self = this;
     self.div.tablebody.scrollTop( self.div.tablebody.scrollTop() - self.div.tablebody.height() * 0.8 );
-    var h = window.innerHeight,
-        $last = $('tr.last-select', self.div.tbody);
+    var h = window.innerHeight;
+    var $last = $('tr.last-select', self.div.tbody);
     if ($last.next().ISSELECTED()) {
       $('tr.ui-selected')
         .filter( function () { return $(this).position().top > h - 50; })
@@ -1252,10 +1252,10 @@ $.fn.SELECT = function (flg, anime) {
       // If flg is true, not scroll. Default is false(Scroll follows).
       return this;
     }
-    var offsetTop = this.offset().top,
-        firstRow = UI.div.tablebody.offset().top,
-        rm = offsetTop - 30 - firstRow,
-        ex = offsetTop + 60 - UI.div.tablediv.height() - firstRow;
+    var offsetTop = this.offset().top;
+    var firstRow = UI.div.tablebody.offset().top;
+    var rm = offsetTop - 30 - firstRow;
+    var ex = offsetTop + 60 - UI.div.tablediv.height() - firstRow;
      if (rm < 0) {
        if (anime) {
          UI.div.tablebody.animate({scrollTop: '+=' + rm}, {duration: 'fast', easing: 'linear'});
@@ -1292,22 +1292,23 @@ $.fn.ISSELECTED = function () {
 };
 
 $.fn.drag_drop_multi_select.defaults.while_dragging_action = function (e, ui) {
-logfn ('drag_drop_multi_select.defaults.while_dragging_action');
   var eY = e.originalEvent.clientY;
-  var trHgtHlf = $('tr', UI.div.tbody).first().height() / 2;
-  var $target = $('tr', UI.div.tbody)
+  var trs = $('tr', UI.div.tbody);
+  var trHgtHlf = trs.first().height() / 2;
+  var $target = trs
                 .filter(function () { var d = eY - $(this).offset().top; return -trHgtHlf <= d && d < trHgtHlf; } )
                 .first();
-  $('tr.dragover', UI.div.tbody).removeClass('dragover');
+  trs.removeClass('dragover');
   $target.addClass('dragover');
 };
 
 $.fn.drag_drop_multi_select.defaults.after_drop_action = function ($item, $old, $new, e, ui) {
 logfn ('drag_drop_multi_select.defaults.after_drop_action');
-  var itemNum = $item.first().attr('number'),
-      trHgtHlf = $('tr', UI.div.tbody).first().height() / 2,
-      eY = e.originalEvent.clientY,
-      $target = $('tr', UI.div.tbody)
+  var trs = $('tr', UI.div.tbody);
+  var itemNum = $item.first().attr('number');
+  var trHgtHlf = trs.first().height() / 2;
+  var eY = e.originalEvent.clientY;
+  var $target = trs
                 .filter(function () { var d = eY - $(this).offset().top; return -trHgtHlf <= d && d < trHgtHlf; } )
                 .first();
   if (itemNum === $target.attr('number')) {
