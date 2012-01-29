@@ -1,9 +1,12 @@
 // UI
 // dragenter等々を調べる
 
+var demomode = false;
+
 var UI = {
 
   init: function (player) {
+    if (demomode) $('div#keyviewer').show();
     var self = this;
     self.player = player;
     self.div = (function (a, x) {
@@ -1245,6 +1248,15 @@ var UI = {
     var x = selected.eq(this.filterIndex).UNSELECT(true);
     setTimeout( function () { x.SELECT(false, true).LASTSELECT(); }, 200);
     this.filterIndex = (++this.filterIndex) % selected.size();
+  },
+
+  keyview: function (keys) {
+    if (demomode) {
+      $('div#keyviewer').text(keys);
+      setTimeout (function () {
+        $('div#keyviewer').text('');
+      }, 800);
+    }
   }
 
 };

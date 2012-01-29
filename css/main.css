@@ -66,4 +66,5 @@ div#filter{z-index:15;padding:0em;position:absolute;top:50%;left:50%;display:non
 div#filter #matchnum{float:left;width:auto;height:100%;padding:0.25em;text-align:middle;background-color:transparent;color:rgba(168, 168, 168, 0.7);font-size:1.5em;}
 div#videopopup{visibility:hidden;float:left;left:50%;top:50%;position:absolute;z-index:4;}div#videopopup video{margin-left:-32em;margin-top:-18em;width:64em;height:36em;}
 div#albumart{float:right;right:0;bottom:0;position:absolute;z-index:4;}
+div#keyviewer{position:absolute;z-index:10;left:0%;top:100%;margin-left:1em;margin-top:-2.5em;width:5em;height:1.4em;font-size:500%;border:0.2em solid #cc0;border-radius:0.2em;padding:0px;text-align:center;background-color:#cc0;display:none;}
 

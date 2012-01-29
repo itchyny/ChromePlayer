@@ -59,12 +59,12 @@ SED_CHANGELOG = sed "s/@CHANGELOG/${CHANGELOG}/"
 
 
 main.js : ${SOURCE_FILES}
-	@cat ${SOURCE_FILES} | ${SED_DATE} | ${SED_VER} | node closure-command.js  > $@
+	@cat ${SOURCE_FILES} | ${SED_DATE} | ${SED_VER} | node closure-command.js > $@
 	@cp $@ ../js/
 	@wc ${SOURCE_FILES}
 
 bg_main.js : ${BG_SOURCE_FILES}
-	@cat ${BG_SOURCE_FILES} | ${SED_DATE} | ${SED_VER} | node closure-command.js  > $@
+	@cat ${BG_SOURCE_FILES} | ${SED_DATE} | ${SED_VER} | node closure-command.js > $@
 	@cp $@ ../js/
 
 manifest.json : manifest_base.json version.txt

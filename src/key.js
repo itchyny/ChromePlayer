@@ -1,5 +1,6 @@
 // Key maneger
 
+
 if (typeof window === 'undefined') {
   var Rc = require ('./rc').Rc;
 }
@@ -53,6 +54,7 @@ Key.prototype = {
 
   keydown: function (e) {
     if (!this.onlyMeta (e)) {
+      this.app.ui.keyview (this.keyqueue.join(' ')+this.convert(e));
       this.keydownstr (this.convert (e), e);
     }
   },
