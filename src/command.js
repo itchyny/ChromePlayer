@@ -71,17 +71,17 @@ var command = {
   ToggleHelp:           function (opt) { return { opt: opt, type: 3, id: 43, str: "Keyboard shortcut", fn: function (app) { app.ui.toggleHelp (); } }; },
   ToggleAbout:          function (opt) { return { opt: opt, type: 3, id: 44, str: "Application Information", fn: function (app) { app.ui.toggleAbout (); } }; },
   OpenConfig:           function (opt) { return { opt: opt, type: 3, id: 45, str: "Configuration", fn: function (app) { app.ui.click ('conf'); } }; },
-  ViewInformation:      function (opt) { return { opt: opt, type: 3, id: 44, str: "Music information", fn: function (app) { app.ui.viewInformation (); } }; },
-  Escape:               function (opt) { return { opt: opt, type: 3, id: 45, str: "", fn: function (app) { app.ui.escape (); } }; },
-  FocusToggle:          function (opt) { return { opt: opt, type: 3, id: 46, str: "", fn: function (app) { app.ui.focusToggle (); } }; },
-  FocusToggleReverse:   function (opt) { return { opt: opt, type: 3, id: 47, str: "", fn: function (app) { app.ui.focusToggleReverse (); } }; },
-  FullScreenOn:         function (opt) { return { opt: opt, type: 3, id: 48, str: "", fn: function (app) { app.ui.fullScreenOn (); } }; },
-  FullScreenOff:        function (opt) { return { opt: opt, type: 3, id: 49, str: "", fn: function (app) { app.ui.fullScreenOff (); } }; },
-  FullScreenToggle:     function (opt) { return { opt: opt, type: 3, id: 50, str: "Toggle fullscreen", fn: function (app) { app.ui.fullScreenToggle (); } }; },
+  ViewInformation:      function (opt) { return { opt: opt, type: 3, id: 46, str: "Music information", fn: function (app) { app.ui.viewInformation (); } }; },
+  Escape:               function (opt) { return { opt: opt, type: 3, id: 47, str: "", fn: function (app) { app.ui.escape (); } }; },
+  FocusToggle:          function (opt) { return { opt: opt, type: 3, id: 48, str: "", fn: function (app) { app.ui.focusToggle (); } }; },
+  FocusToggleReverse:   function (opt) { return { opt: opt, type: 3, id: 49, str: "", fn: function (app) { app.ui.focusToggleReverse (); } }; },
+  FullScreenOn:         function (opt) { return { opt: opt, type: 3, id: 50, str: "", fn: function (app) { app.ui.fullScreenOn (); } }; },
+  FullScreenOff:        function (opt) { return { opt: opt, type: 3, id: 51, str: "", fn: function (app) { app.ui.fullScreenOff (); } }; },
+  FullScreenToggle:     function (opt) { return { opt: opt, type: 3, id: 52, str: "Toggle fullscreen", fn: function (app) { app.ui.fullScreenToggle (); } }; },
 
   /* Special commands */
-  Nop:                  function (opt) { return { opt: opt, type: 4, id: 51, str: "", fn: function (app) {} }; },
-  Define:               function (opt) { return { opt: opt, type: 4, id: 52, str: "", fn: function (app) {} }; } // TODO
+  Nop:                  function (opt) { return { opt: opt, type: 4, id: 53, str: "", fn: function (app) {} }; },
+  Define:               function (opt) { return { opt: opt, type: 4, id: 54, str: "", fn: function (app) {} }; } // TODO
 
 };
 
