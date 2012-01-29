@@ -8,6 +8,19 @@
 //
 // The "app" here is actually player in global closure, and is player.key.app, too.
 // See keyconfig.js and key.js.
+
+var id = 0;
+function newcommand (str, fn) {
+  return function (opt) {
+    return { opt: opt
+           , type: 0
+           , id: id++
+           , str: typeof str === 'function' ? str (opt) : str
+           , fn: fn (opt)
+    };
+  }
+}
+
 var command = {
 
   /* operate player */

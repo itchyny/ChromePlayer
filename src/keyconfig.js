@@ -80,14 +80,16 @@ Player.prototype.key = new Key ({
   '<enter>':       command.DefaultEnter ([]),
   '<a-enter>':     command.ViewInformation ([]),
   'pp':            command.ViewInformation ([]), // for enviroment <a-enter> doesn't work
-  '<tab>':         command.FocusToggle ([]),
-  '<s-tab>':       command.FocusToggleReverse ([]),
+  // '<tab>':         command.FocusToggle ([]),
+  // '<s-tab>':       command.FocusToggleReverse ([]),
+  '<tab>':         '<nop>', // disable traveling // TODO: disable tab key in input elem, too
+  '<s-tab>':       '<nop>', // disable traveling
   'f':             command.FullScreenToggle ([]),
   '<c-s-f>':       'f',
 
   /* filter interface */
   '<c-f>':         command.FilterStart ([]),
-  '/':             '<c-f>', // vim
+  '/':             command.FilterStart ([]), // vim
 
   /* special command */
   '<c-p>':         '<nop>', // disable browser mapping
