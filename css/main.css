@@ -13,7 +13,7 @@ div#header img#mute,div#header img#volumeon{height:30%;margin-top:-0.75%;}
 div#header img#shuffle{margin-left:2%;}
 div#header img#conf{margin-right:2%;}
 div#header div#volume{width:10%;margin:-9px auto;position:relative;top:50%;}
-div#header div#info{margin:-2.5em auto 0 -20%;z-index:3;position:absolute;top:3em;height:5em;left:50%;width:40%;min-width:360px;text-align:center;border-radius:1em;overflow:hidden;}div#header div#info.full{margin:0;top:0em;left:0%;width:100%;border-radius:0em;}div#header div#info.full div#albumart{visibility:visible;display:block;float:left;position:absolute;left:15%;top:50%;opacity:0.3;-webkit-box-reflect:below 1px -webkit-gradient(linear, left top, left bottom, from(transparent), color-stop(30%, transparent), to(#ffffff));}div#header div#info.full div#albumart.realart{opacity:1;}
+div#header div#info{margin:-2.5em auto 0 -20%;z-index:3;position:absolute;top:3em;height:5em;left:50%;width:40%;min-width:360px;text-align:center;border-radius:1em;overflow:hidden;}div#header div#info.full{margin:0;top:0em;left:0%;width:100%;border-radius:0em;}div#header div#info.full div#albumart{visibility:visible;display:block;float:left;position:absolute;left:15%;top:50%;opacity:0.3;-webkit-box-reflect:below 1px -webkit-gradient(linear, left top, left bottom, from(transparent), color-stop(30%, transparent), to(white));}div#header div#info.full div#albumart.realart{opacity:1;}
 div#header div#info.full div#filename{font-size:300%;width:60%;position:absolute;left:65%;width:40%;margin-left:-20%;}
 div#header div#info.full div#seek{position:absolute;left:65%;margin-left:0%;width:50%;font-size:150%;}div#header div#info.full div#seek div#musicSliderParent{position:relative;}
 div#header div#info div#albumart{visibility:visible;display:none;}
@@ -38,11 +38,11 @@ div#playlist table tbody tr td.now{height:2em;text-align:center;padding:0;line-h
 div#help{z-index:8;position:absolute;top:50%;left:50%;height:34em;width:40em;border-radius:2em;margin:-18em 0 0 -21em;padding:2em;background-color:rgba(0, 0, 0, 0.8);color:#fff;font-size:1.2em;list-style:none;display:none;box-shadow:0.1em 0.1em 0.3em rgba(255, 255, 255, 0.5);}div#help *{line-height:1.25;}
 div#help>div{width:100%;overflow:auto;}
 div#help .top{font-size:1.5em;text-shadow:1px 1px 3px #000;}
-div#help span.key{color:#ff4;font-weight:bolder;}
+div#help span.key{color:#ee4;}
 div#help span.global{text-decoration:underline;}
-div#help dt,div#help dd{display:inline-block;width:16em;}
-div#help dt{padding-right:0.25em;text-align:right;}
-div#help dd:before{content:": ";}
+div#help dt,div#help dd{display:inline-block;width:18em;font-size:0.96em;line-height:1.3;}
+div#help dt{padding-right:0.5em;text-align:right;}
+div#help dd:before{content:" : ";}
 div#help div.keygroups{margin-top:1em;overflow-y:scroll;height:30em;}
 div#help div.keygroup{margin:0 0 1em;}
 div#config{z-index:7;position:absolute;top:50%;left:50%;height:34em;width:40em;border-radius:2em;margin:-18em 0 0 -21em;padding:2em;background-color:rgba(0, 0, 0, 0.8);color:#fff;font-size:1.2em;list-style:none;display:none;box-shadow:0.1em 0.1em 0.3em rgba(255, 255, 255, 0.5);}div#config *{line-height:1.25;}
@@ -67,4 +67,3 @@ div#filter #matchnum{float:left;width:auto;height:100%;padding:0.25em;text-align
 div#videopopup{visibility:hidden;float:left;left:50%;top:50%;position:absolute;z-index:4;}div#videopopup video{margin-left:-32em;margin-top:-18em;width:64em;height:36em;}
 div#albumart{float:right;right:0;bottom:0;position:absolute;z-index:4;}
 div#keyviewer{position:absolute;z-index:10;left:0%;top:100%;margin-left:1em;margin-top:-2.5em;width:5em;height:1.4em;font-size:500%;border:0.2em solid #cc0;border-radius:0.2em;padding:0px;text-align:center;background-color:#cc0;display:none;}
-
