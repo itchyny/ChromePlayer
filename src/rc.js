@@ -11,7 +11,7 @@ var Rc = {
     command: /^((map|unmap|avoid)\s)/,
     rhscommand: /^([A-Z]([a-zA-Z]*))/,
     rhs: /^(((([A-Z]([a-zA-Z]*))((\s*)\s))*)([A-Z]([a-zA-Z]*)))/,
-    comment: /^(#(.*))/,
+    comment: /^(#(.*))/
 
   },
   match: function (match, obj) {

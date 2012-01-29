@@ -61,6 +61,7 @@ SED_CHANGELOG = sed "s/@CHANGELOG/${CHANGELOG}/"
 main.js : ${SOURCE_FILES}
 	@cat ${SOURCE_FILES} | ${SED_DATE} | ${SED_VER} | node closure-command.js  > $@
 	@cp $@ ../js/
+	@wc ${SOURCE_FILES}
 
 bg_main.js : ${BG_SOURCE_FILES}
 	@cat ${BG_SOURCE_FILES} | ${SED_DATE} | ${SED_VER} | node closure-command.js  > $@
@@ -79,9 +80,9 @@ bg_index.html : bg_index_base.html
 	@cp $@ ../
 
 all:
-	make main.js
-	make bg_main.js
 	make manifest.json
 	make index.html
 	make bg_index.html
+	make bg_main.js
+	make main.js
 
