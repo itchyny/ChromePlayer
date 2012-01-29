@@ -5,7 +5,7 @@ function Player() {
 
 Player.prototype = {
   start: function () {
-    notification.createNotification ('../icon_128.png', 'Local Player', 'Background page created');
+    // notification.createNotification ('../icon_128.png', 'Local Player', 'Background page created');
     for (var x in this) {
       if (this[x] && this[x].init) {
         this[x].init (this);
@@ -89,12 +89,14 @@ Player.prototype.setting = {
     // initialized within this constructor
     // if the key was already set, it is ignored
     this.settings = new Store ("settings", this.defaultSetting);
-    var playerrc = local.getSetting ('playerrc');
-    console.dir (playerrc);
-    console.dir (Rc.parselines (playerrc.split ('\\n').slice(1).slice(0,-1)));
+    this.reloadplayerrc ();
   },
   reset: function () {
     this.settings.fromObject (this.defaultSetting);
+  },
+  reloadplayerrc: function () {
+    var playerrc = local.getSetting ('playerrc');
+    var result = Rc.parselines (playerrc.split('\\n').slice(1).slice(0,-1));
   }
 };
 

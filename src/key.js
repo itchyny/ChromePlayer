@@ -9,7 +9,7 @@ function Key (config) {
     for (var key in config) {
       if (config.hasOwnProperty (key)) {
         if (config[key]) {
-          var keyformatted = this.parse (key);
+          var keyformatted = this.parse (key).join (' ');
           this.set (keyformatted, config[key]);
           this.keys.push (keyformatted);
         }
@@ -79,7 +79,8 @@ Key.prototype = {
     if (index < 0) {
       return false;
     }
-    if (this.keys[index + 1] !== undefined && this.keys[index + 1].indexOf (key) < 0) {
+    if (this.keys[index + 1] !== undefined
+        && this.keys[index + 1].indexOf (key) < 0) {
       return true;
     }
     return false;
@@ -97,7 +98,6 @@ Key.prototype = {
   trigger: function (e) {
     var self = this;
     var keys = self.keyqueue.join (' ');
-    log (keys);
     var f = self.callback [keys];
     if (f) {
       self.prevent (e);
@@ -134,21 +134,28 @@ Key.prototype = {
           + (e.altKey || this.lockconfig.altKey ? 'a-' : ''));
   },
 
+  // TODO
   parse: function (key) {
-    key = key.toLowerCase ().replace (/ /g, '');
-    var arr = [];
-    var onekey = [];
-    while (key) {
-      if (!(onekey = key.match (/^<[^<>]*>/))) {
-        onekey = [key[0]];
-      }
-      arr = arr.concat (onekey);
-      key = key.slice (onekey[0].length);
-    }
-    return arr.join (' ');
+    var result = Rc.parsekey (key);
+    return result;
   },
+  // parse: function (key) {
+  //   key = key.toLowerCase ().replace (/ /g, '');
+  //   var arr = [];
+  //   var onekey = [];
+  //   while (key) {
+  //     if (!(onekey = key.match (/^<[^<>]*>/))) {
+  //       onekey = [key[0]];
+  //     }
+  //     arr = arr.concat (onekey);
+  //     key = key.slice (onekey[0].length);
+  //   }
+  //   return arr.join (' ');
+  // },
 
   keyinfo: [],
+
+  numcommand: 10,
 
   set: function (key, callback) {
     var self = this;
@@ -156,32 +163,35 @@ Key.prototype = {
       self.callback [key] = callback;
       if (callback.str !== "") {
         var dt = 0;
-        while (dt < 5 && self.keyinfo[callback.id * 5 + dt]) dt++;
-        if (dt < 5) {
-          self.keyinfo [callback.id * 5 + dt] = { callback: callback, key: key, opt: callback.opt };
+        var id = callback.id;
+        var offset = id * self.numcommand;
+        while (dt < self.numcommand && self.keyinfo[offset + dt]) dt++;
+        if (dt < self.numcommand) {
+          self.keyinfo [offset + dt] = { callback: callback, key: key, opt: callback.opt };
         }
       }
     } else if (typeof callback === 'string') {
       self.callback [key] = (function (env) {
-        var keyseq = self.parse (callback).split (' ');
+        var keyseq = self.parse (callback);
         if (keyseq.length === 1 && env[keyseq[0]]) {
           var eqkey = keyseq[0];
           var newcallback = env[eqkey];
           var id = newcallback.id;
           var opt = newcallback.opt;
           var str = newcallback.str;
+          var offset = id * self.numcommand;
           if (id && str !== '' && !/g-/.test(key)) {
             var dt = 0;
-            while (dt < 5 && self.keyinfo[id * 5 + dt]) dt++;
-            if (dt < 5) {
-              self.keyinfo [id * 5 + dt] = { callback: newcallback, key: key, opt: opt };
+            while (dt < self.numcommand && self.keyinfo[offset + dt]) dt++;
+            if (dt < self.numcommand) {
+              self.keyinfo [offset + dt] = { callback: newcallback, key: key, opt: opt };
             }
           } else { // if (key.replace('g-', '') === eqkey) {
             var keywithoutglobal = key.replace ('g-', '');
-            for (var dt = 0; dt < 5; dt++) {
-              if (self.keyinfo [id * 5 + dt]) {
-                if (self.keyinfo [id * 5 + dt].key === keywithoutglobal) {
-                  self.keyinfo [id * 5 + dt].key = key;
+            for (var dt = 0; dt < self.numcommand; dt++) {
+              if (self.keyinfo [offset + dt]) {
+                if (self.keyinfo [offset + dt].key === keywithoutglobal) {
+                  self.keyinfo [offset + dt].key = key;
                 }
               }
             }
@@ -192,7 +202,7 @@ Key.prototype = {
             setTimeout ( (function (i) { return function () {
               self.keydownstr (keyseq [i]);
             };}) (i)
-            , 10 * i);
+            , 5 * i);
           }
         }, callback: newcallback, key: key, opt: opt };
       }) (self.callback);
@@ -212,7 +222,7 @@ Key.prototype = {
           var keys = Rc.parsekey (info.key)
                        .map (function (x) { return new Onekey (x); });
           var keyshtml = keys.map (function (x) { return x.toHTML (); }).join ('');
-          for (var j = i - parseInt(i/5) * 5; j < 5; j++) {
+          for (var j = i - parseInt(i/self.numcommand) * self.numcommand; j < self.numcommand; j++) {
             if (!checked[i + j]) {
               var _info = self.keyinfo[i + j];
               if (_info && _info.opt.deepEqual(info.opt)) {
@@ -251,7 +261,6 @@ Key.prototype = {
 
   lock: function (key) {
     if (this.lockconfig[key] !== undefined) {
-    log ('lock' + key);
       this.lockconfig[key] = true;
     }
     return this;
@@ -361,6 +370,12 @@ Key.prototype = {
 
 };
 
+// TODO
+function KeySequence (str) {
+  // body...
+};
+KeySequence.prototype = {
+};
 
 function Onekey (str) {
   this.ctrl = this.alt = this.meta = this.shift = this.global = null;
@@ -423,9 +438,9 @@ Onekey.prototype = {
 
   wrapglobalkey: function (html) {
     return '<span ' + (this.global ? 'class="global"' : '') + '>' +
-              '<span>' + (html) + '</span>' +
-              '</span>';
-  },
+                '<span>' + (html) + '</span>' +
+           '</span>';
+  }
 
 
 };

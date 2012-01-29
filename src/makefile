@@ -37,6 +37,7 @@ BG_SOURCE_FILES =\
 	command.js \
 	rc.js \
 	bg_player.js \
+	keyconfig.js \
 	_footer.js
 
 

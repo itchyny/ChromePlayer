@@ -7,11 +7,12 @@ var Rc = {
     metakeypyphen: /^([cmasg]\-)/,
     smallalphabets: /^([a-z])/,
     number: /^([0-9])/,
-    onekey: /^((<((([cmasg]\-)*)(f(10|11|12|1|2|3|4|5|6|7|8|9)|backspace|tab|enter|shift|ctrl|alt|esc|space|pgup|pgdn|end|home|left|up|right|down|insert|delete|ctrl|numlock|[*+/:;,\-.\/@\[\\\]\^]|[a-z]|[0-9])))>|f(10|11|12|1|2|3|4|5|6|7|8|9)|backspace|tab|enter|shift|ctrl|alt|esc|space|pgup|pgdn|end|home|left|up|right|down|insert|delete|ctrl|numlock|[*+/:;,\-.\/@\[\\\]\^]|[a-z]|[0-9])/,
-    command: /^((map|unmap|gmap|gunmap|avoid)\s)/,
+    onekey: /^((<((([cmasg]\-)*)(f(10|11|12|1|2|3|4|5|6|7|8|9)|backspace|tab|enter|shift|ctrl|alt|esc|space|pgup|pgdn|end|home|left|up|right|down|insert|delete|ctrl|numlock|[*+/:;,\-.\/@\[\\\]\^]|[a-z]|[0-9])))>|f(10|11|12|1|2|3|4|5|6|7|8|9)|backspace|tab|enter|shift|ctrl|alt|esc|space|pgup|pgdn|end|home|left|up|right|down|insert|delete|ctrl|numlock|[*+/:;,\-.\/@\[\\\]\^]|[a-z]|[0-9]|<nop>)/,
+    command: /^((map|unmap|avoid)\s)/,
     rhscommand: /^([A-Z]([a-zA-Z]*))/,
     rhs: /^(((([A-Z]([a-zA-Z]*))((\s*)\s))*)([A-Z]([a-zA-Z]*)))/,
-    comment: /^(#(.*))/
+    comment: /^(#(.*))/,
+
   },
   match: function (match, obj) {
     var str = obj.str;
@@ -26,13 +27,6 @@ var Rc = {
       return { str: str, col: obj.col, line: obj.line };
     }
   },
-  // matchcommand: function (s) {
-  //   var a = this.regex.command.exec (s);
-  //   return a ? a[0], null;
-  // },
-  // trimmatch: function (result, str) {
-  //   return str.slice (result.length);
-  // },
   delwhite: function (obj) {
     return this.match ('white', obj);
   },
@@ -62,7 +56,6 @@ var Rc = {
     obj = this.getallkey (obj);
     return obj.result;
   },
-
   parseerror: function (obj) {
     log (obj)
     throw obj.str + '\n' +
@@ -167,3 +160,6 @@ r = Rc.parselines (s + "\n" + ss + "\n"+  com + "\n" + s);
 if (typeof exports !== 'undefined') {
   exports.Rc = Rc;
 }
+
+
+
