@@ -18,10 +18,6 @@ function Key (config) {
     }
   }
   this.keys = this.keys.sort ();
-  var self = this;
-  setTimeout (function () {
-    self.viewshortcuts ();
-  }, 1000);
 }
 
 Key.prototype = {
@@ -50,6 +46,7 @@ Key.prototype = {
           }
       }
     });
+    self.viewshortcuts ();
   },
 
   keydown: function (e) {
