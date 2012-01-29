@@ -22,7 +22,7 @@ Player.prototype.key = new Key ({
   'h':             '<left>', // vim
   'b':             '<s-left>', // vim
   '<s-4>':         command.SeekPercent (['100']), // vim
-  '<c-c>':         command.Interrupt ([]),
+  '<c-d>':         command.Interrupt ([]),
 
   /* change setting */
   '<c-r>':         command.ToggleRepeat ([]),
@@ -93,6 +93,7 @@ Player.prototype.key = new Key ({
   '<c-p>':         '<nop>', // disable browser mapping
   '<c-j>':         '<nop>', // disable browser mapping
   '<c-h>':         '<nop>', // disable browser mapping
+  '<c-l>':         '<nop>', // disable browser mapping
   '<nop>':         command.Nop ([])
 
 });

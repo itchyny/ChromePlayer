@@ -30,47 +30,47 @@ var command = {
   FilterStart:          function (opt) { return { opt: opt, type: 1, id: 12, str: "Start filter", fn: function (app) { app.ui.filterStart (); } }; },
 
   /* select, extend */
-  SelectDown:           function (opt) { return { opt: opt, type: 1, id: 9, str: "", fn: function (app) { app.ui.selectDown (); } }; },
-  ExtendDown:           function (opt) { return { opt: opt, type: 1, id: 10, str: "", fn: function (app) { app.ui.extendDown (); } }; },
-  SelectUp:             function (opt) { return { opt: opt, type: 1, id: 11, str: "", fn: function (app) { app.ui.selectUp (); } }; },
-  ExtendUp:             function (opt) { return { opt: opt, type: 1, id: 12, str: "", fn: function (app) { app.ui.extendUp (); } }; },
-  SelectHome:           function (opt) { return { opt: opt, type: 1, id: 13, str: "", fn: function (app) { app.ui.selectHome (); } }; },
-  ExtendToHome:         function (opt) { return { opt: opt, type: 1, id: 14, str: "", fn: function (app) { app.ui.extendToHome (); } }; },
-  SelectEnd:            function (opt) { return { opt: opt, type: 1, id: 15, str: "", fn: function (app) { app.ui.selectEnd (); } }; },
-  ExtendToEnd:          function (opt) { return { opt: opt, type: 1, id: 16, str: "", fn: function (app) { app.ui.extendToEnd (); } }; },
-  SelectAll:            function (opt) { return { opt: opt, type: 1, id: 17, str: "", fn: function (app) { app.ui.selectAll (); } }; },
-  UnselectAll:          function (opt) { return { opt: opt, type: 1, id: 18, str: "", fn: function (app) { app.ui.unselectAll (); } }; },
-  SelectInvert:         function (opt) { return { opt: opt, type: 1, id: 19, str: "Invert select", fn: function (app) { app.ui.selectInvert (); } }; },
-  PageDown:             function (opt) { return { opt: opt, type: 1, id: 20, str: "", fn: function (app) { app.ui.pageDown (); } }; },
-  ExtendPageDown:       function (opt) { return { opt: opt, type: 1, id: 21, str: "", fn: function (app) { app.ui.extendPageDown (); } }; },
-  PageUp:               function (opt) { return { opt: opt, type: 1, id: 22, str: "", fn: function (app) { app.ui.pageUp (); } }; },
-  ExtendPageUp:         function (opt) { return { opt: opt, type: 1, id: 23, str: "", fn: function (app) { app.ui.extendPageUp (); } }; },
-  SelectNowplaying:     function (opt) { return { opt: opt, type: 1, id: 25, str: "", fn: function (app) { app.ui.selectNowplaying (); } }; },
-  ShiftLock:            function (opt) { return { opt: opt, type: 1, id: 26, str: "", fn: function (app) { app.key.lock ('shiftKey'); } }; },
-  CtrlLock:             function (opt) { return { opt: opt, type: 1, id: 27, str: "", fn: function (app) { app.key.lock ('ctrlKey'); } }; },
-  AltLock:              function (opt) { return { opt: opt, type: 1, id: 28, str: "", fn: function (app) { app.key.lock ('altKey'); } }; },
-  ShiftUnlock:          function (opt) { return { opt: opt, type: 1, id: 29, str: "", fn: function (app) { app.key.unlock ('shiftKey'); } }; },
-  CtrlUnlock:           function (opt) { return { opt: opt, type: 1, id: 30, str: "", fn: function (app) { app.key.unlock ('ctrlKey'); } }; },
-  AltUnlock:            function (opt) { return { opt: opt, type: 1, id: 31, str: "", fn: function (app) { app.key.unlock ('altKey'); } }; },
-  ShiftToggleLock:      function (opt) { return { opt: opt, type: 1, id: 32, str: "", fn: function (app) { app.key.togglelock ('shiftKey'); } }; },
-  CtrlToggleLock:       function (opt) { return { opt: opt, type: 1, id: 33, str: "", fn: function (app) { app.key.togglelock ('ctrlKey'); } }; },
-  AltToggleLock:        function (opt) { return { opt: opt, type: 1, id: 34, str: "", fn: function (app) { app.key.togglelock ('altKey'); } }; },
+  SelectDown:           function (opt) { return { opt: opt, type: 1, id: 13, str: "", fn: function (app) { app.ui.selectDown (); } }; },
+  ExtendDown:           function (opt) { return { opt: opt, type: 1, id: 14, str: "", fn: function (app) { app.ui.extendDown (); } }; },
+  SelectUp:             function (opt) { return { opt: opt, type: 1, id: 15, str: "", fn: function (app) { app.ui.selectUp (); } }; },
+  ExtendUp:             function (opt) { return { opt: opt, type: 1, id: 16, str: "", fn: function (app) { app.ui.extendUp (); } }; },
+  SelectHome:           function (opt) { return { opt: opt, type: 1, id: 17, str: "", fn: function (app) { app.ui.selectHome (); } }; },
+  ExtendToHome:         function (opt) { return { opt: opt, type: 1, id: 18, str: "", fn: function (app) { app.ui.extendToHome (); } }; },
+  SelectEnd:            function (opt) { return { opt: opt, type: 1, id: 19, str: "", fn: function (app) { app.ui.selectEnd (); } }; },
+  ExtendToEnd:          function (opt) { return { opt: opt, type: 1, id: 20, str: "", fn: function (app) { app.ui.extendToEnd (); } }; },
+  SelectAll:            function (opt) { return { opt: opt, type: 1, id: 21, str: "", fn: function (app) { app.ui.selectAll (); } }; },
+  UnselectAll:          function (opt) { return { opt: opt, type: 1, id: 22, str: "", fn: function (app) { app.ui.unselectAll (); } }; },
+  SelectInvert:         function (opt) { return { opt: opt, type: 1, id: 23, str: "Invert select", fn: function (app) { app.ui.selectInvert (); } }; },
+  PageDown:             function (opt) { return { opt: opt, type: 1, id: 24, str: "", fn: function (app) { app.ui.pageDown (); } }; },
+  ExtendPageDown:       function (opt) { return { opt: opt, type: 1, id: 25, str: "", fn: function (app) { app.ui.extendPageDown (); } }; },
+  PageUp:               function (opt) { return { opt: opt, type: 1, id: 26, str: "", fn: function (app) { app.ui.pageUp (); } }; },
+  ExtendPageUp:         function (opt) { return { opt: opt, type: 1, id: 27, str: "", fn: function (app) { app.ui.extendPageUp (); } }; },
+  SelectNowplaying:     function (opt) { return { opt: opt, type: 1, id: 28, str: "", fn: function (app) { app.ui.selectNowplaying (); } }; },
+  ShiftLock:            function (opt) { return { opt: opt, type: 1, id: 29, str: "", fn: function (app) { app.key.lock ('shiftKey'); } }; },
+  CtrlLock:             function (opt) { return { opt: opt, type: 1, id: 30, str: "", fn: function (app) { app.key.lock ('ctrlKey'); } }; },
+  AltLock:              function (opt) { return { opt: opt, type: 1, id: 31, str: "", fn: function (app) { app.key.lock ('altKey'); } }; },
+  ShiftUnlock:          function (opt) { return { opt: opt, type: 1, id: 32, str: "", fn: function (app) { app.key.unlock ('shiftKey'); } }; },
+  CtrlUnlock:           function (opt) { return { opt: opt, type: 1, id: 33, str: "", fn: function (app) { app.key.unlock ('ctrlKey'); } }; },
+  AltUnlock:            function (opt) { return { opt: opt, type: 1, id: 34, str: "", fn: function (app) { app.key.unlock ('altKey'); } }; },
+  ShiftToggleLock:      function (opt) { return { opt: opt, type: 1, id: 35, str: "", fn: function (app) { app.key.togglelock ('shiftKey'); } }; },
+  CtrlToggleLock:       function (opt) { return { opt: opt, type: 1, id: 36, str: "", fn: function (app) { app.key.togglelock ('ctrlKey'); } }; },
+  AltToggleLock:        function (opt) { return { opt: opt, type: 1, id: 37, str: "", fn: function (app) { app.key.togglelock ('altKey'); } }; },
 
   /* volume */
-  VolumeUp:             function (opt) { return { opt: opt, type: 2, id: 35, str: "Volume up", fn: function (app) { app.volumeup (); } }; },
-  VolumeDown:           function (opt) { return { opt: opt, type: 2, id: 36, str: "Volume down", fn: function (app) { app.volumedown (); } }; },
-  VolumeMute:           function (opt) { return { opt: opt, type: 2, id: 37, str: "Volume mute", fn: function (app) { app.ui.click ('mute'); } }; },
-  VolumeResume:         function (opt) { return { opt: opt, type: 2, id: 38, str: "Resume from mute", fn: function (app) { app.ui.click ('volumeon'); } }; },
-  VolumeToggleMute:     function (opt) { return { opt: opt, type: 2, id: 39, str: "Toggle mute", fn: function (app) { app.ui.click (app.ismute () ? 'volumeon' : 'mute'); } }; },
+  VolumeUp:             function (opt) { return { opt: opt, type: 2, id: 38, str: "Volume up", fn: function (app) { app.volumeup (); } }; },
+  VolumeDown:           function (opt) { return { opt: opt, type: 2, id: 39, str: "Volume down", fn: function (app) { app.volumedown (); } }; },
+  VolumeMute:           function (opt) { return { opt: opt, type: 2, id: 40, str: "Volume mute", fn: function (app) { app.ui.click ('mute'); } }; },
+  VolumeResume:         function (opt) { return { opt: opt, type: 2, id: 41, str: "Resume from mute", fn: function (app) { app.ui.click ('volumeon'); } }; },
+  VolumeToggleMute:     function (opt) { return { opt: opt, type: 2, id: 42, str: "Toggle mute", fn: function (app) { app.ui.click (app.ismute () ? 'volumeon' : 'mute'); } }; },
 
   /* vim setting */
   // VisualModeOn:         function (opt) { return function (app) { app.vim.visual.at (1); }; }, // TODO
   // VisualModeoff:        function (opt) { return function (app) { app.vim.visual.at (0); }; }, // TODO
 
   /* toggle popup menu */
-  ToggleHelp:           function (opt) { return { opt: opt, type: 3, id: 40, str: "Keyboard shortcut", fn: function (app) { app.ui.toggleHelp (); } }; },
-  ToggleAbout:          function (opt) { return { opt: opt, type: 3, id: 41, str: "Application Information", fn: function (app) { app.ui.toggleAbout (); } }; },
-  OpenConfig:           function (opt) { return { opt: opt, type: 3, id: 42, str: "Configuration", fn: function (app) { app.ui.click ('conf'); } }; },
+  ToggleHelp:           function (opt) { return { opt: opt, type: 3, id: 43, str: "Keyboard shortcut", fn: function (app) { app.ui.toggleHelp (); } }; },
+  ToggleAbout:          function (opt) { return { opt: opt, type: 3, id: 44, str: "Application Information", fn: function (app) { app.ui.toggleAbout (); } }; },
+  OpenConfig:           function (opt) { return { opt: opt, type: 3, id: 45, str: "Configuration", fn: function (app) { app.ui.click ('conf'); } }; },
   ViewInformation:      function (opt) { return { opt: opt, type: 3, id: 44, str: "Music information", fn: function (app) { app.ui.viewInformation (); } }; },
   Escape:               function (opt) { return { opt: opt, type: 3, id: 45, str: "", fn: function (app) { app.ui.escape (); } }; },
   FocusToggle:          function (opt) { return { opt: opt, type: 3, id: 46, str: "", fn: function (app) { app.ui.focusToggle (); } }; },
@@ -80,8 +80,8 @@ var command = {
   FullScreenToggle:     function (opt) { return { opt: opt, type: 3, id: 50, str: "Toggle fullscreen", fn: function (app) { app.ui.fullScreenToggle (); } }; },
 
   /* Special commands */
-  Nop:                  function (opt) { return { opt: opt, type: 4, id: 52, str: "", fn: function (app) {} }; },
-  Define:               function (opt) { return { opt: opt, type: 4, id: 53, str: "", fn: function (app) {} }; } // TODO
+  Nop:                  function (opt) { return { opt: opt, type: 4, id: 51, str: "", fn: function (app) {} }; },
+  Define:               function (opt) { return { opt: opt, type: 4, id: 52, str: "", fn: function (app) {} }; } // TODO
 
 };
 

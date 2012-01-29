@@ -1341,13 +1341,11 @@ logfn ('drag_drop_multi_select.defaults.after_drop_action');
       .insertBefore($target)
       .addClass('ui-selected moved');
   }
-  setTimeout(function () { UI.selectableSet(); }, 30);
-  setTimeout(
-    function () {
+  if (typeof setorderTimeout !== 'undefined') clearTimeout (setorderTimeout);
+  setorderTimeout = setTimeout(function () { UI.selectableSet(); UI.setorder (); }, 30);
+  setTimeout(function () {
       $('tr.ui-selected', UI.div.tbody)
         .removeClass('ui-selected moved last-select');
-      UI.setorder ();
-    }, 1000
-  );
+    }, 1000);
 };
 
