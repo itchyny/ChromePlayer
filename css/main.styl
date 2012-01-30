@@ -300,19 +300,19 @@ div#playlist
             padding 0
             line-height 0
 
-menu(@zindex)
-  @height 34em
-  @width 40em
-  @rad 2em
-  z-index @zindex
+menu(zind)
+  hei = 34em
+  wid = 40em
+  rad = 2em
+  z-index zind
   position absolute
   top 50%
   left 50%
-  height @height
-  width @width
-  border-radius @rad
-  margin (-1 *(@height + @rad) / 2) 0 0(-1 *(@width + @rad) / 2)
-  padding @rad
+  height hei
+  width wi
+  border-radius rad
+  margin (-1 *(hei + rad) / 2) 0 0(-1 *(wid + rad) / 2)
+  padding rad
   background-color rgba(0, 0, 0, 0.8)
   color #fff
   font-size 1.2em
