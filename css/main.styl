@@ -309,7 +309,7 @@ menu(zind)
   top 50%
   left 50%
   height hei
-  width wi
+  width wid
   border-radius rad
   margin (-1 *(hei + rad) / 2) 0 0(-1 *(wid + rad) / 2)
   padding rad
@@ -351,7 +351,7 @@ div#help
     text-align right
 
   dd:before
-    content "  "
+    content " : "
 
   div.keygroups
     margin-top 1em
@@ -360,29 +360,6 @@ div#help
 
   div.keygroup
     margin 0 0 1em
-
-div#config
-  menu(7)
-  div#scheme a
-    height 4em
-    width 4em
-    border-radius 0.5em
-    margin 0.25em
-    margin-bottom 1em
-    display inline-block
-    padding 0.5em 0 0 0.5em
-    border-bottom 0.1em solid rgba(255,255,255,0.5)
-    border-right 0.1em solid rgba(255,255,255,0.5)
-    &.currentScheme
-      box-shadow 0.2em 0.2em 0.4em rgba(255,255,255,0.5)
-
-  input
-    margin 0.5em 0 0 1em
-
-  textarea
-    background white
-    margin 1em
-    width 36em
 
 div#about
   >div:not(:first-child)
