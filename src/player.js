@@ -63,29 +63,38 @@ logfn ('Player.prototype.readFiles');
   },
 
   asyncread: function (index, files, playindex) {
+    logfn ('asyncread');
+    log ('index: ' + index);
+    log (files);
     var file = files[index];
     var last = (index === files.length - 1) || this.interruptflag;
     var play = (index === playindex);
     this.readOneFile (file, play, last);
     var self = this;
-    if (index < files.length && !self.interruptflag) {
+    if (index + 1 < files.length && !self.interruptflag) {
       setTimeout (function () {
         self.asyncread (index + 1, files, playindex);
       }, index < 60 ? 0 : index < 150 ? 100 : 150);
     } else {
       self.interruptflag = false;
+      self.order.concat (self.orderBuffer);
+      self.orderBuffer = [];
       if (self.order.shuffle.value === 'true') {
         self.order.shuffleOn ();
       }
     }
   },
 
+  orderBuffer: [],
+
   readOneFile: function (file, play, last) {
+    logfn ('readOneFile');
+    log (this.orderBuffer);
     var self = this;
     var n = self.musics.length;
     self.files = self.files || [];
     self.files[n] = file;
-    self.order.concat (n);
+    self.orderBuffer = self.orderBuffer.concat (n);
     self.musics[n] = new Music (file, file.filetype === 'video' ? self.ui.div.video : null);
     self.musics[n].tagread (
       (function (self, j, starttoplay) {
@@ -107,6 +116,8 @@ logfn ('Player.prototype.readFiles');
   /* basic player operations */
   play: function (index) {
 logfn ('Player.prototype.play');
+console.log('order:' + this.order.array.join(','));
+console.log('index:' + index);
     var self = this;
     if (index === undefined) {
       index = 0;

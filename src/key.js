@@ -78,8 +78,7 @@ Key.prototype = {
     if (index < 0) {
       return false;
     }
-    if (this.keys[index + 1] !== undefined
-        && this.keys[index + 1].indexOf (key) < 0) {
+    if (this.keys[index + 1] !== undefined && this.keys[index + 1].indexOf (key) < 0) {
       return true;
     }
     return false;
@@ -157,55 +156,63 @@ Key.prototype = {
   numcommand: 10,
 
   set: function (key, callback) {
-    var self = this;
     if (typeof callback.fn === 'function') {
-      self.callback [key] = callback;
-      if (callback.str !== "") {
-        var dt = 0;
-        var id = callback.id;
-        var offset = id * self.numcommand;
-        while (dt < self.numcommand && self.keyinfo[offset + dt]) dt++;
-        if (dt < self.numcommand) {
-          self.keyinfo [offset + dt] = { callback: callback, key: key, opt: callback.opt };
-        }
-      }
+      this.setfunction (key, callback);
     } else if (typeof callback === 'string') {
-      self.callback [key] = (function (env) {
-        var keyseq = self.parse (callback);
-        if (keyseq.length === 1 && env[keyseq[0]]) {
-          var eqkey = keyseq[0];
-          var newcallback = env[eqkey];
-          var id = newcallback.id;
-          var opt = newcallback.opt;
-          var str = newcallback.str;
-          var offset = id * self.numcommand;
-          if (id && str !== '' && !/g-/.test(key)) {
-            var dt = 0;
-            while (dt < self.numcommand && self.keyinfo[offset + dt]) dt++;
-            if (dt < self.numcommand) {
-              self.keyinfo [offset + dt] = { callback: newcallback, key: key, opt: opt };
-            }
-          } else { // if (key.replace('g-', '') === eqkey) {
-            var keywithoutglobal = key.replace ('g-', '');
-            for (var dt = 0; dt < self.numcommand; dt++) {
-              if (self.keyinfo [offset + dt]) {
-                if (self.keyinfo [offset + dt].key === keywithoutglobal) {
-                  self.keyinfo [offset + dt].key = key;
-                }
+      this.setstring (key, callback);
+    }
+  },
+
+  setfunction: function (key, callback) {
+    this.callback [key] = callback;
+    if (callback.str !== "") {
+      var dt = 0;
+      var id = callback.id;
+      var offset = id * this.numcommand;
+      while (dt < this.numcommand && this.keyinfo[offset + dt]) dt++;
+      if (dt < this.numcommand) {
+        this.keyinfo [offset + dt] = { callback: callback, key: key, opt: callback.opt };
+      }
+    }
+  },
+
+  setstring: function (key, callback) {
+    var self = this;
+    self.callback [key] = (function (env) {
+      var keyseq = self.parse (callback);
+      if (keyseq.length === 1 && env[keyseq[0]]) {
+        var eqkey = keyseq[0];
+        var newcallback = env[eqkey];
+        var id = newcallback.id;
+        var opt = newcallback.opt;
+        var str = newcallback.str;
+        var offset = id * self.numcommand;
+        if (id && str !== '' && !/g-/.test(key)) {
+          var dt = 0;
+          while (dt < self.numcommand && self.keyinfo[offset + dt]) dt++;
+          if (dt < self.numcommand) {
+            self.keyinfo [offset + dt] = { callback: newcallback, key: key, opt: opt };
+          }
+        } else { // if (key.replace('g-', '') === eqkey) {
+          var keywithoutglobal = key.replace ('g-', '');
+          for (var dt = 0; dt < self.numcommand; dt++) {
+            if (self.keyinfo [offset + dt]) {
+              if (self.keyinfo [offset + dt].key === keywithoutglobal) {
+                self.keyinfo [offset + dt].key = key;
               }
             }
           }
         }
-        return { fn: function () {
-          for (var i = 0; i < keyseq.length; i++) {
-            setTimeout ( (function (i) { return function () {
-              self.keydownstr (keyseq [i]);
-            };}) (i)
-            , 5 * i);
-          }
-        }, callback: newcallback, key: key, opt: opt };
-      }) (self.callback);
-    }
+      }
+      return { fn: function () {
+        for (var i = 0; i < keyseq.length; i++) {
+          setTimeout ( (function (i) { return function () {
+            self.keydownstr (keyseq [i]);
+          };}) (i)
+          , 5 * i);
+        }
+      }, callback: newcallback, key: key, opt: opt };
+    }) (self.callback);
   },
 
   viewshortcuts: function () {
@@ -249,7 +256,7 @@ Key.prototype = {
     }
     $('div.keygroup').remove();
     for (var i = 0; i < dls.length; i++) {
-      dl = dls[i];
+      var dl = dls[i];
       if (dl) {
         $('div.keygroups').append(
           $('<div class="keygroup"/>').append(dl)
@@ -369,6 +376,10 @@ Key.prototype = {
 
 };
 
+function Command () {
+  // TODO
+}
+
 // TODO
 function KeySequence (str) {
   // body...
@@ -378,9 +389,11 @@ KeySequence.prototype = {
 
 function Onekey (str) {
   this.ctrl = this.alt = this.meta = this.shift = this.global = null;
+  if (!Rc.regex.onekey.test (str)) throw "Don't pass unvalid key into Onekey!";
   this.parse (str);
 };
 Onekey.prototype = {
+
   parse: function (str) {
     var r;
     if (r = Rc.regex.number.exec (str)) {
@@ -416,31 +429,36 @@ Onekey.prototype = {
     if (this.ctrl) ans.push (this.wrapmetakey ('Ctrl'));
     if (this.alt) ans.push (this.wrapmetakey ('Alt'));
     if (this.shift) ans.push (this.wrapmetakey ('Shift'));
-    var key = this.key[0].toUpperCase() + this.key.slice (1);
-    key = key.replace (/Left/, '←');
-    key = key.replace (/Right/, '→');
-    key = key.replace (/Up/, '↑');
-    key = key.replace (/Down/, '↓');
-    var keyhtml = this.wrapkey (key.length > 1 ? '&lt;' + key + '&gt;' : key);
-    ans.push (keyhtml);
+    var key = this.toUpperCase (this.key)
+                  .replace (/Left/, '←')
+                  .replace (/Right/, '→')
+                  .replace (/Up/, '↑')
+                  .replace (/Down/, '↓');
+    ans.push (this.wrapkey (key));
     return this.wrapglobalkey (ans.join (' + '));
   },
 
   wrapkey: function (key) {
-    return '<span class="key">' + key + '</span>';
+    return '<span class="key">' + this.wrapltgt (key) + '</span>';
+  },
+
+  wrapltgt: function (key) {
+    return key.length > 1 ? '&lt;' + key + '&gt;' : key;
   },
 
   wrapmetakey: function (key) {
-    key = key[0].toUpperCase() + key.slice(1);
-    return this.wrapkey ('&lt;' + key + '&gt;');
+    return this.wrapkey (this.toUpperCase (key));
   },
 
   wrapglobalkey: function (html) {
     return '<span ' + (this.global ? 'class="global"' : '') + '>' +
                 '<span>' + (html) + '</span>' +
            '</span>';
-  }
+  },
 
+  toUpperCase: function (key) {
+    return key[0].toUpperCase() + key.slice(1);
+  }
 
 };
 

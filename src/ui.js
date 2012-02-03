@@ -73,7 +73,13 @@ var UI = {
     self.div.mute.click(        function ()  { player.mute (); });
     self.div.volumeon.click(    function ()  { player.resume (); });
     self.div.repeat.click(      function ()  { player.repeat.next (); });
-    self.div.shuffle.click(     function ()  { player.shuffle.next (); });
+    self.div.shuffle.click(     function ()  {
+      player.shuffle.next ();
+      if (self.player.shuffle.value === 'false') {
+        self.setorder ();
+      }
+    });
+
     // self.div.conf.click(        function ()  { self.div.config.fadeToggle(200); });
     self.div.conf.click(        function ()  { window.open('./fancy-settings/source/index.html'); });
     $('img.lbutton, img.rbutton')
