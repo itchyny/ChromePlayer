@@ -18,7 +18,7 @@ var UI = {
          'remain'    , 'repeat'       , 'scheme'  , 'shuffle'    , 'tablebody', 'tablediv'  ,
          'tagread'   , 'volumeSlider' , 'volumeon', 'wrapper'    , 'filter'   , 'filterword',
          'matchnum'  , 'notification' , 'notificationmsec'  , 'notificationresult' ,
-         'info'      , 'infowrapper'  , 'albumart', 'seek'        ],
+         'info'      , 'infowrapper'  , 'albumart', 'seek' , 'splitter'       ],
       { tbody: $('#tbody'),
         thead: $('thead'),
         table: $('table'),
@@ -153,6 +153,7 @@ var UI = {
     for(var thname in w) {
       $('th.' + thname).width (w[thname] * (this.div.thead.width()));
     }
+    this.afterResize();
   },
 
   initschemes: function () {
@@ -522,6 +523,7 @@ var UI = {
           })
           .mousemove(function (e) {
             if (flg) {
+              self.div.splitter.text('');
               var prevWidth, totalWidth = splitter.prev().width() + splitter.next().width();
               splitter.prev().width( prevWidth = -splitter.prev().offset().left + e.clientX);
               splitter.next().width( totalWidth - prevWidth );
@@ -531,12 +533,14 @@ var UI = {
   },
 
   afterResize: function () {
-    var s = [], data = {}, theadWidth = this.div.thead.width();
+    var s = [], data = {}, theadWidth = this.div.tbody.width();
     $('th:not(.splitter)').each(function (i, th) {
-      var w = $(this).width() / (theadWidth - 0);
-      s.push('td:nth-child(' + (i + 1) + ') {width:' + w * 100 + '%!important;}');
+      var w = ($(this).width() - 1) / (theadWidth - 0);
+      s.push('tbody tr > td:nth-child(' + (2 * i + 1) + ') {width:' + w * 100 + '%;}');
+      s.push('tbody div.inside_helper > tr.ddms_move > td:nth-child(' + (2 * i + 1) + ') {width:' + w * 100 + '%;}');
       data[$(this).attr('class')] = w;
     });
+    this.div.splitter.text(s.join('\n'));
     local.set('splitter', JSON.stringify(data));
     this.selectableSet();
   },

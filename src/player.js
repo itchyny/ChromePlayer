@@ -63,9 +63,7 @@ logfn ('Player.prototype.readFiles');
   },
 
   asyncread: function (index, files, playindex) {
-    logfn ('asyncread');
-    log ('index: ' + index);
-    log (files);
+logfn ('asyncread');
     var file = files[index];
     var last = (index === files.length - 1) || this.interruptflag;
     var play = (index === playindex);
@@ -88,8 +86,7 @@ logfn ('Player.prototype.readFiles');
   orderBuffer: [],
 
   readOneFile: function (file, play, last) {
-    logfn ('readOneFile');
-    log (this.orderBuffer);
+logfn ('readOneFile');
     var self = this;
     var n = self.musics.length;
     self.files = self.files || [];

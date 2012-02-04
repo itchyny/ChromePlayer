@@ -49,12 +49,13 @@ div#playlist table thead th.splitter{width:3px !important;background-color:rgba(
 div#playlist table thead th.splitter:hover{cursor:col-resize}
 div#playlist table tbody tr{height:2em !important;border-top:1px solid rgba(255,255,255,0.00);}
 div#playlist table tbody tr.nP{font-weight:bolder;}
-div#playlist table tbody tr.nP td.now img{width:50%}
+div#playlist table tbody tr.nP td.now img{height:2em !important;width:2em !important}
+div#playlist table tbody tr.ui-draggable-dragging img{height:2em !important;width:2em !important}
 div#playlist table tbody tr.ui-selected{color:#fff}
 div#playlist table tbody tr.ui-selected + tr.ui-selected{border-top:1px solid rgba(255,255,255,0.10)}
 div#playlist table tbody tr.dragover{border-top:1px solid #000}
 div#playlist table tbody tr td{height:2em !important;line-height:2;vertical-align:middle;}
-div#playlist table tbody tr td div{line-height:inherit;height:2em;overflow:hidden;text-overflow:ellipsis;padding-left:1em;width:inherit}
+div#playlist table tbody tr td div{line-height:inherit;height:2em;overflow:hidden;text-overflow:ellipsis;padding-left:1em}
 div#playlist table tbody tr td.now{height:2em;text-align:center;padding:0;line-height:0}
 div#help{z-index:8;position:absolute;top:50%;left:50%;height:34em;width:40em;border-radius:2em;margin:-18em 0 0 -21em;padding:2em;background-color:rgba(0,0,0,0.80);color:#fff;font-size:1.2em;list-style:none;display:none;box-shadow:.1em .1em .3em rgba(255,255,255,0.50);}
 div#help *{line-height:1.25}

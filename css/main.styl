@@ -267,7 +267,14 @@ div#playlist
         &.nP
           font-weight bolder
           td.now img
-            width 50%
+            // width 50%
+            height 2em!important
+            width 2em!important
+
+        &.ui-draggable-dragging
+          img
+            height 2em!important
+            width 2em!important
 
         &.ui-selected
           color #fff
@@ -291,7 +298,7 @@ div#playlist
             overflow hidden
             text-overflow ellipsis
             padding-left 1em
-            width inherit
+            // width inherit
 
           &.now
             //width 5%
