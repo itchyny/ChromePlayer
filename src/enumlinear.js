@@ -114,6 +114,7 @@ logfn ('Enumlinear.prototype.concat');
   splice: function (start, count) {
 logfn ('Enumlinear.prototype.splice');
     var array = this.enumclass.array;
+    this._index = this.enumclass.fromEnum (this.value) || 0;
     array.splice (start, count);
     return this.changeArray (array);
   },
@@ -128,8 +129,7 @@ logfn ('Enumlinear.prototype.changeArray');
     array = array.drop(undefined);
     this.enumclass = new Enum (array);
     this.array = this.enumclass.array;
-    var index = this.enumclass.fromEnum (this.value) || 0;
-    this.at (index);
+    this.at (this._index - 1 % this.array.length);
     return this;
   }
 
