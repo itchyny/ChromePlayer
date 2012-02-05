@@ -282,6 +282,12 @@ var UI = {
         );
       self.selectableSet();
       self.setorder ();
+      setTimeout (function () {
+        UI.div.tablebody.scrollTop(0);
+      }, 10);
+      setTimeout (function () {
+        UI.div.tablebody.scrollTop(0);
+      }, 50);
     };
   })(),
 
@@ -553,6 +559,7 @@ var UI = {
     //   Multi drag & drop action.
     var self = this;
     var tbodyWdt = self.div.tbody.width();
+    var newtbody = $('<tbody />');
     $('tr', self.div.tbody)
     .each(function () {
       var $self = $(this);
@@ -606,12 +613,14 @@ var UI = {
       .addClass( $self.hasClass('nP') ? 'nP': '' )
       .addClass( $self.hasClass('moved') ? 'ui-selected moved': '' )
       .addClass( $self.hasClass('ui-selected') ? 'ui-selected': '' )
-      .appendTo(self.div.tbody);
+      .appendTo(newtbody);
       if ($self.ISSELECTED()) {
         setTimeout(function () {n.SELECT(true);}, 30);
       }
     })
     .remove();
+    this.div.tbody.replaceWith (newtbody);
+    this.div.tbody = newtbody;
     // Initialization of drag & drop multi select.
     $.fn.drag_drop_multi_select.unique=0;
     $.fn.drag_drop_multi_select.stack=[];

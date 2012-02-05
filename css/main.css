@@ -51,6 +51,7 @@ div#playlist table tbody tr{height:2em !important;border-top:1px solid rgba(255,
 div#playlist table tbody tr.nP{font-weight:bolder;}
 div#playlist table tbody tr.nP td.now img{height:2em !important;width:2em !important}
 div#playlist table tbody tr.ui-draggable-dragging img{height:2em !important;width:2em !important}
+div#playlist table tbody tr.ui-draggable-dragging td.now{height:2em;text-align:center;padding:0;line-height:0}
 div#playlist table tbody tr.ui-selected{color:#fff}
 div#playlist table tbody tr.ui-selected + tr.ui-selected{border-top:1px solid rgba(255,255,255,0.10)}
 div#playlist table tbody tr.dragover{border-top:1px solid #000}
