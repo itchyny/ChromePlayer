@@ -50,3 +50,4 @@ If you want see the script, open a site (www.google.com for example) and right c
 ### Any impression on this app is welcome.
 
 ## Enjoy!
+
