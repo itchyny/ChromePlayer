@@ -37,11 +37,13 @@ Support for other types like wav or flac
 I pushed this source to github.
 https://github.com/itchyny/ChromePlayer (Local Player used to be named Chrome Player)
 I allow you to fork another app from this code.
+This application is distributed under the MIT license.
 
 ## Security
 You may wonder why this App accesses "all data from your website". Actually, this App gets no data from your browsing site. This permission is needed for "Global keyboard control." It is realized by following: listening the keydown event, and if it was → or ←, the player catches that event and seek for next or previous music.
 
 If you want see the script, open a site (www.google.com for example) and right click → inspect → Scripts, find chrome-extension://chkhjlbdflppmaddpjmjecgdagdljimc/js/shortcuts.js. "chkhjlbdflppmaddpjmjecgdagdljimc" is the id number for this App.
+
 
 ## Contact or comment
 ### Write a review!!!
