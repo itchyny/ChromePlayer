@@ -1368,3 +1368,4 @@ logfn ('drag_drop_multi_select.defaults.after_drop_action');
     }, 1000);
 };
 
+
