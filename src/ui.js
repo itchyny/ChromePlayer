@@ -717,9 +717,10 @@ var UI = {
       var $last = $('tr.last-select');
       if ($last.size()) {
         $last
+          .removeClass('last-select')
           .last()
           .SELECT()
-          .LASTSELECT();
+          .LASTSELECT(true);
       } else {
         $('tr.nP')
           .next()
@@ -770,9 +771,10 @@ var UI = {
       var $last = $('tr.last-select');
       if ($last.size()) {
         $last
+          .removeClass('last-select')
           .first()
           .SELECT()
-          .LASTSELECT();
+          .LASTSELECT(true);
       } else {
         $('tr.nP')
           .prev()
@@ -1276,6 +1278,29 @@ var UI = {
         $('div#keyviewer').text('');
       }, 800);
     }
+  },
+
+  copy: function (what) {
+    var $selected = $('tr.ui-selected');
+    if ($selected.size()) {
+      var index = $selected.first().attr('number');
+    } else {
+      var index = this.app.nowplaying;
+    }
+    var file = this.app.files[index];
+    var tags = this.app.musics[index].tags;
+    if (tags[what]) {
+      var text = tags[what];
+      if (text) {
+        clipboard.set(text);
+      }
+    } else if (what === 'info') {
+      clipboard.set((tags.artist || '') + ' ' + (tags.title || '') + ' ' + (tags.album || ''));
+    } else if (what === 'artist,title') {
+      clipboard.set((tags.artist || '') + ' ' + (tags.title || ''));
+    } else if (what === 'filename') {
+      clipboard.set(file.name);
+    }
   }
 
 };
@@ -1283,7 +1308,7 @@ var UI = {
 $.fn.SELECT = function (flg, anime) {
   if (this.size()) {
     this
-      .addClass('ui-selected ddms_selected');
+    .addClass('ui-selected ddms_selected');
     if (flg) {
       // If flg is true, not scroll. Default is false(Scroll follows).
       return this;
@@ -1292,20 +1317,19 @@ $.fn.SELECT = function (flg, anime) {
     var firstRow = UI.div.tablebody.offset().top;
     var rm = offsetTop - 30 - firstRow;
     var ex = offsetTop + 60 - UI.div.tablediv.height() - firstRow;
-     if (rm < 0) {
-       if (anime) {
-         UI.div.tablebody.animate({scrollTop: '+=' + rm}, {duration: 'fast', easing: 'linear'});
-       } else {
-         UI.div.tablebody.scrollTop(UI.div.tablebody.scrollTop() + rm);
-       }
-     } else if (ex > 0) {
-       if (anime) {
-         UI.div.tablebody.animate({scrollTop: '+=' + ex}, {duration: 'fast', easing: 'linear'});
-       } else {
-         UI.div.tablebody.scrollTop(UI.div.tablebody.scrollTop() + ex);
-         //tablebody.scrollTop += ex;
-       }
-     }
+    if (rm < 0) {
+      if (anime) {
+        UI.div.tablebody.animate({scrollTop: '+=' + rm}, {duration: 'fast', easing: 'linear'});
+      } else {
+        UI.div.tablebody.scrollTop(UI.div.tablebody.scrollTop() + rm);
+      }
+    } else if (ex > 0) {
+      if (anime) {
+        UI.div.tablebody.animate({scrollTop: '+=' + ex}, {duration: 'fast', easing: 'linear'});
+      } else {
+        UI.div.tablebody.scrollTop(UI.div.tablebody.scrollTop() + ex);
+      }
+    }
   }
   return this;
 };

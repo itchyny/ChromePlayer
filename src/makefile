@@ -13,6 +13,7 @@ SOURCE_FILES =\
 	music.js \
 	local.js \
 	schemeconfig.js \
+	clipboard.js \
 	ui.js \
 	rc.js \
 	key.js \

@@ -92,9 +92,16 @@ var command = {
   FullScreenOff:        function (opt) { return { opt: opt, type: 3, id: 51, str: "", fn: function (app) { app.ui.fullScreenOff (); } }; },
   FullScreenToggle:     function (opt) { return { opt: opt, type: 3, id: 52, str: "Toggle fullscreen", fn: function (app) { app.ui.fullScreenToggle (); } }; },
 
+  /* copy */
+  CopyTitle:            function (opt) { return { opt: opt, type: 4, id: 53, str: "Copy Title", fn: function (app) { app.ui.copy ('title'); } }; },
+  CopyArtist:           function (opt) { return { opt: opt, type: 4, id: 54, str: "Copy Artist", fn: function (app) { app.ui.copy ('artist'); } }; },
+  CopyArtistTitle:      function (opt) { return { opt: opt, type: 4, id: 55, str: "Copy Artist and Title", fn: function (app) { app.ui.copy ('artist/title'); } }; },
+  CopyInformation:      function (opt) { return { opt: opt, type: 4, id: 56, str: "Copy Information", fn: function (app) { app.ui.copy ('info'); } }; },
+  CopyFilename:         function (opt) { return { opt: opt, type: 4, id: 57, str: "Copy Filename", fn: function (app) { app.ui.copy ('filename'); } }; },
+
   /* Special commands */
-  Nop:                  function (opt) { return { opt: opt, type: 4, id: 53, str: "", fn: function (app) {} }; },
-  Define:               function (opt) { return { opt: opt, type: 4, id: 54, str: "", fn: function (app) {} }; } // TODO
+  Nop:                  function (opt) { return { opt: opt, type: 5, id: 55, str: "", fn: function (app) {} }; },
+  Define:               function (opt) { return { opt: opt, type: 5, id: 56, str: "", fn: function (app) {} }; } // TODO
 
 };
 

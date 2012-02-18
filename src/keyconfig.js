@@ -63,6 +63,7 @@ Player.prototype.key = new Key ({
   '<pgup>':        command.PageUp ([]),
   '<c-b>':         '<pgup>', // vim
   '<s-pgup>':      command.ExtendPageUp ([]),
+  'np':            command.SelectNowplaying ([]),
   // 'v':             command.ShiftLock ([]), // vim // TODO
 
   /* toggle popup menu, ui */
@@ -90,6 +91,12 @@ Player.prototype.key = new Key ({
   /* filter interface */
   '<c-f>':         command.FilterStart ([]),
   '/':             command.FilterStart ([]), // vim
+
+  /* copy */
+  '<c-a-c>':       command.CopyTitle ([]),
+  '<c-s-c>':       command.CopyArtist ([]),
+  '<c-c>':         command.CopyInformation ([]),
+  'yy':            command.CopyFilename ([]),
 
   /* special command */
   '<c-p>':         '<nop>', // disable browser mapping
