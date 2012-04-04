@@ -18,7 +18,7 @@ var UI = {
          'remain'    , 'repeat'       , 'scheme'  , 'shuffle'    , 'tablebody', 'tablediv'  ,
          'tagread'   , 'volumeSlider' , 'volumeon', 'wrapper'    , 'filter'   , 'filterword',
          'matchnum'  , 'notification' , 'notificationmsec'  , 'notificationresult' ,
-         'info'      , 'infowrapper'  , 'albumart', 'seek' , 'splitter'       ],
+         'info'      , 'infowrapper'  , 'albumart', 'seek' , 'splitter'       , 'hidden'  ],
       { tbody: $('#tbody'),
         thead: $('thead'),
         table: $('table'),
@@ -574,7 +574,7 @@ var UI = {
         self.focusUpdate (true);
         if (e.shiftKey && !e.altKey && $last.size()) {
           if (e.ctrlKey) {
-            var selected = $('tr.ui-selected');
+            var selected = UI.selected;
             setTimeout(
               function () {
               selected.SELECT(true);
@@ -602,6 +602,9 @@ var UI = {
             }, 20);
           }
         }
+        setTimeout (function () {
+          UI.selected = $('.ui-selected');
+        }, 30);
       })
       .dblclick (
         function (e) {
@@ -704,7 +707,7 @@ var UI = {
 
   selectDown: function () {
     var self = this;
-    var $selected = $('tr.ui-selected');
+    var $selected = UI.selected;
     if ($selected.size()) {
       $selected
         .UNSELECT(true)
@@ -758,7 +761,7 @@ var UI = {
 
   selectUp: function () {
     var self = this;
-    var $selected = $('tr.ui-selected');
+    var $selected = UI.selected;
     if ($selected.size()) {
       $selected
         .UNSELECT(true)
@@ -907,6 +910,14 @@ var UI = {
     $('tr.ui-selected').remove();
   },
 
+  deleteAndNext: function () {
+    var player = this.player;
+    $('tr.ui-selected').UNSELECT();
+    $('tr.nP').SELECT().LASTSELECT();
+    UI.deleteSelected();
+    player.next();
+  },
+
   selectNowplaying: function () {
     var self = this;
     $('tr.ui-selected').UNSELECT();
@@ -1036,8 +1047,8 @@ var UI = {
       case 0:
         if ($('div#musicSlider a:focus, div#volumeSlider a:focus').size()) {
           $('div#musicSlider a, div#volumeSlider a').focusout();
-          // self.focusIndex = 0;
-          // self.focusUpdate (true);
+          self.focusIndex = 0;
+          self.focusUpdate (true);
         } else {
           $('tr.ui-selected').UNSELECT(true);
         }
@@ -1064,14 +1075,16 @@ var UI = {
   focusIndex: 0,
 
   focusElements: function () {
-    return [ $('#tbody')
+    return [ $('#hidden')
            , $('div#musicSlider a')
            , $('div#volumeSlider a')
            ];
   },
 
   focusUpdate: function (focusonly) {
-    this.focusElements ()[this.focusIndex].focus();
+    console.log(this.focusIndex);
+    $('a,input').trigger('focusout');
+    this.focusElements()[this.focusIndex].trigger('focusin');
     if (focusonly) return;
     if (this.focusIndex === 0) {
       $('tr.ui-selected')
@@ -1254,10 +1267,14 @@ var UI = {
   },
 
   filterEnd: function () {
+    console.log('filterEnd');
     this.div.filter.fadeOut(200);
     this.div.filterword.focusout ();
-    // this.div.table.focusin ();
-    this.focusUpdate ();
+    // this.div.table.trigger('focusin');
+    // this.div.hidden.trigger('focusin');
+    UI.div.hidden[0].focus();
+    this.focusIndex = 0;
+    this.focusUpdate(true);
   },
 
   filterIndex: 0,
@@ -1301,7 +1318,9 @@ var UI = {
     } else if (what === 'filename') {
       clipboard.set(file.name);
     }
-  }
+  },
+
+  selected: $()
 
 };
 
@@ -1309,6 +1328,7 @@ $.fn.SELECT = function (flg, anime) {
   if (this.size()) {
     this
     .addClass('ui-selected ddms_selected');
+    UI.selected = this;
     if (flg) {
       // If flg is true, not scroll. Default is false(Scroll follows).
       return this;
@@ -1336,6 +1356,7 @@ $.fn.SELECT = function (flg, anime) {
 
 $.fn.UNSELECT = function (flg) {
   if (!flg) this.SELECT();
+  UI.selected = $();
   return this.removeClass('ui-selected ddms_selected last-select');
 };
 
@@ -1344,6 +1365,7 @@ $.fn.LASTSELECT = function (flg) {
     $('tr.last-select', UI.div.tbody)
       .removeClass('last-select');
   }
+  UI.selected = this;
   return this.addClass('last-select');
 };
 

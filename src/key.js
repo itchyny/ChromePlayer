@@ -37,6 +37,8 @@ Key.prototype = {
       }
     });
     $(window).keydown (function (e) {
+      console.dir(e.target);
+      console.dir(e.target.id);
       switch (e.target.localName) {
         case 'input': case 'textarea': return;
         default:

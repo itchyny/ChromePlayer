@@ -72,6 +72,7 @@ Player.prototype.key = new Key ({
   '[':             '<f1>',
   '<c-,>':         command.OpenConfig ([]),
   '<delete>':      command.DeleteSelected ([]),
+  '<c-]>':         command.DeleteAndNext ([]),
   '<backspace>':   '<delete>',
   'd':             '<delete>', // vim
   '<esc>':         command.Escape ([]),
