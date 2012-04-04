@@ -1328,7 +1328,7 @@ $.fn.SELECT = function (flg, anime) {
   if (this.size()) {
     this
     .addClass('ui-selected ddms_selected');
-    UI.selected = this;
+    UI.selected = UI.selected.add(this);
     if (flg) {
       // If flg is true, not scroll. Default is false(Scroll follows).
       return this;
