@@ -1275,6 +1275,7 @@ var UI = {
     UI.div.hidden[0].focus();
     this.focusIndex = 0;
     this.focusUpdate(true);
+    UI.selected = $('.ui-selected');
   },
 
   filterIndex: 0,
