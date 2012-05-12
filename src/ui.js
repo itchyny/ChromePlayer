@@ -18,7 +18,7 @@ var UI = {
          'remain'    , 'repeat'       , 'scheme'  , 'shuffle'    , 'tablebody', 'tablediv'  ,
          'tagread'   , 'volumeSlider' , 'volumeon', 'wrapper'    , 'filter'   , 'filterword',
          'matchnum'  , 'notification' , 'notificationmsec'  , 'notificationresult' ,
-         'info'      , 'infowrapper'  , 'albumart', 'seek' , 'splitter'       , 'hidden'  ],
+         'info'      , 'infowrapper'  , 'albumart', 'seek' , 'splitter'       ],
       { tbody: $('#tbody'),
         thead: $('thead'),
         table: $('table'),
@@ -862,6 +862,7 @@ var UI = {
       .SELECT(true)
       .last()
       .LASTSELECT();
+    UI.selected = $('tr.ui-selected');
   },
 
   unselectAll: function () {
@@ -869,6 +870,7 @@ var UI = {
     self.div.tbody
       .children()
       .UNSELECT(true);
+    UI.selected = $('tr.ui-selected');
   },
 
   selectInvert: function () {
@@ -880,6 +882,7 @@ var UI = {
       .last()
       .LASTSELECT();
     $selected.UNSELECT (true);
+    UI.selected = $('tr.ui-selected');
   },
 
   toggleHelp: function () {
@@ -908,6 +911,7 @@ var UI = {
           return player.remove ( parseInt($(tr).attr('number'), 10) );
       });
     $('tr.ui-selected').remove();
+    UI.selected = $('tr.ui-selected');
   },
 
   deleteAndNext: function () {
@@ -1075,16 +1079,19 @@ var UI = {
   focusIndex: 0,
 
   focusElements: function () {
-    return [ $('#hidden')
+    return [ $()
            , $('div#musicSlider a')
            , $('div#volumeSlider a')
            ];
   },
 
   focusUpdate: function (focusonly) {
-    console.log(this.focusIndex);
     $('a,input').trigger('focusout');
     this.focusElements()[this.focusIndex].trigger('focusin');
+    if (this.focusIndex === 0) {
+      $('a:focus').size() && $('a:focus')[0].blur();
+      $('input:focus').size() && $('input:focus')[0].blur();
+    }
     if (focusonly) return;
     if (this.focusIndex === 0) {
       $('tr.ui-selected')
@@ -1267,14 +1274,13 @@ var UI = {
   },
 
   filterEnd: function () {
-    console.log('filterEnd');
     this.div.filter.fadeOut(200);
-    this.div.filterword.focusout ();
+    this.div.filterword.focusout()[0].blur();
     // this.div.table.trigger('focusin');
     // this.div.hidden.trigger('focusin');
-    UI.div.hidden[0].focus();
-    this.focusIndex = 0;
-    this.focusUpdate(true);
+    // UI.div.hidden[0].focus();
+    // this.focusIndex = 0;
+    // this.focusUpdate(true);
     UI.selected = $('.ui-selected');
   },
 
