@@ -26,12 +26,10 @@ Enumlinear.prototype = {
   history: [], //:: [Value]
 
   head: function () {
-logfn ('Enumlinear.prototype.head');
     return this.at (0);
   },
 
   last: function () {
-logfn ('Enumlinear.prototype.last');
     return this.at (this.enumclass.array.length - 1);
   },
 
@@ -40,7 +38,6 @@ logfn ('Enumlinear.prototype.last');
   },
 
   at: function (index) {
-logfn ('Enumlinear.prototype.at');
     /*! return value; return undefined if index if out of array */
     if (this.nonvalidIndex (index)) {
       index = this.index;
@@ -58,7 +55,6 @@ logfn ('Enumlinear.prototype.at');
   },
 
   atfromEnum: function (value) {
-logfn ('Enumlinear.prototype.atfromEnum');
     /*! return value; return undefined if value is not found in array */
     var index = this.enumclass.fromEnum (value);
     if (index === undefined) {
@@ -68,7 +64,6 @@ logfn ('Enumlinear.prototype.atfromEnum');
   },
 
   next: function (j) {
-logfn ('Enumlinear.prototype.next');
     /*! return undefined if out of array after moving */
     if (this.nonvalidIndex (j)) {
       j = 1;
@@ -77,7 +72,6 @@ logfn ('Enumlinear.prototype.next');
   },
 
   prev: function (j) {
-logfn ('Enumlinear.prototype.prev');
     /*! return undefined if out of array after backward */
     if (this.nonvalidIndex (j)) {
       j = -1;
@@ -86,7 +80,6 @@ logfn ('Enumlinear.prototype.prev');
   },
 
   init: function (app) {
-logfn ('Enumlinear.prototype.init');
     this.app = app;
     /*! return value; return undefined if value is not found in array */
     var value;
@@ -107,12 +100,10 @@ logfn ('Enumlinear.prototype.init');
   },
 
   concat: function (arr) {
-logfn ('Enumlinear.prototype.concat');
     return this.changeArray (this.enumclass.array.concat (arr));
   },
 
   splice: function (start, count) {
-logfn ('Enumlinear.prototype.splice');
     var array = this.enumclass.array;
     this._index = this.enumclass.fromEnum (this.value) || 0;
     array.splice (start, count);
@@ -120,12 +111,10 @@ logfn ('Enumlinear.prototype.splice');
   },
 
   remove: function (value) {
-logfn ('Enumlinear.prototype.remove');
     return this.splice (this.enumclass.fromEnum (value), 1);
   },
 
   changeArray: function (array) {
-logfn ('Enumlinear.prototype.changeArray');
     array = array.drop(undefined);
     this.enumclass = new Enum (array);
     this.array = this.enumclass.array;

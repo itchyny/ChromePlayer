@@ -99,6 +99,7 @@ var command = {
   CopyArtistTitle:      function (opt) { return { opt: opt, type: 4, id: 56, str: "Copy Artist and Title", fn: function (app) { app.ui.copy ('artist/title'); } }; },
   CopyInformation:      function (opt) { return { opt: opt, type: 4, id: 57, str: "Copy Information", fn: function (app) { app.ui.copy ('info'); } }; },
   CopyFilename:         function (opt) { return { opt: opt, type: 4, id: 58, str: "Copy Filename", fn: function (app) { app.ui.copy ('filename'); } }; },
+  CopyWithHashtag:      function (opt) { return { opt: opt, type: 4, id: 59, str: "Copy with #nowplaying", fn: function (app) { app.ui.copy ('hash'); } }; },
 
   /* Special commands */
   Nop:                  function (opt) { return { opt: opt, type: 5, id: 56, str: "", fn: function (app) {} }; },

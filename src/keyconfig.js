@@ -96,7 +96,7 @@ Player.prototype.key = new Key ({
   /* copy */
   '<c-a-c>':       command.CopyTitle ([]),
   '<c-s-c>':       command.CopyArtist ([]),
-  '<c-c>':         command.CopyInformation ([]),
+  '<c-c>':         command.CopyWithHashtag ([]),
   'yy':            command.CopyFilename ([]),
 
   /* special command */
@@ -104,16 +104,9 @@ Player.prototype.key = new Key ({
   '<c-j>':         '<nop>', // disable browser mapping
   '<c-h>':         '<nop>', // disable browser mapping
   '<c-l>':         '<nop>', // disable browser mapping
+  '<c-s>':         '<nop>', // disable browser mapping
   '<nop>':         command.Nop ([])
 
 });
-
-
-
-
-
-
-
-
 
 

@@ -58,29 +58,29 @@ Music.prototype = {
         }
       }
     } else {
-      if (self.file.filetype === 'audio') {
-        var reader = new FileReader ();
-        reader.onerror = function (e) {
-          log (e);
-        };
-        reader.onload = function (e) {
-          self.audio = new Audio (e.target.result);
-        if (self.htmlElement) {
-          self.htmlElement.src = self.audio.src;
-        }
-          self.audio.volume = vol;
-          self.audio.addEventListener ('ended', function () {
-            self.release ();
-            next ();
-          });
-          if (startplay) {
-            self.audio.play ();
-          }
-        };
-        reader.readAsDataURL (self.file);
-      } else {
-        next ();
-      }
+      // if (self.file.filetype === 'audio') {
+      //   var reader = new FileReader ();
+      //   reader.onerror = function (e) {
+      //     log (e);
+      //   };
+      //   reader.onload = function (e) {
+      //     self.audio = new Audio (e.target.result);
+      //   if (self.htmlElement) {
+      //     self.htmlElement.src = self.audio.src;
+      //   }
+      //     self.audio.volume = vol;
+      //     self.audio.addEventListener ('ended', function () {
+      //       self.release ();
+      //       next ();
+      //     });
+      //     if (startplay) {
+      //       self.audio.play ();
+      //     }
+      //   };
+      //   reader.readAsDataURL (self.file);
+      // } else {
+      //   next ();
+      // }
     }
   },
 

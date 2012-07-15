@@ -40,6 +40,7 @@ var UI = {
     $('div#appname a').text('Local Player ver ' + player.version).click(function (e) {
       self.toggleAbout ();
     });
+    $('a').focus(function (e) { e.target.blur(); });
   },
 
   initdrop: function () {
@@ -1324,6 +1325,8 @@ var UI = {
       clipboard.set((tags.artist || '') + ' ' + (tags.title || ''));
     } else if (what === 'filename') {
       clipboard.set(file.name);
+    } else if (what === 'hash') {
+      clipboard.set((tags.artist + ' - ' || '') + (tags.title || '') + ' #nowplaying');
     }
   },
 
