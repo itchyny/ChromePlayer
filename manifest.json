@@ -28,5 +28,6 @@
       ]
     }
   ],
-  "options_page": "fancy-settings/source/index.html"
+  "options_page": "fancy-settings/source/index.html",
+  "offline_enabled": true
 }
