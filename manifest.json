@@ -17,7 +17,9 @@
     "background",
     "tabs"
   ],
-  "background_page": "bg_index.html",
+  "background": {
+    "page": "bg_index.html"
+  },
   "content_scripts": [
     {
       "matches": [
@@ -29,5 +31,6 @@
     }
   ],
   "options_page": "fancy-settings/source/index.html",
-  "offline_enabled": true
+  "offline_enabled": true,
+  "manifest_version": 2
 }
