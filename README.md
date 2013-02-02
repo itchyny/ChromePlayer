@@ -2,7 +2,10 @@
 ## Local Player is an App for Google Chrome,
 ### available at https://chrome.google.com/webstore/detail/chkhjlbdflppmaddpjmjecgdagdljimc
 
-
+## Note
+This repository has been closed.
+This software will not be developped anymore.
+New repository is https://github.com/itchyny/LocalPlayer.
 
 ## Usage
 - A media player on your browser for LOCAL FILES.
