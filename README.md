@@ -4,7 +4,7 @@
 
 ## Note
 ### This repository has been closed.
-### This software will not be developped anymore.
+### This software will not be developed anymore.
 ### New repository is https://github.com/itchyny/LocalPlayer.
 
 ## Usage
