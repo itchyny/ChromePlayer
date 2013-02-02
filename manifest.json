@@ -30,6 +30,9 @@
       ]
     }
   ],
+  "web_accessible_resources": [
+    "icon_128.png"
+  ],
   "options_page": "fancy-settings/source/index.html",
   "offline_enabled": true,
   "manifest_version": 2

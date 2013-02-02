@@ -85,7 +85,7 @@ var UI = {
     self.div.conf.click(        function ()  { window.open('./fancy-settings/source/index.html'); });
     $('img.lbutton, img.rbutton')
       .mouseup(function (e) { $(this).css({ 'top': '50%' }); })
-      .mousedown(function (e) { $(this).css({ 'top': parseInt($(this).css('top'), 10) * 1.03 + '%' }); });
+      .mousedown(function (e) { $(this).css({ 'top': parseFloat($(this).css('top'), 10) * 1.03 + 'px' }); });
     self.div.filename.click(function () { self.selectNowplaying (); });
     self.div.tablebody.click (function () {
       self.focusIndex = 0;

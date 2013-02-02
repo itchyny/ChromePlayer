@@ -5,9 +5,12 @@
 */
 body {
 background-color: white;
-font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
 color: #222;
 font-size: 13px;
+font-family: "メイリオ",Meiryo,"MS ゴシック","Helvetica Neue", Arial, sans-serif,serif;
+}
+* {
+font-family: "メイリオ",Meiryo,"MS ゴシック","Helvetica Neue", Arial, sans-serif,serif;
 }
 body {
 background-color: white;
